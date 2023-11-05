@@ -5,7 +5,9 @@
 #include "enemy.h"
 #include "enemy_spawner.h"
 #include "player.h"
+#include "projectile.h"
 #include "tiled_map.h"
+#include "weapon.h"
 
 struct Game
 {
@@ -14,12 +16,14 @@ struct Game
 	Player player;
 	TiledMap map;
 
+	Cute::Array<Weapon> weapons;
+	Cute::Array<Projectile> projectiles;
+
 	Cute::Array<Enemy> enemies;
 
 	Cute::v2 camera_size;
 
 	f64 total_time;
-	f64 spawn_timer;
 
 	bool paused;
 

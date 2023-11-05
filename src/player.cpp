@@ -37,7 +37,7 @@ void Player::update(float dt)
 		// Normalize
 		input_dir = input_dir / dir_length;
 
-		vel = input_dir * dt * speed;
+		vel = input_dir * speed * dt;
 		v2 new_pos = pos + vel;
 
 		// TODO: Collision detection / resolution
@@ -48,17 +48,21 @@ void Player::update(float dt)
 
 void Player::draw()
 {
+	static const char *anims[4] =
+		{"idle-left", "idle-right", "walk-left", "walk-right"};
+
 	sprite.transform.p = pos;
 
-	auto facing_anim = facing > 0 ? "right" : "left";
-	auto action_anim = input_dir.x != 0 || input_dir.y != 0 ? "walk" : "idle";
+	int action_anim = input_dir.x != 0 || input_dir.y != 0 ? 2 : 0;
+	int facing_anim = facing > 0 ? 1 : 0;
 
-	auto anim =
-		fmt::vformat("{}-{}", fmt::make_format_args(action_anim, facing_anim));
+	int anim_index = action_anim + facing_anim;
 
-	if (!sprite.is_playing(anim.c_str()))
+	const char *anim = anims[anim_index];
+
+	if (!sprite.is_playing(anim))
 	{
-		sprite.play(anim.c_str());
+		sprite.play(anim);
 	}
 
 	draw_push_layer(42);

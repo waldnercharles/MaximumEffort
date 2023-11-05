@@ -31,11 +31,8 @@ fetchcontent_declare(
 fetchcontent_getproperties(cute_headers)
 fetchcontent_populate(cute_headers)
 
-set(cute_headers_INCLUDE_DIRS ${cute_headers_SOURCE_DIR} CACHE INTERNAL "stb: Include Directories" FORCE)
-add_library(cute_headers STATIC ${cute_headers_SOURCE_DIR}/cute_tiled.h src/cute_headers.cpp
-            include/tiled_map.h
-            include/enemy_spawner.h
-            include/enemy_type.h)
+set(cute_headers_INCLUDE_DIRS ${cute_headers_SOURCE_DIR} CACHE INTERNAL "cute_headers: Include Directories" FORCE)
+add_library(cute_headers STATIC ${cute_headers_SOURCE_DIR}/cute_tiled.h src/cute_headers.cpp)
 
 fetchcontent_declare(
         fmt
@@ -49,17 +46,24 @@ add_executable(MaximumEffort
                include/assets.h
                include/common.h
                include/enemy.h
+               include/enemy_spawner.h
+               include/enemy_type.h
                include/game.h
                include/log.h
                include/player.h
+               include/projectile.h
                include/singleton.h
+               include/tiled_map.h
+               include/weapon.h
                src/assets.cpp
                src/enemy.cpp
+               src/enemy_spawner.cpp
                src/game.cpp
                src/main.cpp
                src/player.cpp
+               src/projectile.cpp
                src/tiled_map.cpp
-               src/enemy_spawner.cpp
+               src/weapon.cpp
 )
 
 include_directories(SYSTEM ${cute_headers_INCLUDE_DIRS})

@@ -49,8 +49,7 @@ Aabb get_max_enemy_bounds()
 Cute::v2 get_enemy_spawn_pos()
 {
 	// TODO: This is good enough for now, but could be better.
-	float angle = rnd_next_range(game.rnd, -CF_PI * 2.0f, CF_PI * 2.0f);
-
+	float angle = rnd_next_range(game.rnd, -CF_PI, CF_PI);
 	v2 dir = V2(cosf(angle), sinf(angle));
 
 	Aabb bounds = get_max_enemy_bounds();

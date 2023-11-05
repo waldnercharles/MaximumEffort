@@ -19,15 +19,13 @@ void Enemy::update(float dt)
 
 	pos = pos + vel * dt;
 
-	// Look at the player
+	sprite.transform.p = pos;
 	sprite.transform.r.s = dir.y;
 	sprite.transform.r.c = dir.x;
 }
 
 void Enemy::draw()
 {
-	sprite.transform.p = pos;
-
 	sprite.update();
 	sprite.draw();
 }

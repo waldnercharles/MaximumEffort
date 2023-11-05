@@ -1,16 +1,18 @@
 #pragma once
 
-#include "cute.h"
+#include <cute.h>
 
-struct Player
+struct Projectile
 {
+	bool alive;
+
+	float lifetime;
+
 	Cute::v2 pos;
 	Cute::v2 vel;
 
-	Cute::v2 input_dir;
-	Cute::v2 speed = Cute::V2(45, 45);
-
-	float facing;
+	Cute::v2 dir;
+	Cute::v2 speed;
 
 	Cute::Sprite sprite;
 
