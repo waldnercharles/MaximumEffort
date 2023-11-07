@@ -72,7 +72,7 @@ jobs:
         run: |
           mkdir -p ./dist
           cp -v ./build/MaximumEffort ./dist
-          cp -v ./build/assets ./dist/assets
+          cp -r -v ./build/assets ./dist/assets
           tar -czvf ${{ matrix.platform.artifact }}.tar.gz -C dist .
         if: runner.os == 'Linux'
 
