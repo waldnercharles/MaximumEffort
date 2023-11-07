@@ -51,8 +51,11 @@ TiledMap load_tiled_map(const char *path)
 	TiledMap tiled_map;
 	buffer = fs_read_entire_file_to_memory(path, &buffer_size);
 
-	tiled_map
-		.map = cute_tiled_load_map_from_memory(buffer, buffer_size, nullptr);
+	tiled_map.map = cute_tiled_load_map_from_memory(
+		buffer,
+		(int)buffer_size,
+		nullptr
+	);
 	tiled_map.pos = V2(0, 0);
 
 	cf_free(buffer);
@@ -113,7 +116,7 @@ void TiledMap::draw()
 		return;
 	}
 
-	v2 cam_center = game.player.pos;
+	v2 cam_center = cf_camera_peek_position();
 	v2 cam_dimensions = game.camera_size;
 
 	cute_tiled_layer_t *layer = map->layers;

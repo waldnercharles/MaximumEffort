@@ -13,62 +13,58 @@ endif ()
 include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
-set(CUTE_FRAMEWORK_STATIC ON)
-fetchcontent_declare(
-        cute
-        GIT_REPOSITORY https://github.com/RandyGaul/cute_framework.git
-        GIT_PROGRESS FALSE
-)
-fetchcontent_makeavailable(cute)
-
-fetchcontent_declare(
-        cute_headers
-        GIT_REPOSITORY https://github.com/RandyGaul/cute_headers.git
-        GIT_TAG master
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND "")
-
-fetchcontent_getproperties(cute_headers)
-fetchcontent_populate(cute_headers)
-
-set(cute_headers_INCLUDE_DIRS ${cute_headers_SOURCE_DIR} CACHE INTERNAL "cute_headers: Include Directories" FORCE)
-add_library(cute_headers STATIC ${cute_headers_SOURCE_DIR}/cute_tiled.h src/cute_headers.cpp)
-
-fetchcontent_declare(
-        fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 10.1.1
-        GIT_PROGRESS FALSE
-)
-fetchcontent_makeavailable(fmt)
-
 add_executable(MaximumEffort
                include/assets.h
+               include/cmp/boomerang_movement_component.h
+               include/cmp/enemy_component.h
+               include/cmp/hitbox_component.h
+               include/cmp/hurtbox_component.h
+               include/cmp/input_component.h
+               include/cmp/lifetime_component.h
+               include/cmp/movement_component.h
+               include/cmp/physics_component.h
+               include/cmp/player_component.h
+               include/cmp/projectile_component.h
+               include/cmp/spawner_component.h
+               include/cmp/sprite_component.h
+               include/cmp/target_component.h
+               include/cmp/weapon_component.h
                include/common.h
-               include/enemy.h
-               include/enemy_spawner.h
-               include/enemy_type.h
                include/game.h
                include/log.h
-               include/player.h
-               include/projectile.h
-               include/singleton.h
+               include/sys/camera_system.h
+               include/sys/lifetime_system.h
+               include/sys/movement_system.h
+               include/sys/physics_system.h
+               include/sys/player_animation_system.h
+               include/sys/render_system.h
+               include/sys/spawner_system.h
+               include/sys/weapon_system.h
                include/tiled_map.h
-               include/weapon.h
                src/assets.cpp
-               src/enemy.cpp
-               src/enemy_spawner.cpp
+               src/factories.cpp
                src/game.cpp
                src/main.cpp
-               src/player.cpp
-               src/projectile.cpp
+               src/sys/camera_system.cpp
+               src/sys/input_system.cpp
+               src/sys/lifetime_system.cpp
+               src/sys/movement_system.cpp
+               src/sys/physics_system.cpp
+               src/sys/player_animation_system.cpp
+               src/sys/render_system.cpp
+               src/sys/spawner_system.cpp
+               src/sys/target_system.cpp
+               src/sys/weapon_system.cpp
                src/tiled_map.cpp
-               src/weapon.cpp
+               src/projectile_factories.cpp
+               include/projectile_factories.h
 )
 
-include_directories(SYSTEM ${cute_headers_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/src)
+add_subdirectory(lib)
+
+target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
+target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
+target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
@@ -84,9 +80,16 @@ if (APPLE)
     )
 endif ()
 
-target_link_libraries(MaximumEffort cute cute_headers fmt)
+target_link_libraries(MaximumEffort cute fmt cute_headers)
 
 if (MSVC)
     set_property(TARGET MaximumEffort PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:MaximumEffort>)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MaximumEffort)
+
+    add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT _CRT_SECURE_NO_WARNINGS)
+
+    add_compile_options($<$<CONFIG:Debug>:-nologo -fp:fast -EHa- -Od -JMC-)
+    add_compile_options($<$<CONFIG:Release>:-nologo -fp:fast -EHa- -O2 -Oi)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-WX -W4 -FC -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-WX -W4 -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
 endif ()

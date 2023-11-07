@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
 	cf_set_update_udata(&game);
 
-	const f32 alpha = 0.99;
+	const f32 alpha = 0.99f;
 	f32 fps = 60;
 
 	while (app_is_running())
@@ -54,7 +54,6 @@ int main(int argc, char *argv[])
 
 		fps = fps * alpha + (1.0 - alpha) * (1.0 / DELTA_TIME);
 		ImGui::Text("%f", fps);
-		ImGui::Text("(%f, %f)", game.player.pos.x, game.player.pos.y);
 
 		game.draw();
 		app_draw_onto_screen();

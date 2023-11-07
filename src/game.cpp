@@ -1,5 +1,16 @@
 #include "game.h"
+#include "factories.h"
 #include "imgui.h"
+#include "sys/camera_system.h"
+#include "sys/input_system.h"
+#include "sys/lifetime_system.h"
+#include "sys/movement_system.h"
+#include "sys/physics_system.h"
+#include "sys/player_animation_system.h"
+#include "sys/render_system.h"
+#include "sys/spawner_system.h"
+#include "sys/target_system.h"
+#include "sys/weapon_system.h"
 #include <ctime>
 
 using namespace Cute;
@@ -11,61 +22,30 @@ void Game::update(float dt)
 	if (!paused)
 	{
 		total_time += dt;
+		lifetime_system(reg, dt);
 
-		player.update(dt);
+		weapon_system(reg, dt);
 
-		for (auto &spawner : spawners)
-		{
-			spawner.update(dt);
-		}
+		spawner_system(reg, dt);
+		target_system(reg, dt);
 
-		for (auto &weapon : weapons)
-		{
-			weapon.update(dt);
-		}
+		input_system(reg, dt);
+		movement_system(reg, dt);
 
-		for (auto &projectile : projectiles)
-		{
-			projectile.update(dt);
-		}
+		player_animation_system(reg, dt);
 
-		for (auto &enemy : enemies)
-		{
-			enemy.update(dt);
-		}
-
-		// Remove dead entities
-		for (int i = projectiles.count() - 1; i >= 0; i--)
-		{
-			if (!projectiles[i].alive)
-			{
-				projectiles.unordered_remove(i);
-			}
-		}
+		physics_system(reg, dt);
 	}
 }
 
+
 void Game::draw()
 {
-	camera_dimensions(game.camera_size.x, game.camera_size.y);
-	auto dim = cf_camera_peek_dimensions();
-	ImGui::Text("%f %f", dim.x, dim.y);
-	camera_look_at(player.pos);
+	camera_system(reg);
 
 	map.draw();
 
-	for (auto &enemy : enemies)
-	{
-		enemy.draw();
-	}
-
-	for (auto &projectile : projectiles)
-	{
-		projectile.draw();
-	}
-
-	player.draw();
-
+	render_system(reg);
 
 	if (ImGui::Button("Pause"))
 	{
@@ -75,33 +55,20 @@ void Game::draw()
 
 void make_game()
 {
-	game.weapons.clear();
-	game.projectiles.clear();
-	game.enemies.clear();
-	game.spawners.clear();
-	game = {};
+	if (game.enemy_aabb_tree.id)
+	{
+		destroy_aabb_tree(game.enemy_aabb_tree);
+	}
 
 	game.rnd = rnd_seed((u64)time(nullptr));
 	game.camera_size = V2(320, 180);
 
 	game.map = load_tiled_map("map.json");
 
-	game.player = {};
-	game.player.sprite = make_sprite("character.ase");
+	auto player = make_player(game.reg);
 
-	Projectile boomerang = {};
-	boomerang.speed = V2(80, 80);
-	boomerang.lifetime = 1;
-	boomerang.sprite = make_sprite("boomerang.ase");
+	make_enemy_spawner(game.reg, player, 0.2f, ENEMY_EYEBALL);
+	make_weapon_boomerang(game.reg, player);
 
-	Weapon weapon = {};
-	weapon.projectile_template = boomerang;
-	weapon.rate = 0.5f;
-
-	game.weapons.add(weapon);
-
-	EnemySpawner enemy_spawner = {0.0f, 0.2f, ENEMY_TYPE_EYEBALL};
-	game.spawners.add(enemy_spawner);
-
-	//	game.paused = true;
+	game.enemy_aabb_tree = make_aabb_tree();
 }
