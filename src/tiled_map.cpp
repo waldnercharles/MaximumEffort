@@ -1,7 +1,7 @@
 #include "tiled_map.h"
 #include "common.h"
 #include "game.h"
-#include <malloc.h>
+#include <stdlib.h>
 
 using namespace Cute;
 
