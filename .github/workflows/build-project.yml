@@ -56,7 +56,7 @@ jobs:
           robocopy build\Release dist MaximumEffort.exe 
           robocopy build\Release\assets dist\assets /E
           robocopy build dist MaximumEffort.exe
-          robocopy build\Release\assets dist\assets /E
+          robocopy build\assets dist\assets /E
           7z a ${{ matrix.platform.artifact }}.zip .\dist\*
         if: runner.os == 'Windows'
 
