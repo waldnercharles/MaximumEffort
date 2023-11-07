@@ -54,7 +54,9 @@ jobs:
         shell: cmd
         run: |
           robocopy build\Release dist MaximumEffort.exe 
+          robocopy build\Release\assets dist\assets /E
           robocopy build dist MaximumEffort.exe
+          robocopy build\Release\assets dist\assets /E
           7z a ${{ matrix.platform.artifact }}.zip .\dist\*
         if: runner.os == 'Windows'
 
@@ -62,6 +64,7 @@ jobs:
         run: |
           mkdir -p ./dist
           cp -R -v ./build/MaximumEffort ./dist
+          cp -R -v ./build/assets ./dist/assets
           tar -czvf ${{ matrix.platform.artifact }}.tar.gz -C dist .
         if: runner.os == 'macOS'
 
@@ -69,6 +72,7 @@ jobs:
         run: |
           mkdir -p ./dist
           cp -v ./build/MaximumEffort ./dist
+          cp -v ./build/assets ./dist/assets
           tar -czvf ${{ matrix.platform.artifact }}.tar.gz -C dist .
         if: runner.os == 'Linux'
 
