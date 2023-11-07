@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT _CRT_SECURE_NO_WARNINGS)
+
 if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(EMSCRIPTEN TRUE)
 endif ()
@@ -32,6 +34,7 @@ add_executable(MaximumEffort
                include/common.h
                include/game.h
                include/log.h
+               include/projectile_factories.h
                include/sys/camera_system.h
                include/sys/lifetime_system.h
                include/sys/movement_system.h
@@ -45,6 +48,7 @@ add_executable(MaximumEffort
                src/factories.cpp
                src/game.cpp
                src/main.cpp
+               src/projectile_factories.cpp
                src/sys/camera_system.cpp
                src/sys/input_system.cpp
                src/sys/lifetime_system.cpp
@@ -56,8 +60,6 @@ add_executable(MaximumEffort
                src/sys/target_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
-               src/projectile_factories.cpp
-               include/projectile_factories.h
 )
 
 add_subdirectory(lib)
@@ -65,6 +67,8 @@ add_subdirectory(lib)
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_link_libraries(MaximumEffort cute fmt cute_headers)
 
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
@@ -80,16 +84,10 @@ if (APPLE)
     )
 endif ()
 
-target_link_libraries(MaximumEffort cute fmt cute_headers)
-
 if (MSVC)
     set_property(TARGET MaximumEffort PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:MaximumEffort>)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MaximumEffort)
 
-    add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT _CRT_SECURE_NO_WARNINGS)
-
-    add_compile_options($<$<CONFIG:Debug>:-nologo -fp:fast -EHa- -Od -JMC-)
-    add_compile_options($<$<CONFIG:Release>:-nologo -fp:fast -EHa- -O2 -Oi)
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-WX -W4 -FC -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-WX -W4 -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-nologo -fp:fast -EHa- -Od -JMC- -WX -W4 -FC -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-nologo -fp:fast -EHa- -O2 -Oi -WX -W4 -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459>)
 endif ()

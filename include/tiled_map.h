@@ -1,5 +1,5 @@
 #pragma once
-#include <Cute.h>
+#include <cute.h>
 #include <cute_tiled.h>
 
 struct TiledMap
