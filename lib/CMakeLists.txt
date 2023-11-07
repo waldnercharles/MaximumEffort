@@ -12,7 +12,9 @@ if (MSVC)
     add_compile_options(-nologo -fp:fast)
 endif ()
 
-set(CUTE_FRAMEWORK_STATIC ON)
+set(CF_FRAMEWORK_STATIC ON)
+set(CF_FRAMEWORK_BUILD_TESTS OFF)
+set(CF_FRAMEWORK_BUILD_SAMPLES OFF)
 fetchcontent_declare(
         cute
         GIT_REPOSITORY https://github.com/RandyGaul/cute_framework.git
@@ -51,9 +53,7 @@ fetchcontent_declare(
 fetchcontent_getproperties(cute_headers)
 fetchcontent_populate(cute_headers)
 
-add_library(cute_headers STATIC
-            src/cute_headers.cpp
-)
+add_library(cute_headers STATIC src/cute_headers.cpp)
 target_include_directories(cute_headers SYSTEM PUBLIC ${cute_headers_SOURCE_DIR})
 
 set(lib_INCLUDE_DIRS ${entt_SOURCE_DIR}/single_include ${cute_headers_SOURCE_DIR} CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
