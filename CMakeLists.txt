@@ -89,6 +89,12 @@ if (APPLE)
     )
 endif ()
 
+# Statically link the standard library when using MinGW, because it's dumb.
+if (WIN32 AND NOT MSVC)
+    target_link_options(MaximumEffort PRIVATE -static-libgcc -static-libstdc++)
+    target_link_libraries(MaximumEffort ws2_32 secur32 shlwapi)
+endif ()
+
 if (MSVC)
     set_property(TARGET MaximumEffort PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:MaximumEffort>)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MaximumEffort)
