@@ -70,6 +70,11 @@ target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURREN
 
 target_link_libraries(MaximumEffort cute fmt cute_headers)
 
+add_custom_target(copy-assets ALL
+                  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
+
+add_dependencies(MaximumEffort copy-assets)
+
 if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     target_compile_options(MaximumEffort PUBLIC -O1 -fno-rtti -fno-exceptions)
