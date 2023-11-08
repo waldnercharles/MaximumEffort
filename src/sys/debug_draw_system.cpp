@@ -1,5 +1,5 @@
 #include "sys/debug_draw_system.h"
-#include "cmp/debug_draw_circle.h"
+#include "cmp/debug_draw_circle_component.h"
 #include "cmp/scene_node_component.h"
 
 #include <cute.h>

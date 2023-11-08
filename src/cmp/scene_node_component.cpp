@@ -1,19 +1,33 @@
 #include "cmp/scene_node_component.h"
 
+using namespace Cute;
+
 entt::entity SceneNodeComponent::get_entity() const
 {
 	return entity;
 }
 
-const SceneNodeTransform &SceneNodeComponent::get_transform() const
+const SceneNodeTransform &SceneNodeComponent::get_local_transform() const
 {
 	return transform;
 }
 
-void SceneNodeComponent::set_transform(const SceneNodeTransform &t)
+void SceneNodeComponent::set_local_transform(const SceneNodeTransform &t)
 {
 	invalidate_cached_parent_transform_for_children();
 	transform = t;
+}
+
+void SceneNodeComponent::set_pos(const v2 pos)
+{
+	invalidate_cached_parent_transform_for_children();
+	transform.pos = pos;
+}
+
+void SceneNodeComponent::set_rotation(const float radians)
+{
+	invalidate_cached_parent_transform_for_children();
+	transform.angle = radians;
 }
 
 SceneNodeTransform SceneNodeComponent::get_global_transform() const
@@ -111,5 +125,5 @@ void register_scene_node_callbacks(entt::registry &reg)
 SceneNodeTransform
 operator*(const SceneNodeTransform &a, const SceneNodeTransform &b)
 {
-	return {cf_add_v2(a.pos, b.pos)};
+	return {a.pos + b.pos, a.angle + b.angle};
 }

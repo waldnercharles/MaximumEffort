@@ -23,6 +23,4 @@ struct WeaponComponent
 
 	TargetType target_type = {};
 	WeaponType weapon_type = {};
-
-	entt::entity parent = entt::null;
 };

@@ -2,6 +2,7 @@
 #include "cmp/enemy_component.h"
 #include "cmp/movement_component.h"
 #include "cmp/player_component.h"
+#include "cmp/scene_node_component.h"
 #include "cmp/spawner_component.h"
 #include "factories.h"
 #include "game.h"
@@ -26,23 +27,21 @@ Cute::v2 get_enemy_spawn_pos(v2 center_pos)
 
 void spawner_system(entt::registry &reg, float dt)
 {
-	auto player = reg.view<PlayerComponent, MovementComponent>().front();
-	auto *player_movement = reg.try_get<MovementComponent>(player);
+	auto player = reg.view<PlayerComponent, SceneNodeComponent>().front();
+	auto &player_scene_node = reg.get<SceneNodeComponent>(player);
 
-	if (player_movement == nullptr)
-	{
-		return;
-	}
+	v2 player_pos = player_scene_node.get_global_transform().pos;
 
-	auto enemies = reg.view<EnemyComponent, MovementComponent>();
+	auto enemies = reg.view<EnemyComponent, SceneNodeComponent>();
 	for (auto e : enemies)
 	{
-		auto &m = enemies.get<MovementComponent>(e);
+		auto &enemy_scene_node = enemies.get<SceneNodeComponent>(e);
+		auto enemy_pos = enemy_scene_node.get_global_transform().pos;
 
-		Aabb bounds = get_max_enemy_bounds(player_movement->pos);
-		if (!contains(bounds, m.pos))
+		Aabb bounds = get_max_enemy_bounds(player_pos);
+		if (!contains(bounds, enemy_pos))
 		{
-			m.pos = get_enemy_spawn_pos(player_movement->pos);
+			enemy_scene_node.set_pos(get_enemy_spawn_pos(player_pos));
 		}
 	}
 
@@ -59,7 +58,8 @@ void spawner_system(entt::registry &reg, float dt)
 				{
 					make_enemy_eyeball(
 						game.reg,
-						get_enemy_spawn_pos(player_movement->pos)
+						get_enemy_spawn_pos(player_pos),
+						player
 					);
 					break;
 				}

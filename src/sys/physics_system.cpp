@@ -2,9 +2,9 @@
 #include "cmp/enemy_component.h"
 #include "cmp/hitbox_component.h"
 #include "cmp/hurtbox_component.h"
-#include "cmp/movement_component.h"
 #include "cmp/physics_component.h"
 #include "cmp/projectile_component.h"
+#include "cmp/scene_node_component.h"
 #include "game.h"
 
 #include <cute.h>
@@ -21,20 +21,39 @@ bool on_projectile_hit(
 	auto &reg = game.reg;
 
 	entt::entity enemy = (entt::entity)(u64)leaf_udata;
-	entt::entity projectile = (entt::entity)(u64)fn_udata;
+	if (!reg.valid(enemy))
+	{
+		return true;
+	}
+
+	entt::entity *projectile = (entt::entity *)fn_udata;
+	if (!reg.valid(*projectile))
+	{
+		return false;
+	}
 
 	// Intentional Copy
-	Circle projectile_hurtbox = reg.get<HurtboxComponent>(projectile).circle;
+	Circle projectile_hurtbox = reg.get<HurtboxComponent>(*projectile).circle;
 	Circle enemy_hitbox = reg.get<HitboxComponent>(enemy).circle;
 
-	v2 projectile_pos = reg.get<MovementComponent>(projectile).pos;
-	v2 enemy_pos = reg.get<MovementComponent>(enemy).pos;
+	v2 projectile_pos = reg.get<SceneNodeComponent>(*projectile)
+							.get_global_transform()
+							.pos;
+
+	v2 enemy_pos = reg.get<SceneNodeComponent>(enemy)
+					   .get_global_transform()
+					   .pos;
 
 	projectile_hurtbox.p += projectile_pos;
 	enemy_hitbox.p += enemy_pos;
 
 	if (circle_to_circle(projectile_hurtbox, enemy_hitbox))
 	{
+		//		if (*projectile != entt::null && reg.valid(*projectile))
+		//		{
+		//			reg.destroy(*projectile);
+		//			*projectile = entt::null;
+		//		}
 		reg.destroy(enemy);
 		aabb_tree_remove(game.enemy_aabb_tree, leaf);
 	}
@@ -44,13 +63,19 @@ bool on_projectile_hit(
 
 void update_enemy_aabb_tree(entt::registry &reg, AabbTree &tree)
 {
-	auto view = reg.view<EnemyComponent, MovementComponent, PhysicsComponent>();
+	auto view = reg.view<EnemyComponent, SceneNodeComponent, PhysicsComponent>(
+	);
 	for (auto e : view)
 	{
-		auto &m = view.get<MovementComponent>(e);
+		auto &scene_node = view.get<SceneNodeComponent>(e);
+		auto enemy_pos = scene_node.get_global_transform().pos;
+
 		auto &p = view.get<PhysicsComponent>(e);
 
-		Cute::Aabb aabb = make_aabb(p.aabb.min + m.pos, p.aabb.max + m.pos);
+		Cute::Aabb aabb = make_aabb(
+			p.aabb.min + enemy_pos,
+			p.aabb.max + enemy_pos
+		);
 
 		if (p.leaf.id != -1)
 		{
@@ -67,16 +92,21 @@ void handle_player_projectiles(entt::registry &reg, AabbTree &tree)
 {
 	auto view = reg.view<
 		ProjectileComponent,
-		MovementComponent,
+		SceneNodeComponent,
 		PhysicsComponent>();
 
 	for (auto e : view)
 	{
-		auto &m = view.get<MovementComponent>(e);
+		auto &scene_node = view.get<SceneNodeComponent>(e);
+		auto projectile_pos = scene_node.get_global_transform().pos;
+
 		auto &p = view.get<PhysicsComponent>(e);
 
-		Cute::Aabb aabb = make_aabb(p.aabb.min + m.pos, p.aabb.max + m.pos);
-		aabb_tree_query(tree, on_projectile_hit, aabb, (void *)e);
+		Cute::Aabb aabb = make_aabb(
+			p.aabb.min + projectile_pos,
+			p.aabb.max + projectile_pos
+		);
+		aabb_tree_query(tree, on_projectile_hit, aabb, &e);
 	}
 }
 

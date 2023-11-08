@@ -5,7 +5,8 @@
 #include <cute.h>
 #include <entt/entt.hpp>
 
-entt::entity make_enemy_eyeball(entt::registry &reg, Cute::v2);
+entt::entity
+make_enemy_eyeball(entt::registry &reg, Cute::v2 pos, entt::entity target);
 entt::entity make_player(entt::registry &reg);
 
 entt::entity make_enemy_spawner(

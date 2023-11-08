@@ -18,8 +18,9 @@ set(FETCHCONTENT_QUIET TRUE)
 add_executable(MaximumEffort
                include/assets.h
                include/cmp/boomerang_movement_component.h
-               include/cmp/debug_draw_circle.h
+               include/cmp/debug_draw_circle_component.h
                include/cmp/enemy_component.h
+               include/cmp/follow_target_behavior_component.h
                include/cmp/hitbox_component.h
                include/cmp/hurtbox_component.h
                include/cmp/input_component.h
@@ -31,7 +32,7 @@ add_executable(MaximumEffort
                include/cmp/scene_node_component.h
                include/cmp/spawner_component.h
                include/cmp/sprite_component.h
-               include/cmp/target_component.h
+               include/cmp/target_direction_behavior_component.h
                include/cmp/weapon_component.h
                include/common.h
                include/game.h

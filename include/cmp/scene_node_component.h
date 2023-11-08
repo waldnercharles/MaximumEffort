@@ -5,6 +5,7 @@
 struct SceneNodeTransform
 {
 	Cute::v2 pos;
+	float angle;
 };
 
 SceneNodeTransform
@@ -14,16 +15,15 @@ struct SceneNodeComponent
 {
 	entt::entity get_entity() const;
 
-	const SceneNodeTransform &get_transform() const;
-
-	void set_transform(const SceneNodeTransform &t);
-
+	const SceneNodeTransform &get_local_transform() const;
+	SceneNodeTransform get_parent_transform() const;
 	SceneNodeTransform get_global_transform() const;
 
-	SceneNodeTransform get_parent_transform() const;
+	void set_local_transform(const SceneNodeTransform &t);
+	void set_pos(const Cute::v2 pos);
+	void set_rotation(const float radians);
 
 	void add_child(SceneNodeComponent *child);
-
 	void remove_child(SceneNodeComponent *child);
 
 	~SceneNodeComponent();
@@ -44,11 +44,9 @@ private:
 	static constexpr auto in_place_delete = true;
 
 	void set_parent(SceneNodeComponent *p);
-
 	void clear_parent();
 
 	void invalidate_cached_parent_transform();
-
 	void invalidate_cached_parent_transform_for_children();
 
 	friend void link_scene_node_with_entity(entt::registry &, entt::entity);

@@ -2,10 +2,11 @@
 #include <cute.h>
 #include <entt/entt.hpp>
 
-struct TargetComponent
+struct FollowTargetBehaviorComponent
 {
 	entt::entity entity = entt::null;
 	Cute::v2 dir = {};
+	Cute::v2 speed = {};
 
 	bool face_target = false;
 };

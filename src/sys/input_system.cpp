@@ -36,7 +36,7 @@ void input_system(entt::registry &reg, float dt)
 				p->facing = i.input_dir.x;
 			}
 
-			m.dir = cf_safe_norm(i.input_dir);
+			m.vel = cf_safe_norm(i.input_dir) * i.speed;
 		}
 	);
 }

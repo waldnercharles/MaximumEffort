@@ -3,6 +3,7 @@
 #include "factories.h"
 #include "imgui.h"
 #include "sys/camera_system.h"
+#include "sys/debug_draw_system.h"
 #include "sys/enemy_target_system.h"
 #include "sys/input_system.h"
 #include "sys/lifetime_system.h"
@@ -46,13 +47,8 @@ void Game::draw()
 
 	map.draw();
 
+	debug_draw_system(reg);
 	render_system(reg);
-
-	auto targeting_circle = make_circle(V2(0, 0), 64.f);
-
-	draw_push_color({0, 0, 1, 0.5});
-	draw_circle(targeting_circle);
-	draw_pop_layer();
 
 	if (ImGui::Button("Pause"))
 	{
@@ -76,7 +72,7 @@ void make_game()
 
 	auto player = make_player(game.reg);
 
-	make_enemy_spawner(game.reg, player, 0.2f, ENEMY_EYEBALL);
+	make_enemy_spawner(game.reg, player, 0.02f, ENEMY_EYEBALL);
 	make_weapon_boomerang(game.reg, player);
 
 	game.enemy_aabb_tree = make_aabb_tree();

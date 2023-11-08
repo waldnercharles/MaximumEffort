@@ -56,5 +56,5 @@ fetchcontent_populate(cute_headers)
 add_library(cute_headers STATIC src/cute_headers.cpp)
 target_include_directories(cute_headers SYSTEM PUBLIC ${cute_headers_SOURCE_DIR})
 
-set(lib_INCLUDE_DIRS ${entt_SOURCE_DIR}/single_include ${cute_headers_SOURCE_DIR} CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+set(lib_INCLUDE_DIRS ${entt_SOURCE_DIR}/src ${cute_headers_SOURCE_DIR} CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 
