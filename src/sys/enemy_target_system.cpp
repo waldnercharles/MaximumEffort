@@ -1,10 +1,10 @@
-#include "sys/target_system.h"
+#include "sys/enemy_target_system.h"
 #include "cmp/movement_component.h"
 #include "cmp/target_component.h"
 
 using namespace Cute;
 
-void target_system(entt::registry &reg, float dt)
+void enemy_target_system(entt::registry &reg, float dt)
 {
 	reg.view<MovementComponent, TargetComponent>().each(
 		[&](auto e, MovementComponent &m, TargetComponent &t) {

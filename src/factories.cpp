@@ -1,5 +1,5 @@
 #include "factories.h"
-#include "cmp/boomerang_movement_component.h"
+#include "cmp/debug_draw_circle.h"
 #include "cmp/enemy_component.h"
 #include "cmp/hitbox_component.h"
 #include "cmp/hurtbox_component.h"
@@ -8,6 +8,7 @@
 #include "cmp/physics_component.h"
 #include "cmp/player_component.h"
 #include "cmp/projectile_component.h"
+#include "cmp/scene_node_component.h"
 #include "cmp/spawner_component.h"
 #include "cmp/sprite_component.h"
 #include "cmp/target_component.h"
@@ -35,7 +36,7 @@ entt::entity make_enemy_eyeball(entt::registry &reg, v2 pos)
 	hitbox.circle = make_circle(V2(8, 8), 8);
 
 	auto &hurtbox = reg.emplace<HurtboxComponent>(e);
-	hurtbox.circle = make_circle(V2(8, 8), 8);
+	hurtbox.circle = make_circle(V2(8, 8), 6);
 
 	auto &sprite = reg.emplace<SpriteComponent>(e, make_sprite("eyeball.ase"));
 	sprite.layer = 50;
@@ -50,6 +51,8 @@ entt::entity make_player(entt::registry &reg)
 
 	auto &m = reg.emplace<MovementComponent>(e);
 	m.speed = V2(45, 45);
+
+	reg.emplace<SceneNodeComponent>(e);
 
 	reg.emplace<InputComponent>(e);
 
@@ -85,6 +88,19 @@ entt::entity make_weapon_boomerang(entt::registry &reg, entt::entity parent)
 	w.parent = parent;
 	w.rate = 0.5f;
 	w.weapon_type = WEAPON_BOOMERANG;
+	w.targeting_radius = 64.f;
+	w.target_type = TARGET_CLOSEST_ENEMY;
+
+	auto &dbg = reg.emplace<DebugDrawCircleComponent>(e);
+	dbg.color = make_color(0, 0, 1, 0.5f);
+	dbg.circle = make_circle(V2(0, 0), w.targeting_radius);
+
+	reg.emplace<MovementComponent>(e);
+
+	auto *parent_scene_node = &reg.get<SceneNodeComponent>(parent);
+	auto *child_scene_node = &reg.emplace<SceneNodeComponent>(e);
+
+	parent_scene_node->add_child(child_scene_node);
 
 	return e;
 }

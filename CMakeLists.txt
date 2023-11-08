@@ -18,6 +18,7 @@ set(FETCHCONTENT_QUIET TRUE)
 add_executable(MaximumEffort
                include/assets.h
                include/cmp/boomerang_movement_component.h
+               include/cmp/debug_draw_circle.h
                include/cmp/enemy_component.h
                include/cmp/hitbox_component.h
                include/cmp/hurtbox_component.h
@@ -27,6 +28,7 @@ add_executable(MaximumEffort
                include/cmp/physics_component.h
                include/cmp/player_component.h
                include/cmp/projectile_component.h
+               include/cmp/scene_node_component.h
                include/cmp/spawner_component.h
                include/cmp/sprite_component.h
                include/cmp/target_component.h
@@ -36,6 +38,7 @@ add_executable(MaximumEffort
                include/log.h
                include/projectile_factories.h
                include/sys/camera_system.h
+               include/sys/debug_draw_system.h
                include/sys/lifetime_system.h
                include/sys/movement_system.h
                include/sys/physics_system.h
@@ -45,11 +48,14 @@ add_executable(MaximumEffort
                include/sys/weapon_system.h
                include/tiled_map.h
                src/assets.cpp
+               src/cmp/scene_node_component.cpp
                src/factories.cpp
                src/game.cpp
                src/main.cpp
                src/projectile_factories.cpp
                src/sys/camera_system.cpp
+               src/sys/debug_draw_system.cpp
+               src/sys/enemy_target_system.cpp
                src/sys/input_system.cpp
                src/sys/lifetime_system.cpp
                src/sys/movement_system.cpp
@@ -57,7 +63,6 @@ add_executable(MaximumEffort
                src/sys/player_animation_system.cpp
                src/sys/render_system.cpp
                src/sys/spawner_system.cpp
-               src/sys/target_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
 )

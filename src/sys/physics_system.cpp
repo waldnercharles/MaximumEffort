@@ -23,15 +23,17 @@ bool on_projectile_hit(
 	entt::entity enemy = (entt::entity)(u64)leaf_udata;
 	entt::entity projectile = (entt::entity)(u64)fn_udata;
 
-	auto *projectile_hurtbox = reg.try_get<HurtboxComponent>(projectile);
-	auto *enemy_hitbox = reg.try_get<HitboxComponent>(enemy);
+	// Intentional Copy
+	Circle projectile_hurtbox = reg.get<HurtboxComponent>(projectile).circle;
+	Circle enemy_hitbox = reg.get<HitboxComponent>(enemy).circle;
 
-	if (!projectile_hurtbox || !enemy_hitbox)
-	{
-		return true;
-	}
+	v2 projectile_pos = reg.get<MovementComponent>(projectile).pos;
+	v2 enemy_pos = reg.get<MovementComponent>(enemy).pos;
 
-	if (circle_to_circle(projectile_hurtbox->circle, enemy_hitbox->circle))
+	projectile_hurtbox.p += projectile_pos;
+	enemy_hitbox.p += enemy_pos;
+
+	if (circle_to_circle(projectile_hurtbox, enemy_hitbox))
 	{
 		reg.destroy(enemy);
 		aabb_tree_remove(game.enemy_aabb_tree, leaf);

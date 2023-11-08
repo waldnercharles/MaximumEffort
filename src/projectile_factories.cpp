@@ -9,24 +9,23 @@
 
 using namespace Cute;
 
-entt::entity make_projectile_boomerang(entt::registry &reg, v2 pos, v2 dir)
+entt::entity make_projectile_boomerang(entt::registry &reg, v2 pos)
 {
 	const entt::entity e = reg.create();
 	reg.emplace<ProjectileComponent>(e);
 
 	auto &m = reg.emplace<MovementComponent>(e);
 	m.pos = pos;
-	m.dir = dir;
 	m.speed = V2(80, 80);
 	m.angular_vel = CF_PI * 3.f;// Rotations per second
 
 	reg.emplace<PhysicsComponent>(e, make_aabb(V2(0, 0), 17, 18));
 
 	auto &hitbox = reg.emplace<HitboxComponent>(e);
-	hitbox.circle = make_circle(V2(8, 8), 8);
+	hitbox.circle = make_circle(V2(8, 8), 4);
 
 	auto &hurtbox = reg.emplace<HurtboxComponent>(e);
-	hurtbox.circle = make_circle(V2(8, 8), 8);
+	hurtbox.circle = make_circle(V2(8, 8), 4);
 
 	auto &lifetime = reg.emplace<LifetimeComponent>(e);
 	lifetime = 2.0f;
