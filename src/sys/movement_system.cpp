@@ -1,10 +1,6 @@
 #include "sys/movement_system.h"
-#include "cmp/follow_target_behavior_component.h"
-#include "cmp/movement_component.h"
-#include "cmp/projectile_component.h"
-#include "cmp/scene_node_component.h"
-#include "cmp/target_direction_behavior_component.h"
-#include "log.h"
+#include "cmp/c_movement.h"
+#include "cmp/c_transform.h"
 
 #include <cute.h>
 
@@ -12,20 +8,8 @@ using namespace Cute;
 
 void movement_system(entt::registry &reg, float dt)
 {
-	reg.view<FollowTargetBehaviorComponent, MovementComponent>().each(
-		[&](auto e, FollowTargetBehaviorComponent &t, MovementComponent &m) {
-			m.vel = safe_norm(t.dir) * t.speed;
-		}
-	);
-
-	reg.view<TargetDirectionBehaviorComponent, MovementComponent>().each(
-		[&](auto e, TargetDirectionBehaviorComponent &t, MovementComponent &m) {
-			m.vel = safe_norm(t.dir) * t.speed;
-		}
-	);
-
-	reg.view<MovementComponent, SceneNodeComponent>().each(
-		[&](auto e, MovementComponent &m, SceneNodeComponent &s) {
+	reg.view<C_Movement, C_Transform>().each(
+		[&](auto e, C_Movement &m, C_Transform &s) {
 			auto &t = s.get_local_transform();
 
 			s.set_local_transform(

@@ -1,6 +1,6 @@
 #include "sys/render_system.h"
-#include "cmp/scene_node_component.h"
-#include "cmp/sprite_component.h"
+#include "cmp/c_sprite.h"
+#include "cmp/c_transform.h"
 
 #include <cute.h>
 
@@ -8,8 +8,8 @@ using namespace Cute;
 
 void render_system(entt::registry &reg)
 {
-	reg.view<SpriteComponent, SceneNodeComponent>().each(
-		[&](auto e, SpriteComponent &s, SceneNodeComponent &n) {
+	reg.view<C_Sprite, C_Transform>().each(
+		[&](auto e, C_Sprite &s, C_Transform &n) {
 			auto t = n.get_global_transform();
 
 			s.transform.p = t.pos;

@@ -1,7 +1,7 @@
 #include "sys/player_animation_system.h"
-#include "cmp/input_component.h"
-#include "cmp/player_component.h"
-#include "cmp/sprite_component.h"
+#include "cmp/c_input.h"
+#include "cmp/c_player.h"
+#include "cmp/c_sprite.h"
 
 #include <cute.h>
 
@@ -12,8 +12,8 @@ void player_animation_system(entt::registry &reg, float dt)
 	static const char *anims[4] =
 		{"idle-left", "idle-right", "walk-left", "walk-right"};
 
-	reg.view<PlayerComponent, InputComponent, SpriteComponent>().each(
-		[&](auto e, PlayerComponent &p, InputComponent &i, SpriteComponent &s) {
+	reg.view<C_Player, C_Input, C_Sprite>().each(
+		[&](auto e, C_Player &p, C_Input &i, C_Sprite &s) {
 			int action_anim = i.input_dir.x != 0 || i.input_dir.y != 0 ? 2 : 0;
 			int facing_anim = p.facing > 0 ? 1 : 0;
 

@@ -1,13 +1,6 @@
 #pragma once
 
-struct BoomerangMovementComponent
+struct C_MovementBehavior_InOut
 {
 	float time = 0.0f;
 };
-
-// ProjectileMovementBehavior
-// ProjectileTargetingBehavior
-// ProjectileHitBehavior
-//    -- Chain
-//    -- Pierce
-//    -- Fork

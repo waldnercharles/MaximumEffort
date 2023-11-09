@@ -21,7 +21,6 @@ void update(void *udata)
 	game.update(CF_DELTA_TIME_FIXED);
 }
 
-
 int main(int argc, char *argv[])
 {
 	clear_color(0.5, 0.5, 0.5, 1);
@@ -38,14 +37,13 @@ int main(int argc, char *argv[])
 
 	app_init_imgui();
 
-	// Increase default stack size for d3d11 funcs
 	set_fixed_timestep(60);
 
 	make_game();
 
 	cf_set_update_udata(&game);
 
-	const f32 alpha = 0.99f;
+	const f32 alpha = 0.75f;
 	f32 fps = 60;
 
 	while (app_is_running())

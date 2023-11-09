@@ -1,10 +1,9 @@
 #include "sys/lifetime_system.h"
-#include "cmp/lifetime_component.h"
+#include "cmp/c_lifetime.h"
 
 void lifetime_system(entt::registry &reg, float dt)
 {
-	reg.view<LifetimeComponent>().each([&](auto e,
-										   LifetimeComponent &lifetime) {
+	reg.view<C_Lifetime>().each([&](auto e, C_Lifetime &lifetime) {
 		lifetime -= dt;
 
 		if (lifetime <= 0)

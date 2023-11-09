@@ -1,7 +1,7 @@
 #include "sys/input_system.h"
-#include "cmp/input_component.h"
-#include "cmp/movement_component.h"
-#include "cmp/player_component.h"
+#include "cmp/c_input.h"
+#include "cmp/c_movement.h"
+#include "cmp/c_player.h"
 
 #include <cute.h>
 
@@ -9,8 +9,8 @@ using namespace Cute;
 
 void input_system(entt::registry &reg, float dt)
 {
-	reg.view<InputComponent, MovementComponent>().each(
-		[&reg](auto e, InputComponent &i, MovementComponent &m) {
+	reg.view<C_Input, C_Movement>().each(
+		[&reg](auto e, C_Input &i, C_Movement &m) {
 			i.input_dir = {};
 
 			if (key_down(KEY_W) || key_down(KEY_UP))
@@ -30,7 +30,7 @@ void input_system(entt::registry &reg, float dt)
 				i.input_dir.x += 1;
 			}
 
-			PlayerComponent *p = reg.try_get<PlayerComponent>(e);
+			C_Player *p = reg.try_get<C_Player>(e);
 			if (p)
 			{
 				p->facing = i.input_dir.x;

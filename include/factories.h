@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmp/spawner_component.h"
+#include "cmp/c_enemy_spawner.h"
 
 #include <cute.h>
 #include <entt/entt.hpp>
