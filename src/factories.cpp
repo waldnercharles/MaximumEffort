@@ -80,7 +80,6 @@ entt::entity make_enemy_spawner(
 	s.rate = rate;
 	s.entity_type = spawn_type;
 
-
 	return e;
 }
 

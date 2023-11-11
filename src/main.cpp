@@ -33,13 +33,11 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	mount_assets_folder();
+	make_game();
 
 	app_init_imgui();
 
 	set_fixed_timestep(60);
-
-	make_game();
 
 	cf_set_update_udata(&game);
 

@@ -1,6 +1,4 @@
 #include "sys/weapon_system.h"
-#include "cmp/c_movement.h"
-#include "cmp/c_movement_behavior_constant_direction.h"
 #include "cmp/c_transform.h"
 #include "cmp/c_weapon.h"
 #include "game.h"
@@ -28,15 +26,20 @@ struct TargetClosestEnemyQueryData
 };
 
 bool on_closest_enemy_query_hit(
-	CF_Leaf leaf,
-	CF_Aabb aabb,
+	Cute::AabbGridNode,
+	Cute::Aabb aabb,
 	void *leaf_udata,
 	void *fn_udata
 )
 {
 	auto &reg = game.reg;
 
-	entt::entity enemy = (entt::entity)(u64)leaf_udata;
+	entt::entity enemy = (entt::entity)(uint64_t)leaf_udata;
+	if (!reg.valid(enemy))
+	{
+		return true;
+	}
+
 	auto *query_data = (TargetClosestEnemyQueryData *)fn_udata;
 
 	auto player_pos = query_data->player_pos;
@@ -66,12 +69,8 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 	data.player_pos = circle.p;
 	data.radius = circle.r;
 
-	aabb_tree_query(
-		game.enemy_aabb_tree,
-		on_closest_enemy_query_hit,
-		make_aabb(circle.p, circle.r * 2, circle.r * 2),
-		&data
-	);
+	auto aabb = make_aabb(circle.p, circle.r * 2, circle.r * 2);
+	aabb_grid_query(game.enemy_grid, aabb, on_closest_enemy_query_hit, &data);
 
 	*dir = data.dir;
 

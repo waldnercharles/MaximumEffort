@@ -16,11 +16,13 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
 add_executable(MaximumEffort
+               include/array_algorithms.h
                include/assets.h
                include/cmp/boomerang_movement_component.h
                include/cmp/c_debug_draw_circle.h
                include/cmp/c_enemy_component.h
                include/cmp/c_enemy_spawner.h
+               include/cmp/c_faction.h
                include/cmp/c_hitbox.h
                include/cmp/c_hurtbox.h
                include/cmp/c_input.h
@@ -35,6 +37,7 @@ add_executable(MaximumEffort
                include/cmp/c_transform.h
                include/cmp/c_weapon.h
                include/common.h
+               include/cute_aabb_grid.h
                include/game.h
                include/log.h
                include/projectile_factories.h
@@ -51,6 +54,7 @@ add_executable(MaximumEffort
                include/tiled_map.h
                src/assets.cpp
                src/cmp/c_transform.cpp
+               src/cute_aabb_grid.cpp
                src/factories.cpp
                src/game.cpp
                src/main.cpp

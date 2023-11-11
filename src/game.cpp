@@ -1,4 +1,5 @@
 #include "game.h"
+#include "assets.h"
 #include "cmp/c_enemy_component.h"
 #include "cmp/c_transform.h"
 #include "factories.h"
@@ -20,6 +21,35 @@
 using namespace Cute;
 
 Game game = {};
+
+void make_game()
+{
+	register_scene_node_callbacks(game.reg);
+
+	game.rnd = rnd_seed((u64)time(nullptr));
+	game.camera_size = V2(320, 180);
+	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
+	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
+	game.enemy_grid = make_aabb_grid(
+		V2(0, 0),
+		ceil(game.world_size.x),
+		ceil(game.world_size.y),
+		32
+	);
+
+	// TODO: Do this somewhere else
+	{
+		mount_assets_folder();
+		game.map = load_tiled_map("map.json");
+
+		auto player = make_player(game.reg);
+
+		make_enemy_spawner(game.reg, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(game.reg, player);
+	}
+
+	game.paused = true;
+}
 
 void Game::update(float dt)
 {
@@ -74,26 +104,4 @@ void Game::draw()
 	{
 		paused = !paused;
 	}
-}
-
-void make_game()
-{
-	if (game.enemy_aabb_tree.id)
-	{
-		destroy_aabb_tree(game.enemy_aabb_tree);
-	}
-
-	register_scene_node_callbacks(game.reg);
-
-	game.rnd = rnd_seed((u64)time(nullptr));
-	game.camera_size = V2(320, 180);
-
-	game.map = load_tiled_map("map.json");
-
-	auto player = make_player(game.reg);
-
-	make_enemy_spawner(game.reg, player, 0.1f, ENEMY_EYEBALL);
-	//	make_weapon_boomerang(game.reg, player);
-
-	game.enemy_aabb_tree = make_aabb_tree();
 }
