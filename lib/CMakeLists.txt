@@ -33,6 +33,14 @@ fetchcontent_declare(
 fetchcontent_makeavailable(entt)
 
 fetchcontent_declare(
+        flecs
+        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
+        GIT_PROGRESS FALSE
+        SYSTEM
+)
+fetchcontent_makeavailable(flecs)
+
+fetchcontent_declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG 10.1.1
@@ -56,5 +64,9 @@ fetchcontent_populate(cute_headers)
 add_library(cute_headers STATIC src/cute_headers.cpp)
 target_include_directories(cute_headers SYSTEM PUBLIC ${cute_headers_SOURCE_DIR})
 
-set(lib_INCLUDE_DIRS ${entt_SOURCE_DIR}/src ${cute_headers_SOURCE_DIR} CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+set(lib_INCLUDE_DIRS
+    ${entt_SOURCE_DIR}/src
+    ${cute_headers_SOURCE_DIR}
+    ${flecs_SOURCE_DIR}/include
+    CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 

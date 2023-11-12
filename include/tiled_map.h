@@ -13,4 +13,4 @@ struct TiledMap
 };
 
 TiledMap load_tiled_map(const char *path);
-void unload_tiled_map(TiledMap &tiled_map);
+void unload_tiled_map(TiledMap tiled_map);

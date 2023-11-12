@@ -38,12 +38,16 @@ add_executable(MaximumEffort
                include/cmp/c_weapon.h
                include/common.h
                include/cute_aabb_grid.h
+               include/enemy_type.h
+               include/factories.h
                include/game.h
+               include/sys/input_system.h
                include/log.h
                include/projectile_factories.h
                include/sys/camera_system.h
                include/sys/debug_draw_system.h
                include/sys/lifetime_system.h
+               include/sys/movement_behavior_constant_direction_system.h
                include/sys/movement_behavior_follow_target_system.h
                include/sys/movement_system.h
                include/sys/physics_system.h
@@ -80,7 +84,7 @@ target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute fmt cute_headers)
+target_link_libraries(MaximumEffort cute cute_headers flecs fmt)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)

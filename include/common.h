@@ -17,3 +17,20 @@ using u64 [[maybe_unused]] = uint64_t;
 using f32 [[maybe_unused]] = float;
 using f64 [[maybe_unused]] = double;
 using size_t [[maybe_unused]] = std::size_t;
+
+#ifdef CF_CPP
+#ifdef _MSC_VER
+#pragma warning(disable : 4291)
+#endif
+
+enum DummyEnum
+{
+	DUMMY_ENUM
+};
+inline void *operator new(size_t, DummyEnum, void *ptr)
+{
+	return ptr;
+}
+#define PLACEMENT_NEW(ptr) new (DUMMY_ENUM, ptr)
+#define NEW(...)           new (DUMMY_ENUM, malloc(sizeof(__VA_ARGS__)))(__VA_ARGS__)
+#endif

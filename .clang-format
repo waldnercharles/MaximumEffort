@@ -59,6 +59,7 @@ NamespaceIndentation: All
 ObjCBlockIndentWidth: 4
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
+PackConstructorInitializers: CurrentLine
 PenaltyBreakAssignment: 100000
 PointerAlignment: Right
 ReflowComments: false

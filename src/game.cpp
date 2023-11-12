@@ -2,6 +2,7 @@
 #include "assets.h"
 #include "cmp/c_enemy_component.h"
 #include "cmp/c_transform.h"
+#include "common.h"
 #include "factories.h"
 #include "imgui.h"
 #include "sys/camera_system.h"
@@ -20,35 +21,46 @@
 
 using namespace Cute;
 
-Game game = {};
+Game game;
 
-void make_game()
+Game make_game()
 {
-	register_scene_node_callbacks(game.reg);
+	Game g;
 
-	game.rnd = rnd_seed((u64)time(nullptr));
-	game.camera_size = V2(320, 180);
-	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
-	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
-	game.enemy_grid = make_aabb_grid(
+	register_scene_node_callbacks(g.reg);
+
+	g.world = CF_NEW(flecs::world);
+
+	g.rnd = rnd_seed((u64)time(nullptr));
+	g.camera_size = V2(320, 180);
+	g.spawn_radius = max(g.camera_size.x, g.camera_size.y) * 0.66f;
+	g.world_size = V2(g.spawn_radius, g.spawn_radius) * 4.0f;
+	g.enemy_grid = make_aabb_grid(
 		V2(0, 0),
-		ceil(game.world_size.x),
-		ceil(game.world_size.y),
+		ceil(g.world_size.x),
+		ceil(g.world_size.y),
 		32
 	);
 
 	// TODO: Do this somewhere else
 	{
 		mount_assets_folder();
-		game.map = load_tiled_map("map.json");
+		g.map = load_tiled_map("map.json");
 
-		auto player = make_player(game.reg);
+		auto player = make_player(g.reg);
 
-		make_enemy_spawner(game.reg, player, 0.001f, ENEMY_EYEBALL);
-		make_weapon_boomerang(game.reg, player);
+		make_enemy_spawner(g.reg, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(g.reg, player);
 	}
 
-	game.paused = true;
+	g.paused = true;
+
+	return g;
+}
+
+void destroy_game(Game g)
+{
+	unload_tiled_map(g.map);
 }
 
 void Game::update(float dt)

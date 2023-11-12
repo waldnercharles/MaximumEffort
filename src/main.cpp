@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	make_game();
+	game = make_game();
 
 	app_init_imgui();
 

@@ -1,7 +1,6 @@
 #include "tiled_map.h"
 #include "common.h"
 #include "game.h"
-#include <stdlib.h>
 
 using namespace Cute;
 
@@ -94,18 +93,18 @@ TiledMap load_tiled_map(const char *path)
 	return tiled_map;
 }
 
-void unload_tiled_map(TiledMap *tiled_map)
+void unload_tiled_map(TiledMap tiled_map)
 {
-	if (tiled_map && tiled_map->map)
+	if (tiled_map.map)
 	{
-		cute_tiled_free_map(tiled_map->map);
-		tiled_map->map = nullptr;
+		cute_tiled_free_map(tiled_map.map);
+		tiled_map.map = nullptr;
 
-		for (int i = 0; i < tiled_map->atlas.count(); i++)
+		for (int i = 0; i < tiled_map.atlas.count(); i++)
 		{
-			cf_easy_sprite_unload(&(tiled_map->atlas[i]));
+			cf_easy_sprite_unload(&(tiled_map.atlas[i]));
 		}
-		tiled_map->atlas.clear();
+		tiled_map.atlas.clear();
 	}
 }
 

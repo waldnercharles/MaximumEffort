@@ -6,20 +6,22 @@
 #include "tiled_map.h"
 
 #include <entt/entt.hpp>
+#include <flecs.h>
 
 struct Game
 {
 	Cute::Rnd rnd;
 	Cute::v2 camera_size;
-	Cute::v2 world_size;
 
 	float spawn_radius;
+	Cute::v2 world_size;
+
+	Cute::AabbGrid enemy_grid;
 
 	TiledMap map;
 
+	flecs::world *world;
 	entt::registry reg;
-
-	Cute::AabbGrid enemy_grid;
 
 	f64 total_time;
 	bool paused;
@@ -30,4 +32,5 @@ struct Game
 
 extern Game game;
 
-void make_game();
+Game make_game();
+void destroy_game(Game game);
