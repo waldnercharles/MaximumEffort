@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
 project(MaximumEffort)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_policy(SET CMP0077 NEW)
+#set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -78,6 +79,8 @@ add_executable(MaximumEffort
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
 )
+
+target_compile_features(MaximumEffort PRIVATE cxx_std_20)
 
 add_subdirectory(lib)
 
