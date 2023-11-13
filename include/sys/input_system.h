@@ -1,5 +1,5 @@
 #pragma once
 
-#include <entt/entt.hpp>
+#include <flecs.h>
 
-void input_system(entt::registry &reg, float dt);
+void add_input_system(flecs::world *world);

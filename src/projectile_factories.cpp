@@ -12,33 +12,23 @@
 
 using namespace Cute;
 
-entt::entity make_projectile_boomerang(entt::registry &reg, v2 pos, v2 dir)
+flecs::entity make_projectile_boomerang(flecs::world *world, v2 pos, v2 dir)
 {
-	const entt::entity e = reg.create();
-	reg.emplace<C_Projectile>(e);
+	flecs::entity e = world->entity();
+	e.add<C_Projectile>();
+	e.set<C_WorldTransform>({pos, 0.0f});
+	e.set<C_LocalTransform>({pos, 0.0f});
+	e.set<C_Behavior_ConstantDirection>({dir, {80, 80}});
+	e.set<C_Movement>({{}, CF_PI * 3.f});
 
-	auto &scene_node = reg.emplace<C_Transform>(e);
-	scene_node.set_pos(pos);
+	Aabb aabb = make_aabb({}, 17, 18);
+	e.set<C_Physics>({aabb});
 
-	auto &behavior = reg.emplace<C_MovementBehavior_ConstantDirection>(e);
-	behavior.speed = V2(80, 80);
-	behavior.dir = dir;
+	e.set<C_Hitbox>({make_circle(center(aabb), 6)});
+	e.set<C_Hurtbox>({make_circle(center(aabb), 8)});
 
-	auto &m = reg.emplace<C_Movement>(e);
-	m.angular_vel = CF_PI * 3.f;// Rotations per second
-
-	reg.emplace<C_Physics>(e, make_aabb(V2(0, 0), 17, 18));
-
-	auto &hitbox = reg.emplace<C_Hitbox>(e);
-	hitbox.circle = make_circle(V2(8, 8), 4);
-
-	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
-	hurtbox.circle = make_circle(V2(8, 8), 24);
-
-	auto &lifetime = reg.emplace<C_Lifetime>(e);
-	lifetime = 2.0f;
-
-	reg.emplace<C_Sprite>(e, make_sprite("boomerang.ase"));
+	e.set<C_Lifetime>({2.0f});
+	e.set<C_Sprite>({make_sprite("boomerang.ase"), 0});
 
 	return e;
 }

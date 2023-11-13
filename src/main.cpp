@@ -3,7 +3,7 @@
 #include "assets.h"
 #include "game.h"
 #include "imgui.h"
-#include "log.h"
+// #include "log.h"
 
 #ifdef _WIN32
 // Use dedicated GPU unless there is an application-specific override
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	auto result = make_app("Maximum Effort", 0, 0, 1280, 720, options);
 	if (is_error(result))
 	{
-		log_fatal(result.details);
+		// log_fatal(result.details);
 		return -1;
 	}
 

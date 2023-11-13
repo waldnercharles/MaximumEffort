@@ -1,4 +1,5 @@
 #pragma once
-#include <entt/entt.hpp>
 
-void player_animation_system(entt::registry &reg, float dt);
+#include <flecs.h>
+
+void add_player_animation_system(flecs::world *world);

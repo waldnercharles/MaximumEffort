@@ -1,4 +1,5 @@
 #pragma once
-#include <entt/entt.hpp>
 
-void render_system(entt::registry &reg);
+#include <flecs.h>
+
+void render_system(flecs::world *world);

@@ -6,23 +6,24 @@
 
 using namespace Cute;
 
-void debug_draw_system(entt::registry &reg)
+void debug_draw(flecs::world *world)
 {
-	reg.view<C_DebugDrawCircle, C_Transform>().each(
-		[&](auto e, C_DebugDrawCircle &dbg, C_Transform &scene_node) {
-			Color color = dbg.color;
+	static flecs::query
+		q = world->query<const C_DebugDrawCircle, const C_WorldTransform>();
 
-			Circle circle = dbg.circle;
-			circle.p += scene_node.get_global_transform().pos;
+	q.each([](const C_DebugDrawCircle &dbg, const C_WorldTransform &t) {
+		Color color = dbg.color;
 
-			draw_push_color(color);
-			draw_circle_fill(circle);
-			draw_pop_color();
+		Circle circle = dbg.circle;
+		circle.p += t.pos;
 
-			color.a = 1.f;
-			draw_push_color(color);
-			draw_circle(circle, 0.1f);
-			draw_pop_color();
-		}
-	);
+		draw_push_color(color);
+		draw_circle_fill(circle);
+		draw_pop_color();
+
+		color.a = 1.f;
+		draw_push_color(color);
+		draw_circle(circle, 0.1f);
+		draw_pop_color();
+	});
 }
