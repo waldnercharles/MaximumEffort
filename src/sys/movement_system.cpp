@@ -3,18 +3,19 @@
 #include "cmp/c_transform.h"
 
 #include <cute.h>
-#include <flecs.h>
 
 using namespace Cute;
 
-void add_movement_system(flecs::world *world)
+void movement_system(entt::registry &reg, float dt)
 {
-	world->system<C_LocalTransform, C_Movement>("movement")
-		.each([](C_LocalTransform &t, const C_Movement &m) {
-			t.pos += m.vel * DELTA_TIME_FIXED;
-			t.angle = fmodf(
-				t.angle + m.angular_vel * DELTA_TIME_FIXED,
-				CF_PI * 2.f
+	reg.view<C_Movement, C_Transform>().each(
+		[&](auto e, C_Movement &m, C_Transform &s) {
+			auto &t = s.get_local_transform();
+
+			s.set_local_transform(
+				{t.pos + m.vel * dt,
+				 fmodf(t.angle + m.angular_vel * dt, CF_PI * 2.f)}
 			);
-		});
+		}
+	);
 }

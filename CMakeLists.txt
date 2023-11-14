@@ -13,12 +13,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 endif ()
 
 include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
+set(FETCHCONTENT_QUIET TRUE)
 
 add_executable(MaximumEffort
                include/array_algorithms.h
                include/assets.h
-               include/camera.h
                include/cmp/boomerang_movement_component.h
                include/cmp/c_debug_draw_circle.h
                include/cmp/c_enemy_component.h
@@ -42,39 +41,39 @@ add_executable(MaximumEffort
                include/enemy_type.h
                include/factories.h
                include/game.h
-               include/projectile_factories.h
-               include/sys/behavior_constant_direction_system.h
-               include/sys/debug_draw_system.h
                include/sys/input_system.h
+               include/log.h
+               include/projectile_factories.h
+               include/sys/camera_system.h
+               include/sys/debug_draw_system.h
                include/sys/lifetime_system.h
+               include/sys/movement_behavior_constant_direction_system.h
                include/sys/movement_behavior_follow_target_system.h
                include/sys/movement_system.h
                include/sys/physics_system.h
                include/sys/player_animation_system.h
                include/sys/render_system.h
                include/sys/spawner_system.h
-               include/sys/transform_system.h
                include/sys/weapon_system.h
                include/tiled_map.h
                src/assets.cpp
-               src/camera.cpp
                src/cmp/c_transform.cpp
                src/cute_aabb_grid.cpp
                src/factories.cpp
                src/game.cpp
                src/main.cpp
                src/projectile_factories.cpp
-               src/sys/behavior_constant_direction_system.cpp
+               src/sys/camera_system.cpp
                src/sys/debug_draw_system.cpp
                src/sys/input_system.cpp
                src/sys/lifetime_system.cpp
+               src/sys/movement_behavior_constant_direction_system.cpp
                src/sys/movement_behavior_follow_target_system.cpp
                src/sys/movement_system.cpp
                src/sys/physics_system.cpp
                src/sys/player_animation_system.cpp
                src/sys/render_system.cpp
                src/sys/spawner_system.cpp
-               src/sys/transform_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
 )
@@ -85,7 +84,7 @@ target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute cute_headers flecs_static)
+target_link_libraries(MaximumEffort cute cute_headers flecs fmt)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)

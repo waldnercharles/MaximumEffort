@@ -20,25 +20,23 @@ Cute::v2 get_enemy_spawn_pos(v2 center_pos)
 
 void spawner_system(entt::registry &reg, float dt)
 {
-	auto player = reg.view<C_Player, C_LocalTransform>().front();
-	auto &player_scene_node = reg.get<C_LocalTransform>(player);
+	auto player = reg.view<C_Player, C_Transform>().front();
+	auto &player_scene_node = reg.get<C_Transform>(player);
 
-	v2 player_pos = player_scene_node.pos;
-	//	v2 player_pos = player_scene_node.get_global_transform().pos;
+	v2 player_pos = player_scene_node.get_global_transform().pos;
 	v2 world_size = game.world_size;
 	Aabb bounds = make_aabb(player_pos, world_size.x, world_size.y);
 
 	// Respawn if out of bounds
-	auto enemies = reg.view<C_Enemy, C_LocalTransform>();
+	auto enemies = reg.view<C_Enemy, C_Transform>();
 	for (auto e : enemies)
 	{
-		auto &enemy_scene_node = enemies.get<C_LocalTransform>(e);
-		auto enemy_pos = enemy_scene_node.pos;
-		//		auto enemy_pos = enemy_scene_node.get_global_transform().pos;
+		auto &enemy_scene_node = enemies.get<C_Transform>(e);
+		auto enemy_pos = enemy_scene_node.get_global_transform().pos;
 
 		if (!contains(bounds, enemy_pos))
 		{
-			enemy_scene_node.pos = get_enemy_spawn_pos(player_pos);
+			enemy_scene_node.set_pos(get_enemy_spawn_pos(player_pos));
 		}
 	}
 
@@ -55,8 +53,9 @@ void spawner_system(entt::registry &reg, float dt)
 				case ENEMY_EYEBALL:
 				{
 					make_enemy_eyeball(
-						game.world,
-						get_enemy_spawn_pos(player_pos)
+						game.reg,
+						get_enemy_spawn_pos(player_pos),
+						player
 					);
 					break;
 				}

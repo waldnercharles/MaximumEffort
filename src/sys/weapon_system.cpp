@@ -43,7 +43,7 @@ bool on_closest_enemy_query_hit(
 	auto *query_data = (TargetClosestEnemyQueryData *)fn_udata;
 
 	auto player_pos = query_data->player_pos;
-	auto enemy_pos = reg.get<C_WorldTransform>(enemy).pos;
+	auto enemy_pos = reg.get<C_Transform>(enemy).get_global_transform().pos;
 
 	float dist = distance(player_pos, enemy_pos);
 
@@ -77,44 +77,46 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 	return data.entity != entt::null;
 }
 
-void add_weapon_system(flecs::world *world)
+void weapon_system(entt::registry &reg, float dt)
 {
-	world->system<C_Weapon, C_WorldTransform>("weapon").each(
-		[](flecs::iter &it, size_t, C_Weapon &w, C_WorldTransform &t) {
-			flecs::world world = it.world();
-			if (on_interval(w.rate))
+	reg.view<C_Weapon, C_Transform>().each([&](auto weapon_entity,
+											   C_Weapon &weapon,
+											   C_Transform &scene_node) {
+		if (on_interval(weapon.rate))
+		{
+			v2 pos = scene_node.get_global_transform().pos;
+			v2 dir = {};
+
+			bool has_target = false;
+			if (weapon.target_type == TARGET_RANDOM_DIR)
 			{
-				v2 pos = t.pos;
-				v2 dir = {};
+				has_target = true;
+				dir = get_random_dir();
+			}
+			else if (weapon.target_type == TARGET_CLOSEST_ENEMY)
+			{
+				auto targeting_circle = make_circle(
+					pos,
+					weapon.targeting_radius
+				);
+				has_target = try_get_closest_enemy_dir(targeting_circle, &dir);
+			}
 
-				bool has_target = false;
-				if (w.target_type == TARGET_RANDOM_DIR)
-				{
-					has_target = true;
-					dir = get_random_dir();
-				}
-				else if (w.target_type == TARGET_CLOSEST_ENEMY)
-				{
-					Circle c = make_circle(pos, w.targeting_radius);
-					has_target = try_get_closest_enemy_dir(c, &dir);
-				}
+			if (!has_target)
+			{
+				return;
+			}
 
-				if (!has_target)
-				{
-					return;
-				}
+			entt::entity e = entt::null;
+			if (weapon.weapon_type == WEAPON_BOOMERANG)
+			{
+				e = make_projectile_boomerang(reg, pos, dir);
+			}
 
-				flecs::entity e = flecs::entity::null();
-				if (w.weapon_type == WEAPON_BOOMERANG)
-				{
-					e = make_projectile_boomerang(&world, pos, dir);
-				}
-
-				if (e == flecs::entity::null())
-				{
-					return;
-				}
+			if (e == entt::null)
+			{
+				return;
 			}
 		}
-	);
+	});
 }

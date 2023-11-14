@@ -9,45 +9,57 @@
 #include "cmp/c_movement_behavior_follow_target.h"
 #include "cmp/c_physics.h"
 #include "cmp/c_player.h"
+#include "cmp/c_projectile.h"
 #include "cmp/c_sprite.h"
 #include "cmp/c_transform.h"
 #include "cmp/c_weapon.h"
 
-#include <flecs.h>
-
 using namespace Cute;
 
-flecs::entity make_enemy_eyeball(flecs::world *world, v2 pos)
+entt::entity
+make_enemy_eyeball(entt::registry &reg, v2 pos, entt::entity target)
 {
-	flecs::entity e = world->entity();
-	e.add<C_Enemy>(e);
-	e.set<C_WorldTransform>({pos, 0.f});
-	e.set<C_LocalTransform>({pos, 0.f});
-	e.set<C_Movement>({});
-	e.set<C_Physics>({make_aabb({}, 16, 16)});
+	const entt::entity e = reg.create();
+	reg.emplace<C_Enemy>(e);
 
-	flecs::entity target = world->lookup("player");
-	e.set<C_MovementBehavior_FollowTarget>({target, {20, 20}, true});
+	auto &enemy_scene_node = reg.emplace<C_Transform>(e);
+	enemy_scene_node.set_local_transform({pos});
 
-	e.set<C_Hitbox>({make_circle({8, 8}, 8)});
-	e.set<C_Hurtbox>({make_circle({8, 8}, 6)});
+	reg.emplace<C_Movement>(e);
 
-	e.set<C_Sprite>({make_sprite("eyeball.ase"), 50});
+	auto &physics = reg.emplace<C_Physics>(e);
+	physics.aabb = make_aabb(V2(0, 0), 16, 16);
+
+	auto &follow_behavior = reg.emplace<C_MovementBehavior_FollowTarget>(e);
+	follow_behavior.entity = target;
+	follow_behavior.speed = V2(20, 20);
+	follow_behavior.face_target = true;
+
+	auto &hitbox = reg.emplace<C_Hitbox>(e);
+	hitbox.circle = make_circle(V2(8, 8), 8);
+
+	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
+	hurtbox.circle = make_circle(V2(8, 8), 6);
+
+	auto &sprite = reg.emplace<C_Sprite>(e, make_sprite("eyeball.ase"));
+	sprite.layer = 50;
 
 	return e;
 }
 
-flecs::entity make_player(flecs::world *world)
+entt::entity make_player(entt::registry &reg)
 {
-	flecs::entity e = world->entity("player");
-	e.set<C_Player>({});
+	const entt::entity e = reg.create();
+	reg.emplace<C_Transform>(e);
+	reg.emplace<C_Player>(e);
 
-	e.set<C_WorldTransform>({});
-	e.set<C_LocalTransform>({});
-	e.set<C_Input>({45, 45});
-	e.set<C_Movement>({});
+	auto &i = reg.emplace<C_Input>(e);
+	i.speed = V2(45, 45);
 
-	e.set<C_Sprite>({make_sprite("character.ase"), 100});
+	reg.emplace<C_Movement>(e);
+
+	auto &s = reg.emplace<C_Sprite>(e, make_sprite("character.ase"));
+	s.layer = 100;
 
 	return e;
 }
@@ -60,9 +72,9 @@ entt::entity make_enemy_spawner(
 )
 {
 	const entt::entity e = reg.create();
-	auto &player_scene_node = reg.get<C_WorldTransform>(parent);
-	auto &spawner_scene_node = reg.emplace<C_WorldTransform>(e);
-	//	player_scene_node.add_child(&spawner_scene_node);
+	auto &player_scene_node = reg.get<C_Transform>(parent);
+	auto &spawner_scene_node = reg.emplace<C_Transform>(e);
+	player_scene_node.add_child(&spawner_scene_node);
 
 	auto &s = reg.emplace<C_EnemySpawner>(e);
 	s.rate = rate;
@@ -71,24 +83,26 @@ entt::entity make_enemy_spawner(
 	return e;
 }
 
-flecs::entity make_weapon_boomerang(flecs::world *world, flecs::entity parent)
+entt::entity make_weapon_boomerang(entt::registry &reg, entt::entity parent)
 {
-	flecs::entity e = world->entity().child_of(parent);
-	e.set<C_WorldTransform>({});
-	e.set<C_LocalTransform>({});
-	e.set<C_Movement>({});
+	const entt::entity e = reg.create();
 
-	C_Weapon w = {};
+	auto &parent_scene_node = reg.get<C_Transform>(parent);
+	auto &child_scene_node = reg.emplace<C_Transform>(e);
+
+	parent_scene_node.add_child(&child_scene_node);
+
+	auto &w = reg.emplace<C_Weapon>(e);
 	w.rate = 0.3f;
 	w.weapon_type = WEAPON_BOOMERANG;
 	w.targeting_radius = 64.f;
-	w.target_type = TARGET_RANDOM_DIR;
-	e.set<C_Weapon>(w);
+	w.target_type = TARGET_CLOSEST_ENEMY;
 
-	C_DebugDrawCircle dbg = {};
-	dbg.color = make_color(0.0f, 0.5f, 1.0f, 0.5f);
-	dbg.circle = make_circle({}, w.targeting_radius);
-	e.set<C_DebugDrawCircle>(dbg);
+	auto &dbg = reg.emplace<C_DebugDrawCircle>(e);
+	dbg.color = make_color(0, 0.5f, 1, 0.5f);
+	dbg.circle = make_circle(V2(0, 0), w.targeting_radius);
+
+	reg.emplace<C_Movement>(e);
 
 	return e;
 }

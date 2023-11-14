@@ -1,24 +1,17 @@
 #pragma once
 #include <cute.h>
 
-struct C_Sprite
+struct C_Sprite : public Cute::Sprite
 {
-	Cute::Sprite sprite = Cute::Sprite();
-	int layer = 0;
+	C_Sprite(const Cute::Sprite &s) : Cute::Sprite(s)
+	{
+	}
 
 	C_Sprite &operator=(const Cute::Sprite &s)
 	{
-		sprite = s;
+		Cute::Sprite::operator=(s);
 		return *this;
 	}
 
-	operator Cute::Sprite &()
-	{
-		return sprite;
-	}
-
-	operator Cute::Sprite() const
-	{
-		return sprite;
-	}
+	int layer = 0;
 };

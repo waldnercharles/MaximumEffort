@@ -37,8 +37,13 @@ bool on_hurtbox_to_hitbox(
 	Circle hurtbox_shape = reg.get<C_Hurtbox>(hurtbox_entity).circle;
 	Circle hitbox_shape = reg.get<C_Hitbox>(hitbox_entity).circle;
 
-	v2 hitbox_pos = reg.get<C_WorldTransform>(hitbox_entity).pos;
-	v2 hurtbox_pos = reg.get<C_WorldTransform>(hurtbox_entity).pos;
+	v2 hitbox_pos = reg.get<C_Transform>(hitbox_entity)
+						.get_global_transform()
+						.pos;
+
+	v2 hurtbox_pos = reg.get<C_Transform>(hurtbox_entity)
+						 .get_local_transform()
+						 .pos;
 
 	hurtbox_shape.p += hurtbox_pos;
 	hitbox_shape.p += hitbox_pos;
@@ -53,11 +58,11 @@ bool on_hurtbox_to_hitbox(
 
 void handle_player_projectiles(entt::registry &reg, AabbGrid &grid)
 {
-	auto view = reg.view<C_WorldTransform, C_Physics, C_Projectile>();
+	auto view = reg.view<C_Transform, C_Physics, C_Projectile>();
 	for (auto e : view)
 	{
 		auto aabb = view.get<C_Physics>(e).aabb;
-		auto pos = view.get<C_WorldTransform>(e).pos;
+		auto pos = view.get<C_Transform>(e).get_local_transform().pos;
 		aabb.min += pos;
 		aabb.max += pos;
 
@@ -81,18 +86,15 @@ bool hitbox_to_hitbox_resolve(
 		return true;
 	}
 
-	auto &a_transform = reg.get<C_WorldTransform>(a);
-	auto &b_transform = reg.get<C_WorldTransform>(b);
+	auto &a_transform = reg.get<C_Transform>(a);
+	auto &b_transform = reg.get<C_Transform>(b);
 
 	// Copy, not reference
 	auto a_hitbox = reg.get<C_Hitbox>(a).circle;
 	auto b_hitbox = reg.get<C_Hitbox>(b).circle;
 
-	auto a_pos = a_transform.pos;
-	auto b_pos = b_transform.pos;
-
-	//	auto a_pos = a_transform.get_local_transform().pos;
-	//	auto b_pos = b_transform.get_local_transform().pos;
+	auto a_pos = a_transform.get_local_transform().pos;
+	auto b_pos = b_transform.get_local_transform().pos;
 
 	a_hitbox.p += a_pos;
 	b_hitbox.p += b_pos;
@@ -105,8 +107,8 @@ bool hitbox_to_hitbox_resolve(
 		a_pos -= manifold.n * manifold.depths[0] * 0.5f;
 		b_pos += manifold.n * manifold.depths[0] * 0.33f;
 
-		a_transform.pos = a_pos;
-		b_transform.pos = b_pos;
+		a_transform.set_pos(a_pos);
+		b_transform.set_pos(b_pos);
 	}
 
 	return true;
@@ -114,12 +116,11 @@ bool hitbox_to_hitbox_resolve(
 
 void handle_enemy_to_enemy_collisions(entt::registry &reg, AabbGrid &grid)
 {
-	auto view = reg.view<C_WorldTransform, C_Enemy, C_Physics>();
+	auto view = reg.view<C_Transform, C_Enemy, C_Physics>();
 	for (auto e : view)
 	{
 		auto aabb = view.get<C_Physics>(e).aabb;
-		auto pos = view.get<C_WorldTransform>(e).pos;
-		//		auto pos = view.get<C_Transform>(e).get_local_transform().pos;
+		auto pos = view.get<C_Transform>(e).get_local_transform().pos;
 		aabb.min += pos;
 		aabb.max += pos;
 
@@ -131,15 +132,15 @@ void update_grid(entt::registry &reg, AabbGrid &grid)
 {
 	aabb_grid_clear(grid);
 
-	auto player = reg.view<C_Player, C_WorldTransform>().front();
-	auto player_pos = reg.get<C_WorldTransform>(player).pos;
+	auto player = reg.view<C_Player, C_Transform>().front();
+	auto player_pos = reg.get<C_Transform>(player).get_global_transform().pos;
 	aabb_grid_set_pos(grid, player_pos);
 
-	auto view = reg.view<C_WorldTransform, C_Enemy, C_Physics>();
+	auto view = reg.view<C_Transform, C_Enemy, C_Physics>();
 	for (auto e : view)
 	{
 		auto aabb = view.get<C_Physics>(e).aabb;
-		auto pos = view.get<C_WorldTransform>(e).pos;
+		auto pos = view.get<C_Transform>(e).get_local_transform().pos;
 
 		aabb.min += pos;
 		aabb.max += pos;

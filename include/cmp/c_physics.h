@@ -4,4 +4,5 @@
 struct C_Physics
 {
 	Cute::Aabb aabb = {};
+	Cute::Leaf leaf = {-1};
 };

@@ -7,10 +7,10 @@
 
 using namespace Cute;
 
-void add_input_system(flecs::world *world)
+void input_system(entt::registry &reg, float dt)
 {
-	world->system<C_Input, C_Movement, C_Player *>("input").each(
-		[](C_Input &i, C_Movement &m, C_Player *p) {
+	reg.view<C_Input, C_Movement>().each(
+		[&reg](auto e, C_Input &i, C_Movement &m) {
 			i.input_dir = {};
 
 			if (key_down(KEY_W) || key_down(KEY_UP))
@@ -30,6 +30,7 @@ void add_input_system(flecs::world *world)
 				i.input_dir.x += 1;
 			}
 
+			C_Player *p = reg.try_get<C_Player>(e);
 			if (p)
 			{
 				p->facing = i.input_dir.x;

@@ -1,5 +1,4 @@
 #pragma once
+#include <entt/entt.hpp>
 
-#include <flecs.h>
-
-void add_weapon_system(flecs::world *world);
+void weapon_system(entt::registry &reg, float weapon);

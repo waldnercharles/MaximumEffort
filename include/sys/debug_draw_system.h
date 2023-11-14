@@ -1,4 +1,4 @@
 #pragma once
-#include <flecs.h>
+#include <entt/entt.hpp>
 
-void debug_draw(flecs::world *world);
+void debug_draw_system(entt::registry &reg);

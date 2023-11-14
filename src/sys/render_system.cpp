@@ -6,34 +6,19 @@
 
 using namespace Cute;
 
-void render_system(flecs::world *world)
+void render_system(entt::registry &reg)
 {
-	static flecs::query q = world->query<const C_WorldTransform, C_Sprite>();
+	reg.view<C_Sprite, C_Transform>().each(
+		[&](auto e, C_Sprite &s, C_Transform &n) {
+			auto t = n.get_global_transform();
 
-	q.each([](const C_WorldTransform &t, C_Sprite &s) {
-		s.sprite.transform.p = t.pos;
-		s.sprite.transform.r = sincos(t.angle);
+			s.transform.p = t.pos;
+			s.transform.r = sincos(t.angle);
 
-		draw_push_layer(s.layer);
-		s.sprite.update();
-		s.sprite.draw();
-		draw_pop_layer();
-	});
+			draw_push_layer(s.layer);
+			s.update();
+			s.draw();
+			draw_pop_layer();
+		}
+	);
 }
-
-//void render_system(entt::registry &reg)
-//{
-//	reg.view<C_Sprite, C_Transform>().each(
-//		[&](auto e, C_Sprite &s, C_Transform &n) {
-//			auto t = n.get_global_transform();
-//
-//			s.transform.p = t.pos;
-//			s.transform.r = sincos(t.angle);
-//
-//			draw_push_layer(s.layer);
-//			s.update();
-//			s.draw();
-//			draw_pop_layer();
-//		}
-//	);
-//}

@@ -1,5 +1,5 @@
 #pragma once
 
-#include <flecs.h>
+#include <entt/entt.hpp>
 
-void add_movement_system(flecs::world *world);
+void movement_system(entt::registry &e, float m);

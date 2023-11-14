@@ -1,43 +1,35 @@
 #include "game.h"
 #include "assets.h"
-#include "camera.h"
 #include "cmp/c_enemy_component.h"
+#include "cmp/c_transform.h"
 #include "common.h"
 #include "factories.h"
 #include "imgui.h"
-#include "sys/behavior_constant_direction_system.h"
+#include "sys/camera_system.h"
 #include "sys/debug_draw_system.h"
 #include "sys/input_system.h"
+#include "sys/lifetime_system.h"
+#include "sys/movement_behavior_constant_direction_system.h"
+#include "sys/movement_behavior_follow_target_system.h"
 #include "sys/movement_system.h"
+#include "sys/physics_system.h"
 #include "sys/player_animation_system.h"
 #include "sys/render_system.h"
-#include "sys/transform_system.h"
+#include "sys/spawner_system.h"
 #include "sys/weapon_system.h"
 #include <ctime>
-#include <flecs.h>
 
 using namespace Cute;
 
 Game game;
 
-ECS_COMPONENT_DECLARE(vec2);
-
 Game make_game()
 {
 	Game g;
-	g.world = NEW(flecs::world);
 
-	add_input_system(g.world);
-	add_movement_system(g.world);
-	add_behavior_constant_direction_system(g.world);
+	register_scene_node_callbacks(g.reg);
 
-	add_transform_system(g.world);
-
-	add_weapon_system(g.world);
-
-	add_player_animation_system(g.world);
-
-	//	register_scene_node_callbacks(g.reg);
+	g.world = CF_NEW(flecs::world);
 
 	g.rnd = rnd_seed((u64)time(nullptr));
 	g.camera_size = V2(320, 180);
@@ -55,10 +47,10 @@ Game make_game()
 		mount_assets_folder();
 		g.map = load_tiled_map("map.json");
 
-		flecs::entity player = make_player(g.world);
+		auto player = make_player(g.reg);
 
-		//		make_enemy_spawner(g.reg, player, 0.001f, ENEMY_EYEBALL);
-		make_weapon_boomerang(g.world, player);
+		make_enemy_spawner(g.reg, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(g.reg, player);
 	}
 
 	g.paused = true;
@@ -73,48 +65,45 @@ void destroy_game(Game g)
 
 void Game::update(float dt)
 {
-	world->progress(dt);
+	if (!paused)
+	{
+		total_time += dt;
+		lifetime_system(reg, dt);
 
-	//	if (!paused)
-	//	{
-	//		total_time += dt;
-	//		lifetime_system(reg, dt);
-	//
-	//		// Spawn projectiles and enemies
-	//		{
-	//			weapon_system(reg, dt);
-	//			spawner_system(reg, dt);
-	//		}
-	//
-	//		// Handle input and movement
-	//		{
-	//			input_system(reg, dt);
-	//			movement_behavior_follow_target_system(reg, dt);
-	//			movement_behavior_constant_direction_system(reg, dt);
-	//
-	//			// Physics before movement
-	//			physics_system(reg, dt);
-	//
-	//			movement_system(reg, dt);
-	//		}
-	//
-	//		// Handle animation
-	//		{
-	//			player_animation_system(reg, dt);
-	//		}
-	//	}
+		// Spawn projectiles and enemies
+		{
+			weapon_system(reg, dt);
+			spawner_system(reg, dt);
+		}
+
+		// Handle input and movement
+		{
+			input_system(reg, dt);
+			movement_behavior_follow_target_system(reg, dt);
+			movement_behavior_constant_direction_system(reg, dt);
+
+			// Physics before movement
+			physics_system(reg, dt);
+
+			movement_system(reg, dt);
+		}
+
+		// Handle animation
+		{
+			player_animation_system(reg, dt);
+		}
+	}
 }
 
 
 void Game::draw()
 {
-	update_camera(game.world);
-	//	camera_system(reg);
+	camera_system(reg);
 
 	map.draw();
 
-	debug_draw(game.world);
-	render_system(game.world);
+	debug_draw_system(reg);
+	render_system(reg);
 
 	int count = 0;
 	game.reg.view<C_Enemy>().each([&]() {
