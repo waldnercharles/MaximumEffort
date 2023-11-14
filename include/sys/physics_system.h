@@ -1,4 +1,6 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "cute_aabb_grid.h"
 
-void physics_system(entt::registry &reg, float dt);
+#include <flecs.h>
+
+void add_physics_system(flecs::world *world, Cute::AabbGrid &grid);

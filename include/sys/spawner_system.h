@@ -1,5 +1,4 @@
 #pragma once
+#include <flecs.h>
 
-#include <entt/entt.hpp>
-
-void spawner_system(entt::registry &reg, float dt);
+void add_spawner_system(flecs::world *world);

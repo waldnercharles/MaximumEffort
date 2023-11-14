@@ -2,9 +2,9 @@
 #include <cute.h>
 #include <flecs.h>
 
-struct C_MovementBehavior_FollowTarget
+struct C_Behavior_FollowTarget
 {
-	flecs::entity entity = flecs::entity::null();
+	flecs::entity target = flecs::entity::null();
 	Cute::v2 dir = {};
 	Cute::v2 speed = {};
 

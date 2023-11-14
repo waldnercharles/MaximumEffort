@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(lib)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
@@ -12,7 +9,8 @@ if (MSVC)
     add_compile_options(-nologo -fp:fast)
 endif ()
 
-set(CF_FRAMEWORK_STATIC ON)
+set(CF_FRAMEWORK_STATIC OFF)
+set(CF_FRAMEWORK_SHARED ON)
 set(CF_FRAMEWORK_BUILD_TESTS OFF)
 set(CF_FRAMEWORK_BUILD_SAMPLES OFF)
 fetchcontent_declare(
@@ -32,7 +30,8 @@ fetchcontent_declare(
 )
 fetchcontent_makeavailable(entt)
 
-set(FLECS_SHARED OFF)
+set(FLECS_SHARED ON)
+set(FLECS_STATIC OFF)
 fetchcontent_declare(
         flecs
         GIT_REPOSITORY https://github.com/SanderMertens/flecs.git

@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
 project(MaximumEffort)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_policy(SET CMP0077 NEW)
+#set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -47,7 +48,7 @@ add_executable(MaximumEffort
                include/sys/debug_draw_system.h
                include/sys/input_system.h
                include/sys/lifetime_system.h
-               include/sys/movement_behavior_follow_target_system.h
+               include/sys/behavior_follow_target_system.h
                include/sys/movement_system.h
                include/sys/physics_system.h
                include/sys/player_animation_system.h
@@ -68,7 +69,7 @@ add_executable(MaximumEffort
                src/sys/debug_draw_system.cpp
                src/sys/input_system.cpp
                src/sys/lifetime_system.cpp
-               src/sys/movement_behavior_follow_target_system.cpp
+               src/sys/behavior_follow_target_system.cpp
                src/sys/movement_system.cpp
                src/sys/physics_system.cpp
                src/sys/player_animation_system.cpp
@@ -79,13 +80,15 @@ add_executable(MaximumEffort
                src/tiled_map.cpp
 )
 
+target_compile_features(MaximumEffort PRIVATE cxx_std_17)
+
 add_subdirectory(lib)
 
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute cute_headers flecs_static)
+target_link_libraries(MaximumEffort cute cute_headers flecs)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)

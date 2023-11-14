@@ -1,14 +1,16 @@
 #include "sys/lifetime_system.h"
 #include "cmp/c_lifetime.h"
 
-void lifetime_system(entt::registry &reg, float dt)
+void add_lifetime_system(flecs::world *world)
 {
-	reg.view<C_Lifetime>().each([&](auto e, C_Lifetime &lifetime) {
-		lifetime -= dt;
+	world->system<C_Lifetime>().each(
+		[](flecs::iter &it, size_t i, C_Lifetime &lifetime) {
+			lifetime -= it.delta_time();
 
-		if (lifetime <= 0)
-		{
-			reg.destroy(e);
+			if (lifetime <= 0)
+			{
+				it.entity(i).destruct();
+			}
 		}
-	});
+	);
 }

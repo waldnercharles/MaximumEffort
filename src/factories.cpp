@@ -20,14 +20,14 @@ using namespace Cute;
 flecs::entity make_enemy_eyeball(flecs::world *world, v2 pos)
 {
 	flecs::entity e = world->entity();
-	e.add<C_Enemy>(e);
+	e.add<C_Enemy>();
 	e.set<C_WorldTransform>({pos, 0.f});
 	e.set<C_LocalTransform>({pos, 0.f});
 	e.set<C_Movement>({});
 	e.set<C_Physics>({make_aabb({}, 16, 16)});
 
 	flecs::entity target = world->lookup("player");
-	e.set<C_MovementBehavior_FollowTarget>({target, {20, 20}, true});
+	e.set<C_Behavior_FollowTarget>({target, {}, {20, 20}, true});
 
 	e.set<C_Hitbox>({make_circle({8, 8}, 8)});
 	e.set<C_Hurtbox>({make_circle({8, 8}, 6)});
@@ -52,21 +52,17 @@ flecs::entity make_player(flecs::world *world)
 	return e;
 }
 
-entt::entity make_enemy_spawner(
-	entt::registry &reg,
-	entt::entity parent,
+flecs::entity make_enemy_spawner(
+	flecs::world *world,
+	flecs::entity parent,
 	float rate,
 	EnemyType spawn_type
 )
 {
-	const entt::entity e = reg.create();
-	auto &player_scene_node = reg.get<C_WorldTransform>(parent);
-	auto &spawner_scene_node = reg.emplace<C_WorldTransform>(e);
-	//	player_scene_node.add_child(&spawner_scene_node);
-
-	auto &s = reg.emplace<C_EnemySpawner>(e);
-	s.rate = rate;
-	s.entity_type = spawn_type;
+	flecs::entity e = world->entity().child_of(parent);
+	e.set<C_WorldTransform>({});
+	e.set<C_LocalTransform>({});
+	e.set<C_EnemySpawner>({rate, spawn_type});
 
 	return e;
 }

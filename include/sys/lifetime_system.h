@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include <flecs.h>
 
-void lifetime_system(entt::registry &reg, float dt);
+void add_lifetime_system(flecs::world *world);
