@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(lib)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
@@ -31,14 +28,6 @@ fetchcontent_declare(
         SYSTEM
 )
 fetchcontent_makeavailable(entt)
-
-fetchcontent_declare(
-        flecs
-        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
-        GIT_PROGRESS FALSE
-        SYSTEM
-)
-fetchcontent_makeavailable(flecs)
 
 fetchcontent_declare(
         fmt

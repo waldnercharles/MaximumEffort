@@ -29,8 +29,6 @@ Game make_game()
 
 	register_scene_node_callbacks(g.reg);
 
-	g.world = CF_NEW(flecs::world);
-
 	g.rnd = rnd_seed((u64)time(nullptr));
 	g.camera_size = V2(320, 180);
 	g.spawn_radius = max(g.camera_size.x, g.camera_size.y) * 0.66f;

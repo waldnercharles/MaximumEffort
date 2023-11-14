@@ -6,7 +6,6 @@
 #include "tiled_map.h"
 
 #include <entt/entt.hpp>
-#include <flecs.h>
 
 struct Game
 {
@@ -20,7 +19,6 @@ struct Game
 
 	TiledMap map;
 
-	flecs::world *world;
 	entt::registry reg;
 
 	f64 total_time;

@@ -104,8 +104,9 @@ bool hitbox_to_hitbox_resolve(
 
 	if (manifold.count > 0)
 	{
-		a_pos -= manifold.n * manifold.depths[0] * 0.5f;
-		b_pos += manifold.n * manifold.depths[0] * 0.33f;
+		v2 delta = manifold.n * manifold.depths[0] * 0.33f;
+		a_pos -= delta;
+		b_pos += delta;
 
 		a_transform.set_pos(a_pos);
 		b_transform.set_pos(b_pos);

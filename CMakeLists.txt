@@ -84,7 +84,7 @@ target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute cute_headers flecs fmt)
+target_link_libraries(MaximumEffort cute cute_headers fmt)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
