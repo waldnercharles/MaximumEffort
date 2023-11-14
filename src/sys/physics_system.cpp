@@ -168,3 +168,151 @@ void add_physics_system(flecs::world *world, AabbGrid &grid)
 	add_enemy_to_enemy_collision_system(world, grid);
 	// handle_player_projectiles(reg, game.enemy_grid);
 }
+
+struct EcsAabbGrid
+{
+	int w = 0;
+	int h = 0;
+
+	v2 pos = {};
+
+	int region_size = 0;
+	Array<flecs::entity> map = {};
+};
+
+struct Region
+{
+};
+
+void update_grid(flecs::world &world, EcsAabbGrid &grid)
+{
+	world.remove_all<Region>();
+
+	grid.map.ensure_count(grid.w * grid.h);
+
+	static auto q = world.query<const C_Physics>();
+
+	q.each([&](flecs::entity e, const C_Physics &p) {
+		v2 half_extents = V2((float)grid.w, (float)grid.h) * 0.5f;
+
+		int max_tiles_x = grid.w / grid.region_size;
+		int max_tiles_y = grid.h / grid.region_size;
+
+		Aabb relative_aabb = p.aabb;
+		relative_aabb.min += half_extents - grid.pos;
+		relative_aabb.max += half_extents - grid.pos;
+
+		int min_x = (int)relative_aabb.min.x / grid.region_size;
+		int min_y = (int)relative_aabb.min.y / grid.region_size;
+
+		int max_x = (int)relative_aabb.max.x / grid.region_size;
+		int max_y = (int)relative_aabb.max.y / grid.region_size;
+
+		if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
+			max_y >= max_tiles_y)
+		{
+			return;
+		}
+
+		for (int x = min_x; x <= max_x; x++)
+		{
+			for (int y = min_y; y <= max_y; y++)
+			{
+				int index = y * max_tiles_x + x;
+
+				if (grid.map[index] == flecs::entity::null())
+				{
+					grid.map[index] = world.entity();
+				}
+
+				world.defer_begin();
+				e.add<Region>(grid.map[index]);
+				world.defer_end();
+			}
+		}
+	});
+}
+
+void update_enemy_to_enemy_collisions(flecs::world &world, EcsAabbGrid &grid)
+{
+	static auto enemies_aabb_query =
+		world.query_builder<C_Enemy, C_LocalTransform, C_Hitbox, C_Physics>()
+			.build();
+
+	static auto grouped_query =
+		world.query_builder<C_Enemy, C_LocalTransform, C_Hitbox>()
+			.group_by<Region>()
+			.build();
+
+	enemies_aabb_query.each([&](flecs::entity a,
+								C_Enemy,
+								C_LocalTransform &a_local,
+								C_Hitbox a_hitbox,
+								C_Physics &a_physics) {
+		v2 half_extents = V2((float)grid.w, (float)grid.h) * 0.5f;
+
+		int max_tiles_x = grid.w / grid.region_size;
+		int max_tiles_y = grid.h / grid.region_size;
+
+		Aabb relative_aabb = a_physics.aabb;
+		relative_aabb.min += half_extents - grid.pos;
+		relative_aabb.max += half_extents - grid.pos;
+
+		int min_x = (int)relative_aabb.min.x / grid.region_size;
+		int min_y = (int)relative_aabb.min.y / grid.region_size;
+
+		int max_x = (int)relative_aabb.max.x / grid.region_size;
+		int max_y = (int)relative_aabb.max.y / grid.region_size;
+
+		if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
+			max_y >= max_tiles_y)
+		{
+			return;
+		}
+
+		a_hitbox.circle.p += a_local.pos;
+
+		for (int x = min_x; x <= max_x; x++)
+		{
+			for (int y = min_y; y <= max_y; y++)
+			{
+				int index = y * max_tiles_x + x;
+				grouped_query.iter()
+					.set_group(grid.map[index])
+					.each([&](flecs::entity b,
+							  C_Enemy,
+							  C_LocalTransform &b_local,
+							  C_Hitbox b_hitbox) {
+						if (a == b)
+						{
+							return;
+						}
+
+						b_hitbox.circle.p += b_local.pos;
+
+						Manifold manifold = {};
+						circle_to_circle_manifold(
+							a_hitbox.circle,
+							b_hitbox.circle,
+							&manifold
+						);
+
+						if (manifold.count > 0)
+						{
+							v2 delta = manifold.n * manifold.depths[0] * 0.33f;
+
+							a_local.pos -= delta;
+							b_local.pos += delta;
+						}
+					});
+			}
+		}
+	});
+}
+
+void physics_system(flecs::world &world)
+{
+	static EcsAabbGrid enemies = {320, 320, {0, 0}, 64, {}};
+	update_grid(world, enemies);
+	update_enemy_to_enemy_collisions(world, enemies);
+}

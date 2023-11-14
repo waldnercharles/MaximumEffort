@@ -55,7 +55,7 @@ Game make_game()
 
 	add_transform_system(g.world);
 
-	add_physics_system(g.world, g.enemy_grid);
+	//	add_physics_system(g.world, g.enemy_grid);
 
 	add_player_animation_system(g.world);
 
@@ -86,6 +86,8 @@ void Game::update(float dt)
 	{
 		// exit?
 	}
+
+	physics_system(*world);
 
 	//	if (!paused)
 	//	{
