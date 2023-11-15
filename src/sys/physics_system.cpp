@@ -1,4 +1,5 @@
 #include "sys/physics_system.h"
+#include "array_algorithms.h"
 #include "cmp/c_enemy_component.h"
 #include "cmp/c_hitbox.h"
 #include "cmp/c_hurtbox.h"
@@ -111,208 +112,238 @@ bool hitbox_to_hitbox_resolve(
 	return true;
 }
 
-void add_enemy_to_enemy_collision_system(flecs::world *world, AabbGrid &grid)
+//void add_enemy_to_enemy_collision_system(flecs::world *world, AabbGrid &grid)
+//{
+//	world->system<const C_Enemy, const C_WorldTransform, const C_Physics>()
+//		.iter([=](flecs::iter &it,
+//				  const C_Enemy *,
+//				  const C_WorldTransform *w,
+//				  const C_Physics *p) {
+//			for (auto i : it)
+//			{
+//				auto aabb = p[i].aabb;
+//				auto pos = w[i].pos;
+//				aabb.min += pos;
+//				aabb.max += pos;
+//
+//				aabb_grid_query(
+//					grid,
+//					aabb,
+//					hitbox_to_hitbox_resolve,
+//					(void *)it.entity(i).raw_id()
+//				);
+//			}
+//		});
+//}
+
+//void add_update_grid_system(flecs::world *world, AabbGrid &grid)
+//{
+//	world->system<const C_Enemy, const C_WorldTransform, const C_Physics>()
+//		.iter([=](flecs::iter &it,
+//				  const C_Enemy *e,
+//				  const C_WorldTransform *w,
+//				  const C_Physics *p) {
+//			aabb_grid_clear(grid);
+//
+//			auto player_pos =
+//				world->lookup("player").get<C_WorldTransform>()->pos;
+//
+//			aabb_grid_set_pos(grid, player_pos);
+//
+//			for (auto i : it)
+//			{
+//				auto aabb = p[i].aabb;
+//				auto pos = w[i].pos;
+//
+//				aabb.min += pos;
+//				aabb.max += pos;
+//
+//				aabb_grid_insert(grid, aabb, (void *)it.entity(i).raw_id());
+//			}
+//		});
+//}
+
+
+void update_grid(flecs::world *world, EcsAabbGrid *grid)
 {
-	world->system<const C_Enemy, const C_WorldTransform, const C_Physics>()
-		.iter([=](flecs::iter &it,
-				  const C_Enemy *,
-				  const C_WorldTransform *w,
-				  const C_Physics *p) {
+	grid->map.ensure_count(
+		grid->w / grid->region_size * grid->h / grid->region_size
+	);
+
+	world->system<const C_Physics, const C_LocalTransform>("update_grid")
+		.iter([world, grid](
+				  flecs::iter &it,
+				  const C_Physics *p,
+				  const C_LocalTransform *l
+			  ) {
 			for (auto i : it)
 			{
-				auto aabb = p[i].aabb;
-				auto pos = w[i].pos;
-				aabb.min += pos;
-				aabb.max += pos;
+				auto e = it.entity(i);
 
-				aabb_grid_query(
-					grid,
-					aabb,
-					hitbox_to_hitbox_resolve,
-					(void *)it.entity(i).raw_id()
-				);
+				v2 half_extents = V2((float)grid->w, (float)grid->h) * 0.5f;
+
+				int max_tiles_x = grid->w / grid->region_size;
+				int max_tiles_y = grid->h / grid->region_size;
+
+				Aabb relative_aabb = p[i].aabb;
+				relative_aabb.min += half_extents - grid->pos + l[i].pos;
+				relative_aabb.max += half_extents - grid->pos + l[i].pos;
+
+				int min_x = (int)relative_aabb.min.x / grid->region_size;
+				int min_y = (int)relative_aabb.min.y / grid->region_size;
+
+				int max_x = (int)relative_aabb.max.x / grid->region_size;
+				int max_y = (int)relative_aabb.max.y / grid->region_size;
+
+				if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
+					max_y >= max_tiles_y)
+				{
+					return;
+				}
+
+				for (int x = min_x; x <= max_x; x++)
+				{
+					for (int y = min_y; y <= max_y; y++)
+					{
+						int index = y * max_tiles_x + x;
+
+						if (grid->map[index] == flecs::entity::null())
+						{
+							grid->map[index] = world->entity();
+						}
+
+						e.add<Region>(grid->map[index]);
+					}
+				}
 			}
 		});
 }
 
-void add_update_grid_system(flecs::world *world, AabbGrid &grid)
+void add_enemy_to_enemy_collision_system(flecs::world *world, EcsAabbGrid *grid)
 {
-	world->system<const C_Enemy, const C_WorldTransform, const C_Physics>()
-		.iter([=](flecs::iter &it,
-				  const C_Enemy *e,
-				  const C_WorldTransform *w,
-				  const C_Physics *p) {
-			aabb_grid_clear(grid);
+	auto grouped_query = world
+							 ->query_builder<
+								 const C_Enemy,
+								 C_LocalTransform,
+								 C_WorldTransform,
+								 const C_Hitbox>("enemy_to_enemy_cell_query")
+							 .group_by<Region>([](flecs::world_t *world,
+												  flecs::table_t *table,
+												  flecs::id_t id,
+												  void *ctx) {
+								 flecs::entity_t result = 0;
+								 ecs_id_t pair = 0;
 
-			auto player_pos =
-				world->lookup("player").get<C_WorldTransform>()->pos;
+								 if (ecs_search(
+										 world,
+										 table,
+										 ecs_pair(id, EcsWildcard),
+										 &pair
+									 ) != -1)
+								 {
+									 result = ecs_pair_second(world, pair);
+								 }
 
-			aabb_grid_set_pos(grid, player_pos);
+								 return result;
+							 })
+							 .build();
 
-			for (auto i : it)
+	world
+		->system<
+			const C_Enemy,
+			C_LocalTransform,
+			C_WorldTransform,
+			const C_Hitbox,
+			const C_Physics>("enemy_to_enemy")
+		.each([=](flecs::entity a,
+				  const C_Enemy,
+				  C_LocalTransform &a_local,
+				  C_WorldTransform &a_world,
+				  C_Hitbox a_hitbox,
+				  const C_Physics &a_physics) {
+			static Array<flecs::entity> visited;
+			visited.clear();
+
+			v2 half_extents = V2((float)grid->w, (float)grid->h) * 0.5f;
+
+			int max_tiles_x = grid->w / grid->region_size;
+			int max_tiles_y = grid->h / grid->region_size;
+
+			Aabb relative_aabb = a_physics.aabb;
+			relative_aabb.min += half_extents - grid->pos + a_local.pos;
+			relative_aabb.max += half_extents - grid->pos + a_local.pos;
+
+			int min_x = (int)relative_aabb.min.x / grid->region_size;
+			int min_y = (int)relative_aabb.min.y / grid->region_size;
+
+			int max_x = (int)relative_aabb.max.x / grid->region_size;
+			int max_y = (int)relative_aabb.max.y / grid->region_size;
+
+			if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
+				max_y >= max_tiles_y)
 			{
-				auto aabb = p[i].aabb;
-				auto pos = w[i].pos;
+				return;
+			}
 
-				aabb.min += pos;
-				aabb.max += pos;
+			a_hitbox.circle.p += a_local.pos;
 
-				aabb_grid_insert(grid, aabb, (void *)it.entity(i).raw_id());
+			for (int x = min_x; x <= max_x; x++)
+			{
+				for (int y = min_y; y <= max_y; y++)
+				{
+					int index = y * max_tiles_x + x;
+					grouped_query.iter()
+						.set_group(grid->map[index])
+						.each([a, a_hitbox, &a_local, &a_world](
+								  flecs::entity b,
+								  const C_Enemy,
+								  C_LocalTransform &b_local,
+								  C_WorldTransform &b_world,
+								  C_Hitbox b_hitbox
+							  ) {
+							if (a == b ||
+								arr_contains(visited.begin(), visited.end(), b))
+							{
+								return;
+							}
+							visited.add(b);
+
+							b_hitbox.circle.p += b_local.pos;
+
+							Manifold manifold = {};
+							circle_to_circle_manifold(
+								a_hitbox.circle,
+								b_hitbox.circle,
+								&manifold
+							);
+
+							if (manifold.count > 0)
+							{
+								v2 delta =
+									manifold.n * manifold.depths[0] * 0.5f;
+
+								a_local.pos -= delta;
+								b_local.pos += delta;
+
+								a_world.pos -= delta;
+								b_world.pos += delta;
+							}
+						});
+				}
 			}
 		});
 }
 
-void add_physics_system(flecs::world *world, AabbGrid &grid)
+void add_physics_system()
 {
-	add_update_grid_system(world, grid);
-	add_enemy_to_enemy_collision_system(world, grid);
+	update_grid(game.world, &game.enemy_grid);
+	add_enemy_to_enemy_collision_system(game.world, &game.enemy_grid);
 	// handle_player_projectiles(reg, game.enemy_grid);
 }
 
-struct EcsAabbGrid
-{
-	int w = 0;
-	int h = 0;
-
-	v2 pos = {};
-
-	int region_size = 0;
-	Array<flecs::entity> map = {};
-};
-
-struct Region
-{
-};
-
-void update_grid(flecs::world &world, EcsAabbGrid &grid)
-{
-	world.remove_all<Region>();
-
-	grid.map.ensure_count(grid.w * grid.h);
-
-	static auto q = world.query<const C_Physics>();
-
-	q.each([&](flecs::entity e, const C_Physics &p) {
-		v2 half_extents = V2((float)grid.w, (float)grid.h) * 0.5f;
-
-		int max_tiles_x = grid.w / grid.region_size;
-		int max_tiles_y = grid.h / grid.region_size;
-
-		Aabb relative_aabb = p.aabb;
-		relative_aabb.min += half_extents - grid.pos;
-		relative_aabb.max += half_extents - grid.pos;
-
-		int min_x = (int)relative_aabb.min.x / grid.region_size;
-		int min_y = (int)relative_aabb.min.y / grid.region_size;
-
-		int max_x = (int)relative_aabb.max.x / grid.region_size;
-		int max_y = (int)relative_aabb.max.y / grid.region_size;
-
-		if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
-			max_y >= max_tiles_y)
-		{
-			return;
-		}
-
-		for (int x = min_x; x <= max_x; x++)
-		{
-			for (int y = min_y; y <= max_y; y++)
-			{
-				int index = y * max_tiles_x + x;
-
-				if (grid.map[index] == flecs::entity::null())
-				{
-					grid.map[index] = world.entity();
-				}
-
-				world.defer_begin();
-				e.add<Region>(grid.map[index]);
-				world.defer_end();
-			}
-		}
-	});
-}
-
-void update_enemy_to_enemy_collisions(flecs::world &world, EcsAabbGrid &grid)
-{
-	static auto enemies_aabb_query =
-		world.query_builder<C_Enemy, C_LocalTransform, C_Hitbox, C_Physics>()
-			.build();
-
-	static auto grouped_query =
-		world.query_builder<C_Enemy, C_LocalTransform, C_Hitbox>()
-			.group_by<Region>()
-			.build();
-
-	enemies_aabb_query.each([&](flecs::entity a,
-								C_Enemy,
-								C_LocalTransform &a_local,
-								C_Hitbox a_hitbox,
-								C_Physics &a_physics) {
-		v2 half_extents = V2((float)grid.w, (float)grid.h) * 0.5f;
-
-		int max_tiles_x = grid.w / grid.region_size;
-		int max_tiles_y = grid.h / grid.region_size;
-
-		Aabb relative_aabb = a_physics.aabb;
-		relative_aabb.min += half_extents - grid.pos;
-		relative_aabb.max += half_extents - grid.pos;
-
-		int min_x = (int)relative_aabb.min.x / grid.region_size;
-		int min_y = (int)relative_aabb.min.y / grid.region_size;
-
-		int max_x = (int)relative_aabb.max.x / grid.region_size;
-		int max_y = (int)relative_aabb.max.y / grid.region_size;
-
-		if (min_x < 0 || min_y < 0 || max_x >= max_tiles_x ||
-			max_y >= max_tiles_y)
-		{
-			return;
-		}
-
-		a_hitbox.circle.p += a_local.pos;
-
-		for (int x = min_x; x <= max_x; x++)
-		{
-			for (int y = min_y; y <= max_y; y++)
-			{
-				int index = y * max_tiles_x + x;
-				grouped_query.iter()
-					.set_group(grid.map[index])
-					.each([&](flecs::entity b,
-							  C_Enemy,
-							  C_LocalTransform &b_local,
-							  C_Hitbox b_hitbox) {
-						if (a == b)
-						{
-							return;
-						}
-
-						b_hitbox.circle.p += b_local.pos;
-
-						Manifold manifold = {};
-						circle_to_circle_manifold(
-							a_hitbox.circle,
-							b_hitbox.circle,
-							&manifold
-						);
-
-						if (manifold.count > 0)
-						{
-							v2 delta = manifold.n * manifold.depths[0] * 0.33f;
-
-							a_local.pos -= delta;
-							b_local.pos += delta;
-						}
-					});
-			}
-		}
-	});
-}
-
-void physics_system(flecs::world &world)
-{
-	static EcsAabbGrid enemies = {320, 320, {0, 0}, 64, {}};
-	update_grid(world, enemies);
-	update_enemy_to_enemy_collisions(world, enemies);
-}
+//void physics_system(flecs::world *world)
+//{
+//	static EcsAabbGrid enemies = {320, 320, {0, 0}, 32, {}};
+//	update_grid(world);
+//	add_enemy_to_enemy_collision_system(world, enemies);
+//}

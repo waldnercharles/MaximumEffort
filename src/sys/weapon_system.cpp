@@ -70,7 +70,7 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 	data.radius = circle.r;
 
 	auto aabb = make_aabb(circle.p, circle.r * 2, circle.r * 2);
-	aabb_grid_query(game.enemy_grid, aabb, on_closest_enemy_query_hit, &data);
+	//	aabb_grid_query(game.enemy_grid, aabb, on_closest_enemy_query_hit, &data);
 
 	*dir = data.dir;
 

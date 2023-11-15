@@ -26,68 +26,69 @@ Game game;
 
 ECS_COMPONENT_DECLARE(vec2);
 
-Game make_game()
+void make_game()
 {
-	Game g;
-	g.rnd = rnd_seed((u64)time(nullptr));
-	g.camera_size = V2(320, 180);
-	g.spawn_radius = max(g.camera_size.x, g.camera_size.y) * 0.66f;
-	g.world_size = V2(g.spawn_radius, g.spawn_radius) * 4.0f;
+	game.rnd = rnd_seed((u64)time(nullptr));
+	game.camera_size = V2(320, 180);
+	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
+	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
 
-	g.enemy_grid = make_aabb_grid(
-		V2(0, 0),
-		ceil(g.world_size.x),
-		ceil(g.world_size.y),
-		32
-	);
+	game.enemy_grid = {
+		(int)ceil(game.world_size.x),
+		(int)ceil(game.world_size.y),
+		{},
+		32,
+		{}};
 
-	g.world = NEW(flecs::world);
+	game.world = NEW(flecs::world);
+	game.world->import <flecs::monitor>();
+	game.world->set<flecs::Rest>({});
 
-	add_lifetime_system(g.world);
+	add_lifetime_system(game.world);
 
-	add_weapon_system(g.world);
-	add_spawner_system(g.world);
+	add_weapon_system(game.world);
+	add_spawner_system(game.world);
 
-	add_input_system(g.world);
-	add_movement_system(g.world);
-	add_behavior_constant_direction_system(g.world);
-	add_behavior_follow_target_system(g.world);
+	add_input_system(game.world);
+	add_movement_system(game.world);
+	add_behavior_constant_direction_system(game.world);
+	add_behavior_follow_target_system(game.world);
 
-	add_transform_system(g.world);
+	add_transform_system(game.world);
 
-	//	add_physics_system(g.world, g.enemy_grid);
+	add_physics_system();
 
-	add_player_animation_system(g.world);
+	add_player_animation_system(game.world);
 
 	// TODO: Do this somewhere else
 	{
 		mount_assets_folder();
-		g.map = load_tiled_map("map.json");
+		game.map = load_tiled_map("map.json");
 
-		flecs::entity player = make_player(g.world);
+		flecs::entity player = make_player(game.world);
 
-		make_enemy_spawner(g.world, player, 0.001f, ENEMY_EYEBALL);
-		make_weapon_boomerang(g.world, player);
+		make_enemy_spawner(game.world, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(game.world, player);
 	}
 
-	g.paused = true;
-
-	return g;
+	game.paused = true;
 }
 
-void destroy_game(Game g)
-{
-	unload_tiled_map(g.map);
-}
+//void destroy_game(Game g)
+//{
+//	unload_tiled_map(g.map);
+//}
 
 void Game::update(float dt)
 {
+	world->remove_all<Region>();
 	if (!world->progress(dt))
 	{
 		// exit?
 	}
 
-	physics_system(*world);
+
+	//	physics_system(*world);
 
 	//	if (!paused)
 	//	{
