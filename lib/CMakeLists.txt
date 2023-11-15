@@ -35,7 +35,7 @@ set(FLECS_STATIC OFF)
 fetchcontent_declare(
         flecs
         GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
-        GIT_TAG v3.2.8
+        GIT_TAG master
         GIT_PROGRESS FALSE
         SYSTEM
 )

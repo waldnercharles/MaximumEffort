@@ -41,8 +41,8 @@ void make_game()
 		{}};
 
 	game.world = NEW(flecs::world);
-	game.world->import <flecs::monitor>();
-	game.world->set<flecs::Rest>({});
+	//	game.world->import <flecs::monitor>();
+	//	game.world->set<flecs::Rest>({});
 
 	add_lifetime_system(game.world);
 
@@ -56,7 +56,7 @@ void make_game()
 
 	add_transform_system(game.world);
 
-	add_physics_system();
+	//	add_physics_system();
 
 	add_player_animation_system(game.world);
 
@@ -81,11 +81,13 @@ void make_game()
 
 void Game::update(float dt)
 {
-	world->remove_all<Region>();
+	//	world->remove_all<Region>();
 	if (!world->progress(dt))
 	{
 		// exit?
 	}
+
+	physics_system(world);
 
 
 	//	physics_system(*world);

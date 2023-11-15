@@ -18,4 +18,6 @@ struct EcsAabbGrid
 	Cute::Array<flecs::entity> map = {};
 };
 
-void add_physics_system();
+//void add_physics_system();
+
+void physics_system(flecs::world *world);

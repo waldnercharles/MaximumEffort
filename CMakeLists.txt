@@ -78,6 +78,7 @@ add_executable(MaximumEffort
                src/sys/transform_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
+               include/cute_ext.h
 )
 
 target_compile_features(MaximumEffort PRIVATE cxx_std_17)
