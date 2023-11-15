@@ -30,7 +30,8 @@ void make_game()
 {
 	game.rnd = rnd_seed((u64)time(nullptr));
 	game.camera_size = V2(320, 180);
-	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
+
+	game.spawn_radius = max(320, 180) * 0.66f;
 	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
 
 	game.enemy_grid = {
@@ -41,8 +42,8 @@ void make_game()
 		{}};
 
 	game.world = NEW(flecs::world);
-	//	game.world->import <flecs::monitor>();
-	//	game.world->set<flecs::Rest>({});
+	game.world->import <flecs::monitor>();
+	game.world->set<flecs::Rest>({});
 
 	add_lifetime_system(game.world);
 
@@ -56,7 +57,7 @@ void make_game()
 
 	add_transform_system(game.world);
 
-	//	add_physics_system();
+	physics_system(game.world);
 
 	add_player_animation_system(game.world);
 
@@ -86,8 +87,6 @@ void Game::update(float dt)
 	{
 		// exit?
 	}
-
-	physics_system(world);
 
 
 	//	physics_system(*world);

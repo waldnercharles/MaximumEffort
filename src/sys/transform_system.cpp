@@ -22,7 +22,7 @@ void add_transform_system(flecs::world *w)
 	auto s = w->system<
 		const C_LocalTransform,
 		const C_WorldTransform *,
-		C_WorldTransform>();
+		C_WorldTransform>("transform");
 
 	s.term_at(2).parent().cascade().optional();
 	s.each(calculate_world_transform);

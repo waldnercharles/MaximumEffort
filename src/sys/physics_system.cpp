@@ -351,53 +351,74 @@ using namespace Cute;
 
 void physics_system(flecs::world *world)
 {
-	static auto q =
-		world->query<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>();
+	auto q = std::make_shared<
+		flecs::query<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>>(
+		world->query<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>()
+	);
 
-	q.each([](C_Enemy,
-			  C_LocalTransform &a_local,
-			  C_WorldTransform &a_world,
-			  C_Hitbox a_hitbox) {
-		int count = 0;
-		auto a_circle = a_hitbox.circle;
-		a_circle.p += a_world.pos;
-
-		auto a_cell =
-			std::pair<int, int>(a_world.pos.x / 32, a_world.pos.y / 32);
-
-		count++;
-
-		q.page(count, 0).each([&a_circle, a_cell, &a_local, &a_world](
-								  C_Enemy,
-								  C_LocalTransform &b_local,
-								  C_WorldTransform &b_world,
-								  C_Hitbox b_hitbox
-							  ) {
-			auto b_circle = b_hitbox.circle;
-			b_circle.p += b_world.pos;
-
-			auto b_cell =
-				std::pair<int, int>(b_world.pos.x / 32, b_world.pos.y / 32);
-
-			auto delta_x = std::abs((a_cell.first - b_cell.first));
-			auto delta_y = std::abs((a_cell.second - b_cell.second));
-
-			if (delta_x <= 1 && delta_y <= 1)
+	world
+		->system<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>(
+			"physics"
+		)
+		.run([](flecs::iter_t *it) {
+			int count = 0;
+			it->ctx = &count;
+			while (ecs_query_next(it))
 			{
-				Manifold manifold = {};
-				circle_to_circle_manifold(a_circle, b_circle, &manifold);
-
-				if (manifold.count > 0)
-				{
-					v2 delta = manifold.n * manifold.depths[0] * 0.5f;
-
-					a_local.pos -= delta;
-					b_local.pos += delta;
-
-					a_world.pos -= delta;
-					b_world.pos += delta;
-				}
+				it->callback(it);
 			}
+		})
+		.each([=](flecs::iter &it,
+				  size_t,
+				  C_Enemy,
+				  C_LocalTransform &a_local,
+				  C_WorldTransform &a_world,
+				  C_Hitbox a_hitbox) {
+			int *count = it.ctx<int>();
+
+			auto a_circle = a_hitbox.circle;
+			a_circle.p += a_world.pos;
+
+			auto a_cell = std::pair<s16, s16>(
+				(int)a_world.pos.x >> 4,
+				(int)a_world.pos.y >> 4
+			);
+
+			(*count)++;
+
+			q->page(*count, 0).each([&a_circle, a_cell, &a_local, &a_world](
+										C_Enemy,
+										C_LocalTransform &b_local,
+										C_WorldTransform &b_world,
+										C_Hitbox b_hitbox
+									) {
+				auto b_circle = b_hitbox.circle;
+				b_circle.p += b_world.pos;
+
+				auto b_cell = std::pair<s16, s16>(
+					(int)b_world.pos.x >> 4,
+					(int)b_world.pos.y >> 4
+				);
+
+				auto delta_x = std::abs((a_cell.first - b_cell.first));
+				auto delta_y = std::abs((a_cell.second - b_cell.second));
+
+				if (delta_x <= 1 && delta_y <= 1)
+				{
+					Manifold manifold = {};
+					circle_to_circle_manifold(a_circle, b_circle, &manifold);
+
+					if (manifold.count > 0)
+					{
+						v2 delta = manifold.n * manifold.depths[0] * 0.5f;
+
+						a_local.pos -= delta;
+						b_local.pos += delta;
+
+						a_world.pos -= delta;
+						b_world.pos += delta;
+					}
+				}
+			});
 		});
-	});
 }
