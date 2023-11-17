@@ -76,6 +76,10 @@ add_executable(MaximumEffort
                src/sys/spawner_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
+               include/singleton.h
+               include/geometry.h
+               include/ecs.h
+               include/spatial_hash.h
 )
 
 add_subdirectory(lib)
@@ -84,7 +88,7 @@ target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute cute_headers fmt)
+target_link_libraries(MaximumEffort cute cute_headers fmt glm)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)

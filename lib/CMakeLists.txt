@@ -30,6 +30,14 @@ fetchcontent_declare(
 fetchcontent_makeavailable(entt)
 
 fetchcontent_declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_PROGRESS FALSE
+        SYSTEM
+)
+fetchcontent_makeavailable(glm)
+
+fetchcontent_declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG 10.1.1
@@ -57,5 +65,6 @@ set(lib_INCLUDE_DIRS
     ${entt_SOURCE_DIR}/src
     ${cute_headers_SOURCE_DIR}
     ${flecs_SOURCE_DIR}/include
+    ${glm_SOURCE_DIR}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 

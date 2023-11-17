@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "cute_aabb_grid.h"
+#include "sys/physics_system.h"
 #include "tiled_map.h"
 
 #include <entt/entt.hpp>
@@ -23,6 +24,8 @@ struct Game
 
 	f64 total_time;
 	bool paused;
+
+	PhysicsSystem physics_system;
 
 	void update(float dt);
 	void draw();

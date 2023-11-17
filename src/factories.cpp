@@ -36,10 +36,10 @@ make_enemy_eyeball(entt::registry &reg, v2 pos, entt::entity target)
 	follow_behavior.face_target = true;
 
 	auto &hitbox = reg.emplace<C_Hitbox>(e);
-	hitbox.circle = make_circle(V2(8, 8), 8);
+	hitbox.circle = make_circle(V2(0, 0), 8);
 
 	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
-	hurtbox.circle = make_circle(V2(8, 8), 6);
+	hurtbox.circle = make_circle(V2(0, 0), 6);
 
 	auto &sprite = reg.emplace<C_Sprite>(e, make_sprite("eyeball.ase"));
 	sprite.layer = 50;

@@ -5,6 +5,7 @@
 #include "common.h"
 #include "factories.h"
 #include "imgui.h"
+#include "singleton.h"
 #include "sys/camera_system.h"
 #include "sys/debug_draw_system.h"
 #include "sys/input_system.h"
@@ -51,7 +52,7 @@ Game make_game()
 		make_weapon_boomerang(g.reg, player);
 	}
 
-	g.paused = true;
+	g.paused = false;
 
 	return g;
 }
@@ -81,7 +82,7 @@ void Game::update(float dt)
 			movement_behavior_constant_direction_system(reg, dt);
 
 			// Physics before movement
-			physics_system(reg, dt);
+			physics_system.update(dt);
 
 			movement_system(reg, dt);
 		}

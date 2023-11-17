@@ -30,10 +30,10 @@ entt::entity make_projectile_boomerang(entt::registry &reg, v2 pos, v2 dir)
 	reg.emplace<C_Physics>(e, make_aabb(V2(0, 0), 17, 18));
 
 	auto &hitbox = reg.emplace<C_Hitbox>(e);
-	hitbox.circle = make_circle(V2(8, 8), 4);
+	hitbox.circle = make_circle(V2(0, 0), 4);
 
 	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
-	hurtbox.circle = make_circle(V2(8, 8), 24);
+	hurtbox.circle = make_circle(V2(0, 0), 24);
 
 	auto &lifetime = reg.emplace<C_Lifetime>(e);
 	lifetime = 2.0f;

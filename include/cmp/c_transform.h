@@ -21,6 +21,7 @@ struct C_Transform
 
 	void set_local_transform(const SceneGraphTransform &t);
 	void set_pos(const Cute::v2 pos);
+	void offset(const Cute::v2 offset);
 	void set_rotation(const float radians);
 
 	void add_child(C_Transform *child);

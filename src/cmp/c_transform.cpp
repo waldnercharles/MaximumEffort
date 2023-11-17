@@ -24,6 +24,12 @@ void C_Transform::set_pos(const v2 pos)
 	transform.pos = pos;
 }
 
+void C_Transform::offset(const v2 offset)
+{
+	invalidate_cached_parent_transform_for_children();
+	transform.pos += offset;
+}
+
 void C_Transform::set_rotation(const float radians)
 {
 	invalidate_cached_parent_transform_for_children();
