@@ -2,7 +2,6 @@
 #include <cute_tiled.h>
 
 #include "common.h"
-#include "cute_aabb_grid.h"
 #include "sys/physics_system.h"
 #include "tiled_map.h"
 
@@ -16,7 +15,7 @@ struct Game
 	float spawn_radius;
 	Cute::v2 world_size;
 
-	Cute::AabbGrid enemy_grid;
+	//	Cute::AabbGrid enemy_grid;
 
 	TiledMap map;
 
@@ -33,5 +32,5 @@ struct Game
 
 extern Game game;
 
-Game make_game();
+void make_game();
 void destroy_game(Game game);

@@ -37,7 +37,6 @@ add_executable(MaximumEffort
                include/cmp/c_transform.h
                include/cmp/c_weapon.h
                include/common.h
-               include/cute_aabb_grid.h
                include/enemy_type.h
                include/factories.h
                include/game.h
@@ -58,7 +57,6 @@ add_executable(MaximumEffort
                include/tiled_map.h
                src/assets.cpp
                src/cmp/c_transform.cpp
-               src/cute_aabb_grid.cpp
                src/factories.cpp
                src/game.cpp
                src/main.cpp

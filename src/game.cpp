@@ -24,37 +24,27 @@ using namespace Cute;
 
 Game game;
 
-Game make_game()
+void make_game()
 {
-	Game g;
+	register_scene_node_callbacks(game.reg);
 
-	register_scene_node_callbacks(g.reg);
-
-	g.rnd = rnd_seed((u64)time(nullptr));
-	g.camera_size = V2(320, 180);
-	g.spawn_radius = max(g.camera_size.x, g.camera_size.y) * 0.66f;
-	g.world_size = V2(g.spawn_radius, g.spawn_radius) * 4.0f;
-	g.enemy_grid = make_aabb_grid(
-		V2(0, 0),
-		ceil(g.world_size.x),
-		ceil(g.world_size.y),
-		32
-	);
+	game.rnd = rnd_seed((u64)time(nullptr));
+	game.camera_size = V2(320, 180);
+	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
+	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
 
 	// TODO: Do this somewhere else
 	{
 		mount_assets_folder();
-		g.map = load_tiled_map("map.json");
+		game.map = load_tiled_map("map.json");
 
-		auto player = make_player(g.reg);
+		auto player = make_player(game.reg);
 
-		make_enemy_spawner(g.reg, player, 0.001f, ENEMY_EYEBALL);
-		make_weapon_boomerang(g.reg, player);
+		make_enemy_spawner(game.reg, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(game.reg, player);
 	}
 
-	g.paused = false;
-
-	return g;
+	game.paused = false;
 }
 
 void destroy_game(Game g)

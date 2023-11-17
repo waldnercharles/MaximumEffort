@@ -1,124 +1,22 @@
 #include "sys/physics_system.h"
 #include "cmp/c_enemy_component.h"
 #include "cmp/c_hitbox.h"
-#include "cmp/c_hurtbox.h"
-#include "cmp/c_physics.h"
 #include "cmp/c_player.h"
-#include "cmp/c_projectile.h"
 #include "cmp/c_transform.h"
-#include "cute_aabb_grid.h"
 #include "game.h"
 
 #include <cute.h>
 
 using namespace Cute;
-//
-//bool on_hurtbox_to_hitbox(
-//	Cute::AabbGridNode id,
-//	Cute::Aabb aabb,
-//	void *leaf_udata,
-//	void *fn_udata
-//)
-//{
-//	auto &reg = game.reg;
-//
-//	entt::entity hurtbox_entity = *(entt::entity *)fn_udata;
-//	if (!reg.valid(hurtbox_entity))
-//	{
-//		return false;
-//	}
-//
-//	entt::entity hitbox_entity = (entt::entity)(uint64_t)leaf_udata;
-//	if (!reg.valid(hitbox_entity))
-//	{
-//		return true;
-//	}
-//
-//	Circle hurtbox_shape = reg.get<C_Hurtbox>(hurtbox_entity).circle;
-//	Circle hitbox_shape = reg.get<C_Hitbox>(hitbox_entity).circle;
-//
-//	v2 hitbox_pos = reg.get<C_Transform>(hitbox_entity)
-//						.get_global_transform()
-//						.pos;
-//
-//	v2 hurtbox_pos = reg.get<C_Transform>(hurtbox_entity)
-//						 .get_local_transform()
-//						 .pos;
-//
-//	hurtbox_shape.p += hurtbox_pos;
-//	hitbox_shape.p += hitbox_pos;
-//
-//	if (circle_to_circle(hurtbox_shape, hitbox_shape))
-//	{
-//		// TODO: Signal for damage? Or just do it?
-//	}
-//
-//	return true;
-//}
-//
-//void handle_player_projectiles(entt::registry &reg, AabbGrid &grid)
-//{
-//	auto view = reg.view<C_Transform, C_Physics, C_Projectile>();
-//	for (auto e : view)
-//	{
-//		auto aabb = view.get<C_Physics>(e).aabb;
-//		auto pos = view.get<C_Transform>(e).get_local_transform().pos;
-//		aabb.min += pos;
-//		aabb.max += pos;
-//
-//		aabb_grid_query(grid, aabb, on_hurtbox_to_hitbox, &e);
-//	}
-//}
-//
-//bool hitbox_to_hitbox_resolve(
-//	Cute::AabbGridNode id,
-//	Cute::Aabb aabb,
-//	void *leaf_udata,
-//	void *fn_udata
-//)
-//{
-//	auto &reg = game.reg;
-//	entt::entity a = *(entt::entity *)fn_udata;
-//	entt::entity b = (entt::entity)(uint64_t)leaf_udata;
-//
-//	if (a == b || !reg.valid(a) || !reg.valid(b))
-//	{
-//		return true;
-//	}
-//
-//	auto &a_transform = reg.get<C_Transform>(a);
-//	auto &b_transform = reg.get<C_Transform>(b);
-//
-//	// Copy, not reference
-//	auto a_hitbox = reg.get<C_Hitbox>(a).circle;
-//	auto b_hitbox = reg.get<C_Hitbox>(b).circle;
-//
-//	auto a_pos = a_transform.get_local_transform().pos;
-//	auto b_pos = b_transform.get_local_transform().pos;
-//
-//	a_hitbox.p += a_pos;
-//	b_hitbox.p += b_pos;
-//
-//	Manifold manifold = {};
-//	circle_to_circle_manifold(a_hitbox, b_hitbox, &manifold);
-//
-//	if (manifold.count > 0)
-//	{
-//		v2 delta = manifold.n * manifold.depths[0] * 0.33f;
-//		a_pos -= delta;
-//		b_pos += delta;
-//
-//		a_transform.set_pos(a_pos);
-//		b_transform.set_pos(b_pos);
-//	}
-//
-//	return true;
-//}
-
 
 void PhysicsSystem::update_spatial_hash(entt::registry &reg)
 {
-	spatial_hash.clear();
+	grid.clear();
+	auto players = reg.view<C_Player, C_Transform>();
+	auto player = players.front();
+	auto player_pos = reg.get<C_Transform>(player).get_global_transform().pos;
+
+	grid.pos = player_pos;
 
 	auto view = reg.view<C_Enemy, C_Transform, C_Hitbox>();
 	for (auto e : view)
@@ -129,12 +27,14 @@ void PhysicsSystem::update_spatial_hash(entt::registry &reg)
 
 		Aabb aabb = make_aabb(c.p - V2(c.r, c.r), c.p + V2(c.r, c.r));
 
-		spatial_hash.add(aabb, e);
+		grid.add(aabb, e);
 	}
 }
 
 void PhysicsSystem::handle_enemy_to_enemy_collisions(entt::registry &reg)
 {
+	using namespace Cute;
+
 	auto view = reg.view<C_Enemy, C_Transform, C_Hitbox>();
 	for (auto a : view)
 	{
@@ -147,7 +47,7 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(entt::registry &reg)
 			a_circle.p + V2(a_circle.r, a_circle.r)
 		);
 
-		spatial_hash.query(a_aabb, [&](entt::entity b) {
+		grid.query(a_aabb, [&](entt::entity b) {
 			if (a == b)
 			{
 				return true;
@@ -161,7 +61,7 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(entt::registry &reg)
 
 			if (manifold.count > 0)
 			{
-				Cute::v2 delta = manifold.n * manifold.depths[0] * 0.33f;
+				Cute::v2 delta = manifold.n * manifold.depths[0] * 0.5f;
 
 				a_transform.offset(-delta);
 				b_transform.offset(delta);
@@ -172,7 +72,7 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(entt::registry &reg)
 	}
 }
 
-PhysicsSystem::PhysicsSystem() : spatial_hash(16)
+PhysicsSystem::PhysicsSystem() : grid(480, 480, 16)
 {
 }
 

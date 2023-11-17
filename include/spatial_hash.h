@@ -7,92 +7,104 @@
 #include <cute.h>
 
 template <typename T>
-struct SpatialHashNode
+struct AabbGridNode
 {
 	size_t id;
 	T value;
 };
 
 template <typename T>
-struct SpatialHash
+struct AabbGrid
 {
-	SpatialHash();
-	SpatialHash(f32 cell_size);
+	AabbGrid(f32 width, f32 height, f32 cell_size);
 
-	void add(Aabb aabb, T value);
-	void query(Aabb aabb, Func<bool, T> fn);
+	void add(Cute::Aabb aabb, T value);
+	void query(Cute::Aabb aabb, Func<bool, T> fn);
 	void clear();
 
+	Cute::v2 pos;
+
 private:
-	int cell_size;
-	Cute::Map<glm::ivec2, Cute::Array<SpatialHashNode<T>>> cells;
+	const Cute::v2 extents;
+	const Cute::v2 half_extents;
+
+	const f32 cell_size;
+
+	const int max_tiles_x;
+	const int max_tiles_y;
+
+	Cute::Array<Cute::Array<AabbGridNode<T>>> cells;
 
 	size_t next_id;
-	Cute::Array<size_t> query_cache;
 };
 
 template <typename T>
-SpatialHash<T>::SpatialHash() : SpatialHash(16)
+AabbGrid<T>::AabbGrid(f32 width, f32 height, f32 cell_size)
+	: pos(Cute::V2(0, 0)),
+	  extents(Cute::V2(width, height)),
+	  half_extents(cf_div_v2_f(extents, 2.f)),
+	  cell_size(cell_size),
+	  max_tiles_x(width / cell_size),
+	  max_tiles_y(height / cell_size),
+	  next_id(0)
 {
+	cells.ensure_count(max_tiles_x * max_tiles_y);
 }
 
 template <typename T>
-SpatialHash<T>::SpatialHash(f32 cell_size) : cell_size(cell_size),
-											 next_id(0)
+void AabbGrid<T>::add(Cute::Aabb aabb, T value)
 {
-}
+	using namespace Cute;
 
-template <typename T>
-void SpatialHash<T>::add(Aabb aabb, T value)
-{
+	const v2 min = (aabb.min - pos + half_extents) / cell_size;
+	const v2 max = (aabb.max - pos + half_extents) / cell_size;
+
+	if (min.x < 0 || min.y < 0 || max.x >= max_tiles_x || max.y >= max_tiles_y)
+	{
+		return;
+	}
+
 	++next_id;
 
-	Cute::v2 min = cf_div_v2_f(aabb.min, cell_size);
-	Cute::v2 max = cf_div_v2_f(aabb.max, cell_size);
-
-	for (int x = floor(min.x); x <= ceil(max.x); x++)
+	for (int x = min.x; x <= max.x; x++)
 	{
-		for (int y = floor(min.y); y <= ceil(max.y); y++)
+		for (int y = min.y; y <= max.y; y++)
 		{
-			Cute::Array<SpatialHashNode<T>> *bucket = cells.try_get({x, y});
-			if (!bucket)
-			{
-				bucket = cells.insert(
-					{x, y},
-					Cute::Array<SpatialHashNode<T>>()
-				);
-			}
-
-			bucket->add({next_id, value});
+			int index = y * max_tiles_x + x;
+			cells[index].add({next_id, value});
 		}
 	}
 }
 
 template <typename T>
-void SpatialHash<T>::query(Aabb aabb, Func<bool, T> fn)
+void AabbGrid<T>::query(Cute::Aabb aabb, Func<bool, T> fn)
 {
-	query_cache.clear();
+	using namespace Cute;
 
-	Cute::v2 min = cf_div_v2_f(aabb.min, cell_size);
-	Cute::v2 max = cf_div_v2_f(aabb.max, cell_size);
+	static Array<size_t> visited;
+	visited.clear();
 
-	for (int x = floor(min.x); x <= ceil(max.x); x++)
+	const Cute::v2 min = (aabb.min - pos + half_extents) / cell_size;
+	const Cute::v2 max = (aabb.max - pos + half_extents) / cell_size;
+
+	if (min.x < 0 || min.y < 0 || max.x >= max_tiles_x || max.y >= max_tiles_y)
 	{
-		for (int y = floor(min.y); y <= ceil(max.y); y++)
+		return;
+	}
+
+	for (int x = min.x; x <= max.x; x++)
+	{
+		for (int y = min.y; y <= max.y; y++)
 		{
-			for (SpatialHashNode<T> &node : cells.get({x, y}))
+			int index = y * max_tiles_x + x;
+			for (const auto node : cells[index])
 			{
-				if (arr_contains(
-						query_cache.begin(),
-						query_cache.end(),
-						node.id
-					))
+				if (arr_contains(visited.begin(), visited.end(), node.id))
 				{
 					continue;
 				}
 
-
-				query_cache.add(node.id);
+				visited.add(node.id);
 				if (!fn(node.value))
 				{
 					return;
@@ -103,11 +115,11 @@ void SpatialHash<T>::query(Aabb aabb, Func<bool, T> fn)
 }
 
 template <typename T>
-void SpatialHash<T>::clear()
+void AabbGrid<T>::clear()
 {
 	for (int i = 0; i < cells.count(); i++)
 	{
-		cells.vals()[i].clear();
+		cells[i].clear();
 	}
 	next_id = 0;
 }
