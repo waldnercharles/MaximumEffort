@@ -34,12 +34,12 @@ void make_game()
 	game.spawn_radius = max(320, 180) * 0.66f;
 	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
 
-	game.enemy_grid = {
-		(int)ceil(game.world_size.x),
-		(int)ceil(game.world_size.y),
-		{},
-		32,
-		{}};
+	//	game.enemy_grid = {
+	//		(int)ceil(game.world_size.x),
+	//		(int)ceil(game.world_size.y),
+	//		{},
+	//		32,
+	//		{}};
 
 	game.world = NEW(flecs::world);
 	game.world->import <flecs::monitor>();
@@ -57,7 +57,6 @@ void make_game()
 
 	add_transform_system(game.world);
 
-	physics_system(game.world);
 
 	add_player_animation_system(game.world);
 
@@ -68,7 +67,7 @@ void make_game()
 
 		flecs::entity player = make_player(game.world);
 
-		make_enemy_spawner(game.world, player, 0.001f, ENEMY_EYEBALL);
+		make_enemy_spawner(game.world, player, 0.0001f, ENEMY_EYEBALL);
 		make_weapon_boomerang(game.world, player);
 	}
 
@@ -88,6 +87,7 @@ void Game::update(float dt)
 		// exit?
 	}
 
+	physics_system(game.world);
 
 	//	physics_system(*world);
 

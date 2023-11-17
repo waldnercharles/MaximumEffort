@@ -7,7 +7,7 @@ cmake_policy(SET CMP0077 NEW)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT _CRT_SECURE_NO_WARNINGS)
+add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 _CRT_SECURE_NO_WARNINGS) # FLECS_NDEBUG)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(EMSCRIPTEN TRUE)
@@ -79,6 +79,7 @@ add_executable(MaximumEffort
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
                include/cute_ext.h
+               include/aabb_grid.h
 )
 
 target_compile_features(MaximumEffort PRIVATE cxx_std_17)

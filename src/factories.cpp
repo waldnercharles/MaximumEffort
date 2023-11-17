@@ -17,16 +17,16 @@
 
 using namespace Cute;
 
-flecs::entity make_enemy_eyeball(flecs::world *world, v2 pos)
+flecs::entity make_enemy_eyeball(flecs::world &world, v2 pos)
 {
-	flecs::entity e = world->entity();
+	flecs::entity e = world.entity();
 	e.add<C_Enemy>();
 	e.set<C_WorldTransform>({pos, 0.f});
 	e.set<C_LocalTransform>({pos, 0.f});
 	e.set<C_Movement>({});
 	e.set<C_Physics>({make_aabb({}, 16, 16)});
 
-	flecs::entity target = world->lookup("player");
+	flecs::entity target = world.lookup("player");
 	e.set<C_Behavior_FollowTarget>({target, {}, {20, 20}, true});
 
 	e.set<C_Hitbox>({make_circle({8, 8}, 8)});

@@ -4,11 +4,6 @@ project(lib)
 include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
-if (MSVC)
-    add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT)
-    add_compile_options(-nologo -fp:fast)
-endif ()
-
 set(CF_FRAMEWORK_STATIC OFF)
 set(CF_FRAMEWORK_SHARED ON)
 set(CF_FRAMEWORK_BUILD_TESTS OFF)

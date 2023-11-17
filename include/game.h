@@ -17,7 +17,7 @@ struct Game
 	float spawn_radius;
 	Cute::v2 world_size;
 
-	EcsAabbGrid enemy_grid;
+	//	EcsAabbGrid enemy_grid;
 
 	TiledMap map;
 

@@ -26,7 +26,7 @@ struct TargetClosestEnemyQueryData
 };
 
 bool on_closest_enemy_query_hit(
-	Cute::AabbGridNode,
+	//	Cute::AabbGridNode,
 	Cute::Aabb aabb,
 	void *leaf_udata,
 	void *fn_udata

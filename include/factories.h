@@ -5,7 +5,7 @@
 #include <cute.h>
 #include <flecs.h>
 
-flecs::entity make_enemy_eyeball(flecs::world *world, Cute::v2 pos);
+flecs::entity make_enemy_eyeball(flecs::world &world, Cute::v2 pos);
 flecs::entity make_player(flecs::world *world);
 
 flecs::entity make_enemy_spawner(

@@ -1,4 +1,5 @@
 #include "sys/physics_system.h"
+#include "aabb_grid.h"
 #include "array_algorithms.h"
 #include "cmp/c_enemy_component.h"
 #include "cmp/c_hitbox.h"
@@ -349,76 +350,76 @@ using namespace Cute;
 ////	add_enemy_to_enemy_collision_system(world, enemies);
 ////}
 
+struct Collider
+{
+	Aabb aabb;
+	Circle circle;
+};
+
 void physics_system(flecs::world *world)
 {
-	auto q = std::make_shared<
-		flecs::query<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>>(
-		world->query<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>()
-	);
+	static AabbGrid<flecs::entity> grid;
+	grid.clear();
 
-	world
-		->system<C_Enemy, C_LocalTransform, C_WorldTransform, C_Hitbox>(
-			"physics"
-		)
-		.run([](flecs::iter_t *it) {
-			int count = 0;
-			it->ctx = &count;
-			while (ecs_query_next(it))
+	static auto add_colliders_query =
+		world->query<const C_Enemy, const C_WorldTransform, const C_Hitbox>();
+
+	// Add colliders to enemies
+	add_colliders_query.each([&](flecs::entity e,
+								 const C_Enemy,
+								 const C_WorldTransform &a_world,
+								 const C_Hitbox a_hitbox) {
+		Circle c = a_hitbox.circle;
+		c.p += a_world.pos;
+
+		Aabb aabb = make_aabb(c.p - V2(c.r, c.r), c.p + V2(c.r, c.r));
+		grid.insert(aabb, e);
+	});
+
+	static auto enemy_collider_query = world->query<
+		const C_Enemy,
+		C_LocalTransform,
+		C_WorldTransform,
+		const C_Hitbox>();
+
+	enemy_collider_query.each([&](flecs::entity a,
+								  const C_Enemy,
+								  C_LocalTransform &a_local,
+								  C_WorldTransform &a_world,
+								  const C_Hitbox &a_hitbox) {
+		Circle a_circle = a_hitbox.circle;
+		a_circle.p += a_world.pos;
+
+		Aabb a_aabb = make_aabb(
+			a_circle.p - V2(a_circle.r, a_circle.r),
+			a_circle.p + V2(a_circle.r, a_circle.r)
+		);
+
+		grid.query(a_aabb, [&](flecs::entity b) {
+			if (a == b)
 			{
-				it->callback(it);
+				return true;
 			}
-		})
-		.each([=](flecs::iter &it,
-				  size_t,
-				  C_Enemy,
-				  C_LocalTransform &a_local,
-				  C_WorldTransform &a_world,
-				  C_Hitbox a_hitbox) {
-			int *count = it.ctx<int>();
 
-			auto a_circle = a_hitbox.circle;
-			a_circle.p += a_world.pos;
+			C_WorldTransform *b_world = b.get_mut<C_WorldTransform>();
+			const C_Hitbox *b_hitbox = b.get<C_Hitbox>();
+			Circle b_circle = b_hitbox->circle;
+			b_circle.p += b_world->pos;
 
-			auto a_cell = std::pair<s16, s16>(
-				(int)a_world.pos.x >> 4,
-				(int)a_world.pos.y >> 4
-			);
+			Manifold manifold = {};
+			circle_to_circle_manifold(a_circle, b_circle, &manifold);
 
-			(*count)++;
+			if (manifold.count > 0)
+			{
+				v2 delta = manifold.n * manifold.depths[0] * 0.5f;
 
-			q->page(*count, 0).each([&a_circle, a_cell, &a_local, &a_world](
-										C_Enemy,
-										C_LocalTransform &b_local,
-										C_WorldTransform &b_world,
-										C_Hitbox b_hitbox
-									) {
-				auto b_circle = b_hitbox.circle;
-				b_circle.p += b_world.pos;
+				a_local.pos -= delta;
+				a_world.pos -= delta;
 
-				auto b_cell = std::pair<s16, s16>(
-					(int)b_world.pos.x >> 4,
-					(int)b_world.pos.y >> 4
-				);
-
-				auto delta_x = std::abs((a_cell.first - b_cell.first));
-				auto delta_y = std::abs((a_cell.second - b_cell.second));
-
-				if (delta_x <= 1 && delta_y <= 1)
-				{
-					Manifold manifold = {};
-					circle_to_circle_manifold(a_circle, b_circle, &manifold);
-
-					if (manifold.count > 0)
-					{
-						v2 delta = manifold.n * manifold.depths[0] * 0.5f;
-
-						a_local.pos -= delta;
-						b_local.pos += delta;
-
-						a_world.pos -= delta;
-						b_world.pos += delta;
-					}
-				}
-			});
+				b.get_mut<C_LocalTransform>()->pos += delta;
+				b_world->pos += delta;
+			}
+			return true;
 		});
+	});
 }

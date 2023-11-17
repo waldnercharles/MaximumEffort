@@ -63,7 +63,7 @@ void add_spawner_system(flecs::world *world)
 							case ENEMY_EYEBALL:
 							{
 								make_enemy_eyeball(
-									&world,
+									world,
 									get_enemy_spawn_pos(p_world->pos)
 								);
 								break;
