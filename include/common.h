@@ -81,6 +81,7 @@ using Path = Cute::Path;
 #include <entt/entt.hpp>
 using Entity = entt::entity;
 using World = entt::registry;
+inline constexpr entt::null_t ECS_NULL {};
 
 #define PI 3.14159265f
 

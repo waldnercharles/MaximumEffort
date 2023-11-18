@@ -50,7 +50,7 @@ bool on_closest_enemy_query_hit(
 		return true;
 	}
 
-	if (query_data->entity == entt::null || dist < query_data->dist)
+	if (query_data->entity == ECS_NULL || dist < query_data->dist)
 	{
 		query_data->dist = dist;
 		query_data->entity = enemy;
@@ -63,7 +63,7 @@ bool on_closest_enemy_query_hit(
 bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 {
 	TargetClosestEnemyQueryData data;
-	data.entity = entt::null;
+	data.entity = ECS_NULL;
 	data.player_pos = circle.p;
 	data.radius = circle.r;
 
@@ -75,7 +75,7 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 
 	*dir = data.dir;
 
-	return data.entity != entt::null;
+	return data.entity != ECS_NULL;
 }
 
 void weapon_system(World &world, float dt)
@@ -108,13 +108,13 @@ void weapon_system(World &world, float dt)
 				return;
 			}
 
-			Entity e = entt::null;
+			Entity e = ECS_NULL;
 			if (weapon.weapon_type == WEAPON_BOOMERANG)
 			{
 				e = make_projectile_boomerang(world, pos, dir);
 			}
 
-			if (e == entt::null)
+			if (e == ECS_NULL)
 			{
 				return;
 			}
