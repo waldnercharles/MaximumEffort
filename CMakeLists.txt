@@ -18,24 +18,22 @@ set(FETCHCONTENT_QUIET TRUE)
 add_executable(MaximumEffort
                include/array_algorithms.h
                include/assets.h
-               include/cmp/boomerang_movement_component.h
-               include/cmp/c_debug_draw_circle.h
-               include/cmp/c_enemy_component.h
-               include/cmp/c_enemy_spawner.h
-               include/cmp/c_faction.h
-               include/cmp/c_hitbox.h
-               include/cmp/c_hurtbox.h
-               include/cmp/c_input.h
-               include/cmp/c_lifetime.h
-               include/cmp/c_movement.h
-               include/cmp/c_movement_behavior_constant_direction.h
-               include/cmp/c_movement_behavior_follow_target.h
-               include/cmp/c_physics.h
-               include/cmp/c_player.h
-               include/cmp/c_projectile.h
-               include/cmp/c_sprite.h
-               include/cmp/c_transform.h
-               include/cmp/c_weapon.h
+               include/cmp/debug_draw_circle.h
+               include/cmp/enemy.h
+               include/cmp/enemy_spawner.h
+               include/cmp/hitbox.h
+               include/cmp/hurtbox.h
+               include/cmp/input.h
+               include/cmp/lifetime.h
+               include/cmp/movement.h
+               include/cmp/movement_behavior_constant_direction.h
+               include/cmp/movement_behavior_follow_target.h
+               include/cmp/physics.h
+               include/cmp/player.h
+               include/cmp/projectile.h
+               include/cmp/sprite.h
+               include/cmp/transform.h
+               include/cmp/weapon.h
                include/common.h
                include/enemy_type.h
                include/factories.h

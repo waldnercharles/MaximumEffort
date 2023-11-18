@@ -1,5 +1,4 @@
 #pragma once
+#include "common.h"
 
-#include <entt/entt.hpp>
-
-void input_system(entt::registry &reg, float dt);
+void input_system(World &reg, float dt);

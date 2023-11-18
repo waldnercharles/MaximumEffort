@@ -2,10 +2,8 @@
 #include "common.h"
 #include "game.h"
 
-using namespace Cute;
-
 CF_Sprite *
-make_atlas_from_png(CF_Png png, int tile_width, int tile_height, size_t *count)
+make_atlas_from_png(Png png, int tile_width, int tile_height, size_t *count)
 {
 	int n;
 	CF_Sprite *s;
@@ -18,7 +16,7 @@ make_atlas_from_png(CF_Png png, int tile_width, int tile_height, size_t *count)
 		*count = n;
 	}
 
-	auto pix = (CF_Pixel *)alloca(sizeof(CF_Pixel) * tile_width * tile_height);
+	auto pix = (Pixel *)alloca(sizeof(Pixel) * tile_width * tile_height);
 
 	for (int y = 0; y < png.h; y += tile_height)
 	{
@@ -48,14 +46,14 @@ TiledMap load_tiled_map(const char *path)
 	size_t buffer_size;
 
 	TiledMap tiled_map;
-	buffer = fs_read_entire_file_to_memory(path, &buffer_size);
+	buffer = cf_fs_read_entire_file_to_memory(path, &buffer_size);
 
 	tiled_map.map = cute_tiled_load_map_from_memory(
 		buffer,
 		(int)buffer_size,
 		nullptr
 	);
-	tiled_map.pos = V2(0, 0);
+	tiled_map.pos = cf_v2(0, 0);
 
 	cf_free(buffer);
 
@@ -65,9 +63,9 @@ TiledMap load_tiled_map(const char *path)
 		// Ensure the count rather than capacity in case our png fails to load
 		tiled_map.atlas.ensure_count(tileset->firstgid + tileset->tilecount);
 
-		CF_Png png;
+		Png png;
 		CF_Result result = cf_png_cache_load(tileset->image.ptr, &png);
-		if (is_error(result))
+		if (cf_is_error(result))
 		{
 			tileset = tileset->next;
 			continue;
@@ -122,14 +120,14 @@ void TiledMap::draw()
 
 	// We're going to offset our calculations by half the map,
 	// so that its origin is (0,0)
-	v2 half_map_size = V2(map->width, map->height) / 2.f;
-	v2 tile_size = V2(map->tilewidth, map->tileheight);
+	v2 half_map_size = cf_v2(map->width, map->height) / 2.f;
+	v2 tile_size = cf_v2(map->tilewidth, map->tileheight);
 
 	v2 map_center = half_map_size * tile_size;
 
 	v2 half_dim = cam_dimensions / 2.f;
-	v2 top_rgt = (cam_center + half_dim) / tile_size + V2(1, 1);
-	v2 bot_lft = (cam_center - half_dim) / tile_size - V2(1, 1);
+	v2 top_rgt = (cam_center + half_dim) / tile_size + cf_v2(1, 1);
+	v2 bot_lft = (cam_center - half_dim) / tile_size - cf_v2(1, 1);
 
 	while (layer)
 	{
@@ -160,7 +158,10 @@ void TiledMap::draw()
 				f32 pos_x = i % map->width * map->tilewidth;
 				f32 pos_y = i / map->width * map->tileheight;
 
-				s.transform.p = V2(pos_x - map_center.x, map_center.y - pos_y);
+				s.transform.p = cf_v2(
+					pos_x - map_center.x,
+					map_center.y - pos_y
+				);
 				cf_draw_sprite(&s);
 			}
 		}

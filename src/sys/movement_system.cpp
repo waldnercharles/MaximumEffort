@@ -1,21 +1,17 @@
 #include "sys/movement_system.h"
-#include "cmp/c_movement.h"
-#include "cmp/c_transform.h"
+#include "cmp/movement.h"
+#include "cmp/transform.h"
 
 #include <cute.h>
 
-using namespace Cute;
-
-void movement_system(entt::registry &reg, float dt)
+void movement_system(World &w)
 {
-	reg.view<C_Movement, C_Transform>().each(
-		[&](auto e, C_Movement &m, C_Transform &s) {
-			auto &t = s.get_local_transform();
+	w.view<Movement, Transform>().each([](auto e, Movement &m, Transform &s) {
+		auto &t = s.get_local_transform();
 
-			s.set_local_transform(
-				{t.pos + m.vel * dt,
-				 fmodf(t.angle + m.angular_vel * dt, CF_PI * 2.f)}
-			);
-		}
-	);
+		s.set_local_transform(
+			{t.pos + m.vel * DELTA_TIME_FIXED,
+			 fmodf(t.angle + m.angular_vel * DELTA_TIME_FIXED, PI * 2.f)}
+		);
+	});
 }

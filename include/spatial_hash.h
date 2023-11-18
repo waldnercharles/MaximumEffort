@@ -18,30 +18,30 @@ struct AabbGrid
 {
 	AabbGrid(f32 width, f32 height, f32 cell_size);
 
-	void add(Cute::Aabb aabb, T value);
-	void query(Cute::Aabb aabb, Func<bool, T> fn);
+	void add(Aabb aabb, T value);
+	void query(Aabb aabb, Func<bool, T> fn);
 	void clear();
 
-	Cute::v2 pos;
+	v2 pos;
 
 private:
-	const Cute::v2 extents;
-	const Cute::v2 half_extents;
+	const v2 extents;
+	const v2 half_extents;
 
 	const f32 cell_size;
 
 	const int max_tiles_x;
 	const int max_tiles_y;
 
-	Cute::Array<Cute::Array<AabbGridNode<T>>> cells;
+	Array<Array<AabbGridNode<T>>> cells;
 
 	size_t next_id;
 };
 
 template <typename T>
 AabbGrid<T>::AabbGrid(f32 width, f32 height, f32 cell_size)
-	: pos(Cute::V2(0, 0)),
-	  extents(Cute::V2(width, height)),
+	: pos(cf_v2(0, 0)),
+	  extents(cf_v2(width, height)),
 	  half_extents(cf_div_v2_f(extents, 2.f)),
 	  cell_size(cell_size),
 	  max_tiles_x(width / cell_size),
@@ -52,9 +52,8 @@ AabbGrid<T>::AabbGrid(f32 width, f32 height, f32 cell_size)
 }
 
 template <typename T>
-void AabbGrid<T>::add(Cute::Aabb aabb, T value)
+void AabbGrid<T>::add(Aabb aabb, T value)
 {
-	using namespace Cute;
 
 	const v2 min = (aabb.min - pos + half_extents) / cell_size;
 	const v2 max = (aabb.max - pos + half_extents) / cell_size;
@@ -77,15 +76,14 @@ void AabbGrid<T>::add(Cute::Aabb aabb, T value)
 }
 
 template <typename T>
-void AabbGrid<T>::query(Cute::Aabb aabb, Func<bool, T> fn)
+void AabbGrid<T>::query(Aabb aabb, Func<bool, T> fn)
 {
-	using namespace Cute;
 
 	static Array<size_t> visited;
 	visited.clear();
 
-	const Cute::v2 min = (aabb.min - pos + half_extents) / cell_size;
-	const Cute::v2 max = (aabb.max - pos + half_extents) / cell_size;
+	const v2 min = (aabb.min - pos + half_extents) / cell_size;
+	const v2 max = (aabb.max - pos + half_extents) / cell_size;
 
 	if (min.x < 0 || min.y < 0 || max.x >= max_tiles_x || max.y >= max_tiles_y)
 	{

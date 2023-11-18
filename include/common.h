@@ -18,12 +18,71 @@ using f32 [[maybe_unused]] = float;
 using f64 [[maybe_unused]] = double;
 using size_t [[maybe_unused]] = std::size_t;
 
-//#include <cute.h>
-//template <typename K, typename T>
-//using Map [[maybe_unused]] = Cute::Map<K, T>;
-//
-//template <typename T>
-//using Array [[maybe_unused]] = Cute::Array<T>;
+// clang-format off
+#include <cute.h>
+template <typename T>
+using Array [[maybe_unused]] = Cute::Array<T>;
+
+template <typename K, typename T>
+using Map [[maybe_unused]] = Cute::Map<K, T>;
+
+using v2 [[maybe_unused]] = CF_V2;
+
+CF_INLINE v2 operator+(v2 a, v2 b) { return cf_v2(a.x + b.x, a.y + b.y); }
+CF_INLINE v2 operator-(v2 a, v2 b) { return cf_v2(a.x - b.x, a.y - b.y); }
+CF_INLINE v2& operator+=(v2& a, v2 b) { return a = a + b; }
+CF_INLINE v2& operator-=(v2& a, v2 b) { return a = a - b; }
+
+CF_INLINE v2 operator*(v2 a, float b) { return cf_v2(a.x * b, a.y * b); }
+CF_INLINE v2 operator*(v2 a, v2 b) { return cf_v2(a.x * b.x, a.y * b.y); }
+CF_INLINE v2& operator*=(v2& a, float b) { return a = a * b; }
+CF_INLINE v2& operator*=(v2& a, v2 b) { return a = a * b; }
+CF_INLINE v2 operator/(v2 a, float b) { return cf_v2(a.x / b, a.y / b); }
+CF_INLINE v2 operator/(v2 a, v2 b) { return cf_v2(a.x / b.x, a.y / b.y); }
+CF_INLINE v2& operator/=(v2& a, float b) { return a = a / b; }
+CF_INLINE v2& operator/=(v2& a, v2 b) { return a = a / b; }
+
+CF_INLINE v2 operator-(v2 a) { return cf_v2(-a.x, -a.y); }
+
+CF_INLINE int operator<(v2 a, v2 b) { return a.x < b.x && a.y < b.y; }
+CF_INLINE int operator>(v2 a, v2 b) { return a.x > b.x && a.y > b.y; }
+CF_INLINE int operator<=(v2 a, v2 b) { return a.x <= b.x && a.y <= b.y; }
+CF_INLINE int operator>=(v2 a, v2 b) { return a.x >= b.x && a.y >= b.y; }
+
+using SinCos = CF_SinCos;
+using M2x2 = CF_M2x2;
+using M3x2 = CF_M3x2;
+//using Transform = CF_Transform;
+using Halfspace = CF_Halfspace;
+using Ray = CF_Ray;
+using Raycast = CF_Raycast;
+using Circle = CF_Circle;
+using Aabb = CF_Aabb;
+using Rect = CF_Rect;
+using Poly = CF_Poly;
+using SliceOutput = CF_SliceOutput;
+using Capsule = CF_Capsule;
+using Manifold = CF_Manifold;
+using GjkCache = CF_GjkCache;
+using ToiResult = CF_ToiResult;
+using ShapeType = CF_ShapeType;
+
+using Rnd = CF_Rnd;
+
+using Pixel = CF_Pixel;
+using Color = CF_Color;
+
+using Png = Cute::Png;
+
+using Path = Cute::Path;
+
+// clang-format on
+
+#include <entt/entt.hpp>
+using Entity = entt::entity;
+using World = entt::registry;
+
+#define PI 3.14159265f
 
 #ifdef CF_CPP
 #ifdef _MSC_VER

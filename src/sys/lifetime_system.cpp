@@ -1,14 +1,14 @@
 #include "sys/lifetime_system.h"
-#include "cmp/c_lifetime.h"
+#include "cmp/lifetime.h"
 
-void lifetime_system(entt::registry &reg, float dt)
+void lifetime_system(World &world, float dt)
 {
-	reg.view<C_Lifetime>().each([&](auto e, C_Lifetime &lifetime) {
+	world.view<Lifetime>().each([&](auto e, Lifetime &lifetime) {
 		lifetime -= dt;
 
 		if (lifetime <= 0)
 		{
-			reg.destroy(e);
+			world.destroy(e);
 		}
 	});
 }

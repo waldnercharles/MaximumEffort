@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "common.h"
 
-void player_animation_system(entt::registry &reg, float dt);
+void player_animation_system(World &reg, float dt);

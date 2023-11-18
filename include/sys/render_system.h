@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "common.h"
 
-void render_system(entt::registry &reg);
+void render_system(World &w);

@@ -1,108 +1,100 @@
 #include "factories.h"
-#include "cmp/c_debug_draw_circle.h"
-#include "cmp/c_enemy_component.h"
-#include "cmp/c_enemy_spawner.h"
-#include "cmp/c_hitbox.h"
-#include "cmp/c_hurtbox.h"
-#include "cmp/c_input.h"
-#include "cmp/c_movement.h"
-#include "cmp/c_movement_behavior_follow_target.h"
-#include "cmp/c_physics.h"
-#include "cmp/c_player.h"
-#include "cmp/c_projectile.h"
-#include "cmp/c_sprite.h"
-#include "cmp/c_transform.h"
-#include "cmp/c_weapon.h"
+#include "cmp/debug_draw_circle.h"
+#include "cmp/enemy.h"
+#include "cmp/enemy_spawner.h"
+#include "cmp/hitbox.h"
+#include "cmp/hurtbox.h"
+#include "cmp/input.h"
+#include "cmp/movement.h"
+#include "cmp/movement_behavior_follow_target.h"
+#include "cmp/player.h"
+#include "cmp/sprite.h"
+#include "cmp/transform.h"
+#include "cmp/weapon.h"
 
-using namespace Cute;
-
-entt::entity
-make_enemy_eyeball(entt::registry &reg, v2 pos, entt::entity target)
+Entity make_enemy_eyeball(World &world, v2 pos, Entity target)
 {
-	const entt::entity e = reg.create();
-	reg.emplace<C_Enemy>(e);
+	const Entity e = world.create();
+	world.emplace<Enemy>(e);
 
-	auto &enemy_scene_node = reg.emplace<C_Transform>(e);
-	enemy_scene_node.set_local_transform({pos});
+	auto &enemy_transform = world.emplace<Transform>(e);
+	enemy_transform.set_local_transform({pos});
 
-	reg.emplace<C_Movement>(e);
+	world.emplace<Movement>(e);
 
-	auto &physics = reg.emplace<C_Physics>(e);
-	physics.aabb = make_aabb(V2(0, 0), 16, 16);
-
-	auto &follow_behavior = reg.emplace<C_MovementBehavior_FollowTarget>(e);
+	auto &follow_behavior = world.emplace<MovementBehavior_FollowTarget>(e);
 	follow_behavior.entity = target;
-	follow_behavior.speed = V2(20, 20);
+	follow_behavior.speed = {20, 20};
 	follow_behavior.face_target = true;
 
-	auto &hitbox = reg.emplace<C_Hitbox>(e);
-	hitbox.circle = make_circle(V2(0, 0), 8);
+	auto &hitbox = world.emplace<Hitbox>(e);
+	hitbox.circle = cf_make_circle({0, 0}, 8);
 
-	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
-	hurtbox.circle = make_circle(V2(0, 0), 6);
+	auto &hurtbox = world.emplace<Hurtbox>(e);
+	hurtbox.circle = cf_make_circle({0, 0}, 6);
 
-	auto &sprite = reg.emplace<C_Sprite>(e, make_sprite("eyeball.ase"));
+	auto &sprite = world.emplace<Sprite>(e, cf_make_sprite("eyeball.ase"));
 	sprite.layer = 50;
 
 	return e;
 }
 
-entt::entity make_player(entt::registry &reg)
+Entity make_player(World &world)
 {
-	const entt::entity e = reg.create();
-	reg.emplace<C_Transform>(e);
-	reg.emplace<C_Player>(e);
+	const Entity e = world.create();
+	world.emplace<Transform>(e);
+	world.emplace<Player>(e);
 
-	auto &i = reg.emplace<C_Input>(e);
-	i.speed = V2(45, 45);
+	auto &i = world.emplace<Input>(e);
+	i.speed = {45, 45};
 
-	reg.emplace<C_Movement>(e);
+	world.emplace<Movement>(e);
 
-	auto &s = reg.emplace<C_Sprite>(e, make_sprite("character.ase"));
+	auto &s = world.emplace<Sprite>(e, cf_make_sprite("character.ase"));
 	s.layer = 100;
 
 	return e;
 }
 
-entt::entity make_enemy_spawner(
-	entt::registry &reg,
-	entt::entity parent,
+Entity make_enemy_spawner(
+	World &world,
+	Entity parent,
 	float rate,
 	EnemyType spawn_type
 )
 {
-	const entt::entity e = reg.create();
-	auto &player_scene_node = reg.get<C_Transform>(parent);
-	auto &spawner_scene_node = reg.emplace<C_Transform>(e);
-	player_scene_node.add_child(&spawner_scene_node);
+	const Entity e = world.create();
+	auto &player_transform = world.get<Transform>(parent);
+	auto &spawner_transform = world.emplace<Transform>(e);
+	player_transform.add_child(&spawner_transform);
 
-	auto &s = reg.emplace<C_EnemySpawner>(e);
+	auto &s = world.emplace<EnemySpawner>(e);
 	s.rate = rate;
 	s.entity_type = spawn_type;
 
 	return e;
 }
 
-entt::entity make_weapon_boomerang(entt::registry &reg, entt::entity parent)
+Entity make_weapon_boomerang(World &reg, Entity parent)
 {
-	const entt::entity e = reg.create();
+	const Entity e = reg.create();
 
-	auto &parent_scene_node = reg.get<C_Transform>(parent);
-	auto &child_scene_node = reg.emplace<C_Transform>(e);
+	auto &parent_transform = reg.get<Transform>(parent);
+	auto &child_transform = reg.emplace<Transform>(e);
 
-	parent_scene_node.add_child(&child_scene_node);
+	parent_transform.add_child(&child_transform);
 
-	auto &w = reg.emplace<C_Weapon>(e);
+	auto &w = reg.emplace<Weapon>(e);
 	w.rate = 0.3f;
 	w.weapon_type = WEAPON_BOOMERANG;
 	w.targeting_radius = 64.f;
 	w.target_type = TARGET_CLOSEST_ENEMY;
 
-	auto &dbg = reg.emplace<C_DebugDrawCircle>(e);
-	dbg.color = make_color(0, 0.5f, 1, 0.5f);
-	dbg.circle = make_circle(V2(0, 0), w.targeting_radius);
+	auto &dbg = reg.emplace<DebugDrawCircle>(e);
+	dbg.color = cf_make_color_rgba_f(0, 0.5f, 1, 0.5f);
+	dbg.circle = cf_make_circle({0, 0}, w.targeting_radius);
 
-	reg.emplace<C_Movement>(e);
+	reg.emplace<Movement>(e);
 
 	return e;
 }

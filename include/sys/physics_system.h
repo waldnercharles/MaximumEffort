@@ -1,6 +1,5 @@
 #pragma once
 #include "common.h"
-#include "ecs.h"
 #include "geometry.h"
 #include "spatial_hash.h"
 #include <entt/entt.hpp>
@@ -12,10 +11,10 @@ struct PhysicsSystem
 	void update(f32 delta_time);
 
 private:
-	AabbGrid<entt::entity> grid;
+	AabbGrid<Entity> grid;
 
-	void update_spatial_hash(entt::registry &reg);
-	void handle_enemy_to_enemy_collisions(entt::registry &reg);
+	void update_spatial_hash(World &reg);
+	void handle_enemy_to_enemy_collisions(World &reg);
 };
 
-//	void physics_system(entt::registry &reg, float dt);
+//	void physics_system(World &reg, float dt);

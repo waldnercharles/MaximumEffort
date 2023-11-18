@@ -1,7 +1,7 @@
 #pragma once
 
+#include "common.h"
 #include <cute.h>
 #include <entt/entt.hpp>
 
-entt::entity
-make_projectile_boomerang(entt::registry &reg, Cute::v2 pos, Cute::v2 dir);
+Entity make_projectile_boomerang(World &w, v2 pos, v2 dir);

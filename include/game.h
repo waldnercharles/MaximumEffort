@@ -9,17 +9,17 @@
 
 struct Game
 {
-	Cute::Rnd rnd;
-	Cute::v2 camera_size;
+	Rnd rnd;
+	v2 camera_size;
 
 	float spawn_radius;
-	Cute::v2 world_size;
+	v2 world_size;
 
-	//	Cute::AabbGrid enemy_grid;
+	//	AabbGrid enemy_grid;
 
 	TiledMap map;
 
-	entt::registry reg;
+	World world;
 
 	f64 total_time;
 	bool paused;

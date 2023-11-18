@@ -5,7 +5,7 @@ enum EnemyType
 	ENEMY_EYEBALL,
 };
 
-struct C_EnemySpawner
+struct EnemySpawner
 {
 	float rate;
 	EnemyType entity_type;

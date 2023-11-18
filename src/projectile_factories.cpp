@@ -1,44 +1,40 @@
 #include "projectile_factories.h"
-#include "cmp/c_hitbox.h"
-#include "cmp/c_hurtbox.h"
-#include "cmp/c_lifetime.h"
-#include "cmp/c_movement.h"
-#include "cmp/c_movement_behavior_constant_direction.h"
-#include "cmp/c_physics.h"
-#include "cmp/c_projectile.h"
-#include "cmp/c_sprite.h"
-#include "cmp/c_transform.h"
+#include "cmp/hitbox.h"
+#include "cmp/hurtbox.h"
+#include "cmp/lifetime.h"
+#include "cmp/movement.h"
+#include "cmp/movement_behavior_constant_direction.h"
+#include "cmp/projectile.h"
+#include "cmp/sprite.h"
+#include "cmp/transform.h"
+#include "common.h"
 #include "cute_math.h"
 
-using namespace Cute;
-
-entt::entity make_projectile_boomerang(entt::registry &reg, v2 pos, v2 dir)
+Entity make_projectile_boomerang(World &w, v2 pos, v2 dir)
 {
-	const entt::entity e = reg.create();
-	reg.emplace<C_Projectile>(e);
+	const Entity e = w.create();
+	w.emplace<Projectile>(e);
 
-	auto &scene_node = reg.emplace<C_Transform>(e);
-	scene_node.set_pos(pos);
+	auto &t = w.emplace<Transform>(e);
+	t.set_pos(pos);
 
-	auto &behavior = reg.emplace<C_MovementBehavior_ConstantDirection>(e);
-	behavior.speed = V2(80, 80);
+	auto &behavior = w.emplace<MovementBehavior_ConstantDirection>(e);
+	behavior.speed = {80, 80};
 	behavior.dir = dir;
 
-	auto &m = reg.emplace<C_Movement>(e);
-	m.angular_vel = CF_PI * 3.f;// Rotations per second
+	auto &m = w.emplace<Movement>(e);
+	m.angular_vel = PI * 3.f;// Rotations per second
 
-	reg.emplace<C_Physics>(e, make_aabb(V2(0, 0), 17, 18));
+	auto &hitbox = w.emplace<Hitbox>(e);
+	hitbox.circle = cf_make_circle({0, 0}, 4);
 
-	auto &hitbox = reg.emplace<C_Hitbox>(e);
-	hitbox.circle = make_circle(V2(0, 0), 4);
+	auto &hurtbox = w.emplace<Hurtbox>(e);
+	hurtbox.circle = cf_make_circle({0, 0}, 24);
 
-	auto &hurtbox = reg.emplace<C_Hurtbox>(e);
-	hurtbox.circle = make_circle(V2(0, 0), 24);
-
-	auto &lifetime = reg.emplace<C_Lifetime>(e);
+	auto &lifetime = w.emplace<Lifetime>(e);
 	lifetime = 2.0f;
 
-	reg.emplace<C_Sprite>(e, make_sprite("boomerang.ase"));
+	w.emplace<Sprite>(e, cf_make_sprite("boomerang.ase"));
 
 	return e;
 }

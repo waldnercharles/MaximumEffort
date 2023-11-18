@@ -1,19 +1,15 @@
 #pragma once
 
-#include "cmp/c_enemy_spawner.h"
+#include "cmp/enemy_spawner.h"
+#include "common.h"
 
 #include <cute.h>
 #include <entt/entt.hpp>
 
-entt::entity
-make_enemy_eyeball(entt::registry &reg, Cute::v2 pos, entt::entity target);
-entt::entity make_player(entt::registry &reg);
+Entity make_enemy_eyeball(World &reg, v2 pos, Entity target);
+Entity make_player(World &reg);
 
-entt::entity make_enemy_spawner(
-	entt::registry &reg,
-	entt::entity parent,
-	float rate,
-	EnemyType spawn_type
-);
+Entity
+make_enemy_spawner(World &reg, Entity parent, float rate, EnemyType spawn_type);
 
-entt::entity make_weapon_boomerang(entt::registry &reg, entt::entity parent);
+Entity make_weapon_boomerang(World &reg, Entity parent);

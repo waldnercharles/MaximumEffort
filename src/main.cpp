@@ -1,6 +1,5 @@
 #include <cute.h>
 
-#include "assets.h"
 #include "game.h"
 #include "imgui.h"
 #include "log.h"
@@ -14,7 +13,6 @@ extern "C"
 }
 #endif
 
-using namespace Cute;
 
 void update(void *udata)
 {
@@ -23,11 +21,14 @@ void update(void *udata)
 
 int main(int argc, char *argv[])
 {
-	clear_color(0.5, 0.5, 0.5, 1);
+	cf_clear_color(0.5, 0.5, 0.5, 1);
 
-	int options = APP_OPTIONS_WINDOW_POS_CENTERED | APP_OPTIONS_D3D11_CONTEXT;
-	auto result = make_app("Maximum Effort", 0, 0, 1280, 720, options);
-	if (is_error(result))
+	int options = CF_APP_OPTIONS_WINDOW_POS_CENTERED |
+				  CF_APP_OPTIONS_D3D11_CONTEXT;
+
+	auto result = cf_make_app("Maximum Effort", 0, 0, 1280, 720, options, NULL);
+
+	if (cf_is_error(result))
 	{
 		log_fatal(result.details);
 		return -1;
@@ -35,27 +36,26 @@ int main(int argc, char *argv[])
 
 	make_game();
 
-	app_init_imgui();
+	cf_app_init_imgui(false);
 
-	set_fixed_timestep(60);
-
+	cf_set_fixed_timestep(60);
 	cf_set_update_udata(&game);
 
 	const f32 alpha = 0.75f;
 	f32 fps = 60;
 
-	while (app_is_running())
+	while (cf_app_is_running())
 	{
-		app_update(update);
+		cf_app_update(update);
 
 		fps = fps * alpha + (1.0 - alpha) * (1.0 / DELTA_TIME);
 		ImGui::Text("%f", fps);
 
 		game.draw();
-		app_draw_onto_screen();
+		cf_app_draw_onto_screen(true);
 	}
 
-	destroy_app();
+	cf_destroy_app();
 
 	return 0;
 }

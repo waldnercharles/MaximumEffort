@@ -1,11 +1,10 @@
 #include "game.h"
 #include "assets.h"
-#include "cmp/c_enemy_component.h"
-#include "cmp/c_transform.h"
+#include "cmp/enemy.h"
+#include "cmp/transform.h"
 #include "common.h"
 #include "factories.h"
 #include "imgui.h"
-#include "singleton.h"
 #include "sys/camera_system.h"
 #include "sys/debug_draw_system.h"
 #include "sys/input_system.h"
@@ -13,35 +12,33 @@
 #include "sys/movement_behavior_constant_direction_system.h"
 #include "sys/movement_behavior_follow_target_system.h"
 #include "sys/movement_system.h"
-#include "sys/physics_system.h"
 #include "sys/player_animation_system.h"
 #include "sys/render_system.h"
 #include "sys/spawner_system.h"
 #include "sys/weapon_system.h"
 #include <ctime>
 
-using namespace Cute;
-
 Game game;
 
 void make_game()
 {
-	register_scene_node_callbacks(game.reg);
+	register_scene_node_callbacks(game.world);
 
-	game.rnd = rnd_seed((u64)time(nullptr));
-	game.camera_size = V2(320, 180);
-	game.spawn_radius = max(game.camera_size.x, game.camera_size.y) * 0.66f;
-	game.world_size = V2(game.spawn_radius, game.spawn_radius) * 4.0f;
+	game.rnd = cf_rnd_seed((u64)time(nullptr));
+	game.camera_size = cf_v2(320, 180);
+	game.spawn_radius = cf_max(game.camera_size.x, game.camera_size.y) * 0.66f;
+
+	game.world_size = cf_v2(game.spawn_radius, game.spawn_radius) * 4.0f;
 
 	// TODO: Do this somewhere else
 	{
 		mount_assets_folder();
 		game.map = load_tiled_map("map.json");
 
-		auto player = make_player(game.reg);
+		auto player = make_player(game.world);
 
-		make_enemy_spawner(game.reg, player, 0.001f, ENEMY_EYEBALL);
-		make_weapon_boomerang(game.reg, player);
+		make_enemy_spawner(game.world, player, 0.001f, ENEMY_EYEBALL);
+		make_weapon_boomerang(game.world, player);
 	}
 
 	game.paused = false;
@@ -57,29 +54,29 @@ void Game::update(float dt)
 	if (!paused)
 	{
 		total_time += dt;
-		lifetime_system(reg, dt);
+		lifetime_system(world, dt);
 
 		// Spawn projectiles and enemies
 		{
-			weapon_system(reg, dt);
-			spawner_system(reg, dt);
+			weapon_system(world, dt);
+			spawner_system(world, dt);
 		}
 
 		// Handle input and movement
 		{
-			input_system(reg, dt);
-			movement_behavior_follow_target_system(reg, dt);
-			movement_behavior_constant_direction_system(reg, dt);
+			input_system(world, dt);
+			movement_behavior_follow_target_system(world, dt);
+			movement_behavior_constant_direction_system(world, dt);
 
 			// Physics before movement
 			physics_system.update(dt);
 
-			movement_system(reg, dt);
+			movement_system(world);
 		}
 
 		// Handle animation
 		{
-			player_animation_system(reg, dt);
+			player_animation_system(world, dt);
 		}
 	}
 }
@@ -87,15 +84,15 @@ void Game::update(float dt)
 
 void Game::draw()
 {
-	camera_system(reg);
+	camera_system(world);
 
 	map.draw();
 
-	debug_draw_system(reg);
-	render_system(reg);
+	debug_draw_system(world);
+	render_system(world);
 
 	int count = 0;
-	game.reg.view<C_Enemy>().each([&]() {
+	game.world.view<Enemy>().each([&]() {
 		count++;
 	});
 

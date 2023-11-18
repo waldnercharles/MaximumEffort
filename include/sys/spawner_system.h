@@ -1,5 +1,4 @@
 #pragma once
+#include "common.h"
 
-#include <entt/entt.hpp>
-
-void spawner_system(entt::registry &reg, float dt);
+void spawner_system(World &w, float dt);

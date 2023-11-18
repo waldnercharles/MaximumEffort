@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "common.h"
 
-void weapon_system(entt::registry &reg, float weapon);
+void weapon_system(World &reg, float weapon);

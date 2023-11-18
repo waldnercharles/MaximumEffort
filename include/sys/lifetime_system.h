@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "common.h"
 
-void lifetime_system(entt::registry &reg, float dt);
+void lifetime_system(World &reg, float dt);

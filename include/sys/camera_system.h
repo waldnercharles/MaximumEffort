@@ -1,5 +1,4 @@
 #pragma once
+#include "common.h"
 
-#include <entt/entt.hpp>
-
-void camera_system(entt::registry &reg);
+void camera_system(World &w);

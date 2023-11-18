@@ -1,4 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
+#include "common.h"
 
-void debug_draw_system(entt::registry &reg);
+void debug_draw_system(World &reg);

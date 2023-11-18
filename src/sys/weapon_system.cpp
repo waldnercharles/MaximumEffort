@@ -1,17 +1,15 @@
 #include "sys/weapon_system.h"
-#include "cmp/c_transform.h"
-#include "cmp/c_weapon.h"
+#include "cmp/transform.h"
+#include "cmp/weapon.h"
 #include "game.h"
 #include "projectile_factories.h"
 
 #include <cute.h>
 
-using namespace Cute;
-
 v2 get_random_dir()
 {
-	float angle = rnd_next_range(game.rnd, -CF_PI, CF_PI);
-	return V2(cosf(angle), sinf(angle));
+	float angle = cf_rnd_next_range_float(&game.rnd, -PI, PI);
+	return cf_v2(cosf(angle), sinf(angle));
 }
 
 struct TargetClosestEnemyQueryData
@@ -19,23 +17,23 @@ struct TargetClosestEnemyQueryData
 	v2 player_pos = {};
 	float radius = {};
 
-	entt::entity entity = entt::null;
+	Entity entity = entt::null;
 
 	float dist = {};
 	v2 dir = {};
 };
 
 bool on_closest_enemy_query_hit(
-	//	Cute::AabbGridNode,
-	Cute::Aabb aabb,
+	//	AabbGridNode,
+	Aabb aabb,
 	void *leaf_udata,
 	void *fn_udata
 )
 {
-	auto &reg = game.reg;
+	auto &world = game.world;
 
-	entt::entity enemy = (entt::entity)(uint64_t)leaf_udata;
-	if (!reg.valid(enemy))
+	Entity enemy = (Entity)(uint64_t)leaf_udata;
+	if (!world.valid(enemy))
 	{
 		return true;
 	}
@@ -43,9 +41,9 @@ bool on_closest_enemy_query_hit(
 	auto *query_data = (TargetClosestEnemyQueryData *)fn_udata;
 
 	auto player_pos = query_data->player_pos;
-	auto enemy_pos = reg.get<C_Transform>(enemy).get_global_transform().pos;
+	auto enemy_pos = world.get<Transform>(enemy).get_global_transform().pos;
 
-	float dist = distance(player_pos, enemy_pos);
+	float dist = cf_distance(player_pos, enemy_pos);
 
 	if (dist > query_data->radius)
 	{
@@ -69,7 +67,10 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 	data.player_pos = circle.p;
 	data.radius = circle.r;
 
-	auto aabb = make_aabb(circle.p, circle.r * 2, circle.r * 2);
+	auto aabb = cf_make_aabb_center_half_extents(
+		circle.p,
+		{circle.r, circle.r}
+	);
 	//	aabb_grid_query(game.enemy_grid, aabb, on_closest_enemy_query_hit, &data);
 
 	*dir = data.dir;
@@ -77,12 +78,12 @@ bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
 	return data.entity != entt::null;
 }
 
-void weapon_system(entt::registry &reg, float dt)
+void weapon_system(World &world, float dt)
 {
-	reg.view<C_Weapon, C_Transform>().each([&](auto weapon_entity,
-											   C_Weapon &weapon,
-											   C_Transform &scene_node) {
-		if (on_interval(weapon.rate))
+	world.view<Weapon, Transform>().each([&](auto weapon_entity,
+											 Weapon &weapon,
+											 Transform &scene_node) {
+		if (cf_on_interval(weapon.rate, 0))
 		{
 			v2 pos = scene_node.get_global_transform().pos;
 			v2 dir = {};
@@ -95,7 +96,7 @@ void weapon_system(entt::registry &reg, float dt)
 			}
 			else if (weapon.target_type == TARGET_CLOSEST_ENEMY)
 			{
-				auto targeting_circle = make_circle(
+				auto targeting_circle = cf_make_circle(
 					pos,
 					weapon.targeting_radius
 				);
@@ -107,10 +108,10 @@ void weapon_system(entt::registry &reg, float dt)
 				return;
 			}
 
-			entt::entity e = entt::null;
+			Entity e = entt::null;
 			if (weapon.weapon_type == WEAPON_BOOMERANG)
 			{
-				e = make_projectile_boomerang(reg, pos, dir);
+				e = make_projectile_boomerang(world, pos, dir);
 			}
 
 			if (e == entt::null)

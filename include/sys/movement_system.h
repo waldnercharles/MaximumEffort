@@ -1,5 +1,4 @@
 #pragma once
+#include "common.h"
 
-#include <entt/entt.hpp>
-
-void movement_system(entt::registry &e, float m);
+void movement_system(World &w);

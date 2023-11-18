@@ -1,6 +1,5 @@
 #pragma once
 
-enum C_Faction
+struct Enemy
 {
-
 };

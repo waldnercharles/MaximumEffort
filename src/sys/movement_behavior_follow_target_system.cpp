@@ -1,30 +1,26 @@
 #include "sys/movement_behavior_follow_target_system.h"
-#include "cmp/c_movement.h"
-#include "cmp/c_movement_behavior_follow_target.h"
-#include "cmp/c_transform.h"
+#include "cmp/movement.h"
+#include "cmp/movement_behavior_follow_target.h"
+#include "cmp/transform.h"
 
-using namespace Cute;
-
-void movement_behavior_follow_target_system(entt::registry &reg, float dt)
+void movement_behavior_follow_target_system(World &world, float dt)
 {
-	reg.view<C_Movement, C_MovementBehavior_FollowTarget, C_Transform>().each(
-		[&](auto e,
-			C_Movement &m,
-			C_MovementBehavior_FollowTarget &b,
-			C_Transform &t) {
+	world.view<Movement, MovementBehavior_FollowTarget, Transform>().each(
+		[&](auto e, Movement &m, MovementBehavior_FollowTarget &b, Transform &t
+		) {
 			auto pos = t.get_global_transform().pos;
 
-			if (!reg.valid(b.entity))
+			if (!world.valid(b.entity))
 			{
-				m.vel = V2(0, 0);
+				m.vel = cf_v2(0, 0);
 				return;
 			}
 
-			auto other_pos = reg.get<C_Transform>(b.entity)
+			auto other_pos = world.get<Transform>(b.entity)
 								 .get_global_transform()
 								 .pos;
 
-			b.dir = safe_norm(other_pos - pos);
+			b.dir = cf_safe_norm(other_pos - pos);
 			m.vel = b.dir * b.speed;
 
 			if (b.face_target)

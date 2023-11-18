@@ -1,5 +1,5 @@
 #pragma once
-#include "c_lifetime.h"
+#include "lifetime.h"
 #include <cute.h>
 
 enum WeaponType
@@ -15,7 +15,7 @@ enum TargetType
 	TARGET_PLAYER
 };
 
-struct C_Weapon
+struct Weapon
 {
 	float rate = {};
 	float targeting_radius = {};

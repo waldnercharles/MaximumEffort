@@ -1,24 +1,20 @@
 #include "sys/render_system.h"
-#include "cmp/c_sprite.h"
-#include "cmp/c_transform.h"
+#include "cmp/sprite.h"
+#include "cmp/transform.h"
 
 #include <cute.h>
 
-using namespace Cute;
-
-void render_system(entt::registry &reg)
+void render_system(World &w)
 {
-	reg.view<C_Sprite, C_Transform>().each(
-		[&](auto e, C_Sprite &s, C_Transform &n) {
-			auto t = n.get_global_transform();
+	w.view<Sprite, Transform>().each([&](auto e, Sprite &s, Transform &n) {
+		auto t = n.get_global_transform();
 
-			s.transform.p = t.pos;
-			s.transform.r = sincos(t.angle);
+		s.transform.p = t.pos;
+		s.transform.r = cf_sincos_f(t.angle);
 
-			draw_push_layer(s.layer);
-			s.update();
-			s.draw();
-			draw_pop_layer();
-		}
-	);
+		cf_draw_push_layer(s.layer);
+		s.update();
+		s.draw();
+		cf_draw_pop_layer();
+	});
 }

@@ -1,18 +1,16 @@
 #include "assets.h"
+#include "common.h"
 #include "log.h"
 
 #include <cute.h>
 
-
-using namespace Cute;
-
 void mount_assets_folder()
 {
-	Path path = fs_get_base_directory();
+	Path path = cf_fs_get_base_directory();
 	path.normalize();
 
 	path += "/assets";
-	fs_mount(path.c_str(), "/");
+	cf_fs_mount(path.c_str(), "/", true);
 
 	log_info("{} mounted to \"/\"", path.c_str());
 }

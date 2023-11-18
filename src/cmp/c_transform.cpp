@@ -1,47 +1,45 @@
-#include "cmp/c_transform.h"
+#include "cmp/transform.h"
 
-using namespace Cute;
-
-entt::entity C_Transform::get_entity() const
+Entity Transform::get_entity() const
 {
 	return entity;
 }
 
-const SceneGraphTransform &C_Transform::get_local_transform() const
+const SceneGraphTransform &Transform::get_local_transform() const
 {
 	return transform;
 }
 
-void C_Transform::set_local_transform(const SceneGraphTransform &t)
+void Transform::set_local_transform(const SceneGraphTransform &t)
 {
 	invalidate_cached_parent_transform_for_children();
 	transform = t;
 }
 
-void C_Transform::set_pos(const v2 pos)
+void Transform::set_pos(const v2 pos)
 {
 	invalidate_cached_parent_transform_for_children();
 	transform.pos = pos;
 }
 
-void C_Transform::offset(const v2 offset)
+void Transform::offset(const v2 offset)
 {
 	invalidate_cached_parent_transform_for_children();
 	transform.pos += offset;
 }
 
-void C_Transform::set_rotation(const float radians)
+void Transform::set_rotation(const float radians)
 {
 	invalidate_cached_parent_transform_for_children();
 	transform.angle = radians;
 }
 
-SceneGraphTransform C_Transform::get_global_transform() const
+SceneGraphTransform Transform::get_global_transform() const
 {
 	return get_parent_transform() * transform;
 }
 
-SceneGraphTransform C_Transform::get_parent_transform() const
+SceneGraphTransform Transform::get_parent_transform() const
 {
 	if (!is_cached)
 	{
@@ -54,14 +52,14 @@ SceneGraphTransform C_Transform::get_parent_transform() const
 	return cached_parent_transform;
 }
 
-void C_Transform::add_child(C_Transform *child)
+void Transform::add_child(Transform *child)
 {
 	assert(child->parent == nullptr);
 	child->set_parent(this);
 	children.add(child);
 }
 
-void C_Transform::remove_child(C_Transform *child)
+void Transform::remove_child(Transform *child)
 {
 	assert(child->parent == this);
 	int i;
@@ -78,7 +76,7 @@ void C_Transform::remove_child(C_Transform *child)
 	assert(false && "Parent child relationship is broken.");
 }
 
-C_Transform::~C_Transform()
+Transform::~Transform()
 {
 	if (parent)
 	{
@@ -91,24 +89,24 @@ C_Transform::~C_Transform()
 	}
 }
 
-void C_Transform::set_parent(C_Transform *p)
+void Transform::set_parent(Transform *p)
 {
 	invalidate_cached_parent_transform();
 	parent = p;
 }
 
-void C_Transform::clear_parent()
+void Transform::clear_parent()
 {
 	set_parent(nullptr);
 }
 
-void C_Transform::invalidate_cached_parent_transform()
+void Transform::invalidate_cached_parent_transform()
 {
 	is_cached = false;
 	invalidate_cached_parent_transform_for_children();
 }
 
-void C_Transform::invalidate_cached_parent_transform_for_children()
+void Transform::invalidate_cached_parent_transform_for_children()
 {
 	for (const auto &child : children)
 	{
@@ -116,15 +114,15 @@ void C_Transform::invalidate_cached_parent_transform_for_children()
 	}
 }
 
-void link_scene_node_with_entity(entt::registry &reg, entt::entity e)
+void link_scene_node_with_entity(World &world, Entity e)
 {
-	reg.get<C_Transform>(e).entity = e;
+	world.get<Transform>(e).entity = e;
 }
 
-void register_scene_node_callbacks(entt::registry &reg)
+void register_scene_node_callbacks(World &world)
 {
-	reg.on_construct<C_Transform>().connect<&link_scene_node_with_entity>();
-	reg.on_update<C_Transform>().connect<&link_scene_node_with_entity>();
+	world.on_construct<Transform>().connect<&link_scene_node_with_entity>();
+	world.on_update<Transform>().connect<&link_scene_node_with_entity>();
 }
 
 SceneGraphTransform
