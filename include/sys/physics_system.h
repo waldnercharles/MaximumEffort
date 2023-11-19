@@ -1,14 +1,13 @@
 #pragma once
+#include "aabb_grid.h"
 #include "common.h"
-#include "geometry.h"
-#include "spatial_hash.h"
-#include <entt/entt.hpp>
+#include "system.h"
 
-struct PhysicsSystem
+struct PhysicsSystem : public System
 {
 	PhysicsSystem();
 
-	void update(f32 delta_time);
+	void update(World &world) override;
 
 private:
 	AabbGrid<Entity> grid;

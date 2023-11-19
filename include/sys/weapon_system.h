@@ -1,4 +1,12 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void weapon_system(World &reg, float weapon);
+struct WeaponSystem final : public System
+{
+	WeaponSystem();
+	void update(World &world) override;
+
+private:
+	Rnd rnd;
+};

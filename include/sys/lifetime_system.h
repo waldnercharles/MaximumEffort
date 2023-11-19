@@ -1,4 +1,8 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void lifetime_system(World &reg, float dt);
+struct LifetimeSystem final : public System
+{
+	void update(World &world) override;
+};

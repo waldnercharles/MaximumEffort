@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-struct Movement
+struct MovementComponent
 {
 	v2 vel = {};
 	float angular_vel = {};

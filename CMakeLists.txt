@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 ENTT_DISABLE_ASSERT _CRT_SECURE_NO_WARNINGS)
+add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 _CRT_SECURE_NO_WARNINGS)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     set(EMSCRIPTEN TRUE)
@@ -16,55 +16,60 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET TRUE)
 
 add_executable(MaximumEffort
+               include/aabb_grid.h
                include/array_algorithms.h
                include/assets.h
-               include/cmp/debug_draw_circle.h
-               include/cmp/enemy.h
-               include/cmp/enemy_spawner.h
-               include/cmp/hitbox.h
-               include/cmp/hurtbox.h
-               include/cmp/input.h
-               include/cmp/lifetime.h
-               include/cmp/movement.h
-               include/cmp/movement_behavior_constant_direction.h
-               include/cmp/movement_behavior_follow_target.h
-               include/cmp/physics.h
-               include/cmp/player.h
-               include/cmp/projectile.h
-               include/cmp/sprite.h
-               include/cmp/transform.h
-               include/cmp/weapon.h
+               include/cmp/debug_draw_circle_component.h
+               include/cmp/enemy_component.h
+               include/cmp/enemy_spawner_component.h
+               include/cmp/hitbox_component.h
+               include/cmp/hurtbox_component.h
+               include/cmp/input_component.h
+               include/cmp/lifetime_component.h
+               include/cmp/movement_behavior_constant_direction_component.h
+               include/cmp/movement_behavior_follow_target_component.h
+               include/cmp/movement_component.h
+               include/cmp/player_component.h
+               include/cmp/projectile_component.h
+               include/cmp/sprite_component.h
+               include/cmp/transform_component.h
+               include/cmp/weapon_component.h
                include/common.h
                include/enemy_type.h
                include/factories.h
                include/game.h
-               include/sys/input_system.h
                include/log.h
+               include/prefabs/player_prefab.h
                include/projectile_factories.h
+               include/singleton.h
+               include/states/game_state.h
+               include/states/game_state_main_menu.h
+               include/states/game_state_playing.h
                include/sys/camera_system.h
-               include/sys/debug_draw_system.h
+               include/sys/input_system.h
                include/sys/lifetime_system.h
-               include/sys/movement_behavior_constant_direction_system.h
-               include/sys/movement_behavior_follow_target_system.h
+               include/sys/movement_behavior_system.h
                include/sys/movement_system.h
                include/sys/physics_system.h
                include/sys/player_animation_system.h
                include/sys/render_system.h
                include/sys/spawner_system.h
+               include/sys/system.h
                include/sys/weapon_system.h
                include/tiled_map.h
                src/assets.cpp
-               src/cmp/c_transform.cpp
+               src/cmp/transform_component.cpp
                src/factories.cpp
                src/game.cpp
                src/main.cpp
+               src/prefabs/player.cpp
                src/projectile_factories.cpp
+               src/states/game_state_main_menu.cpp
+               src/states/game_state_playing.cpp
                src/sys/camera_system.cpp
-               src/sys/debug_draw_system.cpp
                src/sys/input_system.cpp
                src/sys/lifetime_system.cpp
-               src/sys/movement_behavior_constant_direction_system.cpp
-               src/sys/movement_behavior_follow_target_system.cpp
+               src/sys/movement_behavior_system.cpp
                src/sys/movement_system.cpp
                src/sys/physics_system.cpp
                src/sys/player_animation_system.cpp
@@ -72,10 +77,7 @@ add_executable(MaximumEffort
                src/sys/spawner_system.cpp
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
-               include/singleton.h
-               include/geometry.h
-               include/ecs.h
-               include/spatial_hash.h
+               src/sys/movement_behavior_system.cpp
 )
 
 add_subdirectory(lib)
@@ -84,7 +86,7 @@ target_include_directories(MaximumEffort SYSTEM PRIVATE ${lib_INCLUDE_DIRS})
 target_include_directories(MaximumEffort SYSTEM PRIVATE ${entt_SOURCE_DIR}/single_include)
 target_include_directories(MaximumEffort PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(MaximumEffort cute cute_headers fmt glm)
+target_link_libraries(MaximumEffort cute cute_headers fmt)
 
 add_custom_target(copy-assets ALL
                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)

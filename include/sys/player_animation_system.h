@@ -1,4 +1,8 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void player_animation_system(World &reg, float dt);
+struct PlayerAnimationSystem final : public System
+{
+	void update(World &world) override;
+};

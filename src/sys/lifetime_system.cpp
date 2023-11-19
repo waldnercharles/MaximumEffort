@@ -1,10 +1,11 @@
 #include "sys/lifetime_system.h"
-#include "cmp/lifetime.h"
+#include "cmp/lifetime_component.h"
 
-void lifetime_system(World &world, float dt)
+void LifetimeSystem::update(World &world)
 {
-	world.view<Lifetime>().each([&](auto e, Lifetime &lifetime) {
-		lifetime -= dt;
+	world.view<LifetimeComponent>().each([&](auto e,
+											 LifetimeComponent &lifetime) {
+		lifetime -= DELTA_TIME_FIXED;
 
 		if (lifetime <= 0)
 		{

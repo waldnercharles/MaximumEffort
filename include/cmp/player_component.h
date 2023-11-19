@@ -1,6 +1,6 @@
 #pragma once
 
-struct Player
+struct PlayerComponent
 {
 	int facing = 0;
 };

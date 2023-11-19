@@ -1,20 +1,20 @@
 #pragma once
 
-struct Lifetime
+struct LifetimeComponent
 {
-	Lifetime &operator=(const float &f)
+	LifetimeComponent &operator=(const float &f)
 	{
 		value = f;
 		return *this;
 	}
 
-	Lifetime &operator-=(const float &f)
+	LifetimeComponent &operator-=(const float &f)
 	{
 		value -= f;
 		return *this;
 	}
 
-	Lifetime &operator+=(const float &f)
+	LifetimeComponent &operator+=(const float &f)
 	{
 		value += f;
 		return *this;

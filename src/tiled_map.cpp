@@ -114,7 +114,7 @@ void TiledMap::draw()
 	}
 
 	v2 cam_center = cf_camera_peek_position();
-	v2 cam_dimensions = game.camera_size;
+	v2 cam_dimensions = cf_camera_peek_dimensions();
 
 	cute_tiled_layer_t *layer = map->layers;
 

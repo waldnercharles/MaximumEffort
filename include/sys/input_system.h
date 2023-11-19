@@ -1,4 +1,8 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void input_system(World &reg, float dt);
+struct InputSystem final : public System
+{
+	void update(World &world) override;
+};

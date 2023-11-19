@@ -1,4 +1,8 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void render_system(World &w);
+struct RenderSystem final : public System
+{
+	void update(World &world) override;
+};

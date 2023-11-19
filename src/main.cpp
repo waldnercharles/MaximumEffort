@@ -1,5 +1,6 @@
 #include <cute.h>
 
+#include "cmp/transform_component.h"
 #include "game.h"
 #include "imgui.h"
 #include "log.h"
@@ -16,7 +17,8 @@ extern "C"
 
 void update(void *udata)
 {
-	game.update(CF_DELTA_TIME_FIXED);
+	Game *game = (Game *)udata;
+	game->update();
 }
 
 int main(int argc, char *argv[])
@@ -34,9 +36,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	make_game();
-
 	cf_app_init_imgui(false);
+
+	Game game;
 
 	cf_set_fixed_timestep(60);
 	cf_set_update_udata(&game);
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
 	const f32 alpha = 0.75f;
 	f32 fps = 60;
 
-	while (cf_app_is_running())
+	while (cf_app_is_running() && !game.exit)
 	{
 		cf_app_update(update);
 

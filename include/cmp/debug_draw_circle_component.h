@@ -1,9 +1,8 @@
 #pragma once
 #include "common.h"
-#include "geometry.h"
 #include <cute.h>
 
-struct DebugDrawCircle
+struct DebugDrawCircleComponent
 {
 	Circle circle = {};
 	Color color = {};

@@ -1,11 +1,13 @@
 #pragma once
 
-struct _
-{
-	template <typename T>
-	static T &get()
-	{
-		static T instance;
-		return instance;
-	}
-};
+//struct SingletonCache
+//{
+//	template <typename T>
+//	T &get()
+//	{
+//		static T instance = T();
+//		return instance;
+//	}
+//};
+//
+//extern SingletonCache _;

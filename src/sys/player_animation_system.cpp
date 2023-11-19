@@ -1,15 +1,15 @@
 #include "sys/player_animation_system.h"
-#include "cmp/input.h"
-#include "cmp/player.h"
-#include "cmp/sprite.h"
+#include "cmp/input_component.h"
+#include "cmp/player_component.h"
+#include "cmp/sprite_component.h"
 
-void player_animation_system(World &world, float dt)
+void PlayerAnimationSystem::update(World &world)
 {
 	static const char *anims[4] =
 		{"idle-left", "idle-right", "walk-left", "walk-right"};
 
-	world.view<Player, Input, Sprite>().each(
-		[&](auto e, Player &p, Input &i, Sprite &s) {
+	world.view<PlayerComponent, InputComponent, SpriteComponent>().each(
+		[](auto e, PlayerComponent &p, InputComponent &i, SpriteComponent &s) {
 			int action_anim = i.input_dir.x != 0 || i.input_dir.y != 0 ? 2 : 0;
 			int facing_anim = p.facing > 0 ? 1 : 0;
 

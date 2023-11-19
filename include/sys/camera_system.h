@@ -1,4 +1,12 @@
 #pragma once
 #include "common.h"
+#include "system.h"
 
-void camera_system(World &w);
+struct CameraSystem final : public System
+{
+	CameraSystem(int width, int height);
+
+	void update(World &) override;
+
+	v2 camera_size = cf_v2(320, 180);
+};

@@ -1,7 +1,7 @@
 #pragma once
 #include <cute.h>
 
-struct Hitbox
+struct HurtboxComponent
 {
 	Circle circle;
 };

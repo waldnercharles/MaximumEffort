@@ -1,8 +1,6 @@
 #pragma once
 #include "array_algorithms.h"
 #include "common.h"
-#include "geometry.h"
-#include <glm/glm.hpp>
 
 #include <cute.h>
 

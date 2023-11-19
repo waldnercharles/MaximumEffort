@@ -30,14 +30,6 @@ fetchcontent_declare(
 fetchcontent_makeavailable(entt)
 
 fetchcontent_declare(
-        glm
-        GIT_REPOSITORY https://github.com/g-truc/glm.git
-        GIT_PROGRESS FALSE
-        SYSTEM
-)
-fetchcontent_makeavailable(glm)
-
-fetchcontent_declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG 10.1.1
