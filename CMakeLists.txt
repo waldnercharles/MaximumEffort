@@ -36,7 +36,6 @@ add_executable(MaximumEffort
                include/cmp/weapon_component.h
                include/common.h
                include/enemy_type.h
-               include/factories.h
                include/game.h
                include/log.h
                include/prefabs/player_prefab.h
@@ -59,10 +58,9 @@ add_executable(MaximumEffort
                include/tiled_map.h
                src/assets.cpp
                src/cmp/transform_component.cpp
-               src/factories.cpp
                src/game.cpp
                src/main.cpp
-               src/prefabs/player.cpp
+               src/prefabs/player_prefab.cpp
                src/projectile_factories.cpp
                src/states/game_state_main_menu.cpp
                src/states/game_state_playing.cpp
@@ -78,6 +76,14 @@ add_executable(MaximumEffort
                src/sys/weapon_system.cpp
                src/tiled_map.cpp
                src/sys/movement_behavior_system.cpp
+               src/prefabs/enemy_spawner_prefab.cpp
+               include/prefabs/enemy_spawner_prefab.h
+               src/prefabs/enemy_eyeball_prefab.cpp
+               include/prefabs/enemy_eyeball_prefab.h
+               src/prefabs/weapon_boomerang_prefab.cpp
+               include/prefabs/weapon_boomerang_prefab.h
+               include/prefabs/projectile_boomerang_prefab.h
+               src/prefabs/projectile_boomerang_prefab.cpp
 )
 
 add_subdirectory(lib)

@@ -1,9 +1,5 @@
 #pragma once
-
-enum EnemyType
-{
-	ENEMY_EYEBALL,
-};
+#include "enemy_type.h"
 
 struct EnemySpawnerComponent
 {

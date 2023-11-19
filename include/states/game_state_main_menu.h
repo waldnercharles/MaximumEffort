@@ -9,6 +9,9 @@ struct GameStateMainMenu final : public GameState
 	void exit(Game &) override;
 
 private:
-	Entity player = ECS_NULL;
 	Entity tiled_map = ECS_NULL;
+
+	Entity player = ECS_NULL;
+	Entity eyeball_spawner = ECS_NULL;
+	Entity weapon_boomerang = ECS_NULL;
 };

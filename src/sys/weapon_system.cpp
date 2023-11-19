@@ -1,8 +1,7 @@
 #include "sys/weapon_system.h"
 #include "cmp/transform_component.h"
 #include "cmp/weapon_component.h"
-#include "game.h"
-#include "projectile_factories.h"
+#include "prefabs/projectile_boomerang_prefab.h"
 
 #include <cute.h>
 
@@ -12,72 +11,58 @@ v2 get_random_dir(Rnd &rnd)
 	return cf_v2(cosf(angle), sinf(angle));
 }
 
-WeaponSystem::WeaponSystem() : rnd(cf_rnd_seed((u64)time(nullptr)))
+bool try_get_closest_enemy_dir(
+	World &world,
+	AabbGrid<Entity> &enemy_aabb_grid,
+	Circle circle,
+	v2 *dir
+)
 {
-}
+	Entity closest_entity = ECS_NULL;
+	float closest_dist;
 
-struct TargetClosestEnemyQueryData
-{
-	v2 player_pos = {};
-	float radius = {};
-
-	Entity entity = entt::null;
-
-	float dist = {};
-	v2 dir = {};
-};
-
-//bool on_closest_enemy_query_hit(
-//	//	AabbGridNode,
-//	Aabb aabb,
-//	void *leaf_udata,
-//	void *fn_udata
-//)
-//{
-//	Entity enemy = (Entity)(uint64_t)leaf_udata;
-//	if (!world.valid(enemy))
-//	{
-//		return true;
-//	}
-//
-//	auto *query_data = (TargetClosestEnemyQueryData *)fn_udata;
-//
-//	auto player_pos = query_data->player_pos;
-//	auto enemy_pos = world.get<Transform>(enemy).get_world_transform().pos;
-//
-//	float dist = cf_distance(player_pos, enemy_pos);
-//
-//	if (dist > query_data->radius)
-//	{
-//		return true;
-//	}
-//
-//	if (query_data->entity == ECS_NULL || dist < query_data->dist)
-//	{
-//		query_data->dist = dist;
-//		query_data->entity = enemy;
-//		query_data->dir = enemy_pos - player_pos;
-//	}
-//
-//	return true;
-//}
-
-bool try_get_closest_enemy_dir(Circle circle, v2 *dir)
-{
-	TargetClosestEnemyQueryData data;
-	data.entity = ECS_NULL;
-	data.player_pos = circle.p;
-	data.radius = circle.r;
+	v2 source_pos = circle.p;
+	float radius = circle.r;
 
 	auto aabb = cf_make_aabb_center_half_extents(
 		circle.p,
 		{circle.r, circle.r}
 	);
-	//	aabb_grid_query(game.enemy_grid, aabb, on_closest_enemy_query_hit, &data);
 
-	*dir = data.dir;
+	enemy_aabb_grid.query(aabb, [&](Entity enemy) {
+		if (!world.valid(enemy))
+		{
+			return true;
+		}
 
-	return data.entity != ECS_NULL;
+		auto enemy_pos = world.get<TransformComponent>(enemy)
+							 .get_world_transform()
+							 .pos;
+
+		float dist = cf_distance(source_pos, enemy_pos);
+
+		if (dist > radius)
+		{
+			return true;
+		}
+
+		if (closest_entity == ECS_NULL || dist < closest_dist)
+		{
+			closest_dist = dist;
+			closest_entity = enemy;
+			*dir = enemy_pos - source_pos;
+		}
+
+		return true;
+	});
+
+	return closest_entity != ECS_NULL;
+}
+
+WeaponSystem::WeaponSystem(AabbGrid<Entity> &enemy_aabb_grid)
+	: rnd(cf_rnd_seed((u64)time(nullptr))),
+	  enemy_aabb_grid(enemy_aabb_grid)
+{
 }
 
 void WeaponSystem::update(World &world)
@@ -104,6 +89,8 @@ void WeaponSystem::update(World &world)
 						weapon.targeting_radius
 					);
 					has_target = try_get_closest_enemy_dir(
+						world,
+						enemy_aabb_grid,
 						targeting_circle,
 						&dir
 					);
@@ -117,7 +104,7 @@ void WeaponSystem::update(World &world)
 				Entity e = ECS_NULL;
 				if (weapon.weapon_type == WEAPON_BOOMERANG)
 				{
-					e = make_projectile_boomerang(world, pos, dir);
+					e = prefabs::ProjectileBoomerang::create(world, pos, dir);
 				}
 
 				if (e == ECS_NULL)

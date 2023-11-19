@@ -3,7 +3,7 @@
 #include "cmp/enemy_spawner_component.h"
 #include "cmp/player_component.h"
 #include "cmp/transform_component.h"
-#include "factories.h"
+#include "prefabs/enemy_eyeball_prefab.h"
 
 #include <cute.h>
 
@@ -49,9 +49,9 @@ void SpawnerSystem::update(World &world)
 		{
 			switch (s.entity_type)
 			{
-				case ENEMY_EYEBALL:
+				case ENEMY_TYPE_EYEBALL:
 				{
-					make_enemy_eyeball(
+					prefabs::EnemyEyeball::create(
 						world,
 						spawner_pos + get_spawn_pos(),
 						player

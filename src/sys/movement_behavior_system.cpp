@@ -7,7 +7,7 @@
 void MovementBehaviorSystem::update(World &world)
 {
 	world.view<MovementComponent, MovementBehavior_ConstantDirectionComponent>()
-		.each([](auto e,
+		.each([](Entity e,
 				 MovementComponent &m,
 				 MovementBehavior_ConstantDirectionComponent &t) {
 			m.vel = cf_safe_norm(t.dir) * t.speed;
@@ -18,7 +18,7 @@ void MovementBehaviorSystem::update(World &world)
 			MovementComponent,
 			MovementBehavior_FollowTargetComponent,
 			TransformComponent>()
-		.each([&](auto e,
+		.each([&](Entity e,
 				  MovementComponent &m,
 				  MovementBehavior_FollowTargetComponent &b,
 				  TransformComponent &t) {

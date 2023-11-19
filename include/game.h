@@ -17,8 +17,6 @@
 #include "sys/weapon_system.h"
 #include "tiled_map.h"
 
-#include <entt/entt.hpp>
-
 struct Game
 {
 	Game();
@@ -41,14 +39,16 @@ struct Game
 
 	World world;
 
+	AabbGrid<Entity> enemy_aabb_grid;
+
 private:
 	std::shared_ptr<LifetimeSystem> lifetime_system;
 	std::shared_ptr<WeaponSystem> weapon_system;
 	std::shared_ptr<SpawnerSystem> spawner_system;
 	std::shared_ptr<InputSystem> input_system;
 	std::shared_ptr<MovementBehaviorSystem> movement_behavor_system;
-	std::shared_ptr<PhysicsSystem> physics_system;
 	std::shared_ptr<MovementSystem> movement_system;
+	std::shared_ptr<PhysicsSystem> physics_system;
 
 	std::shared_ptr<PlayerAnimationSystem> player_animation_system;
 

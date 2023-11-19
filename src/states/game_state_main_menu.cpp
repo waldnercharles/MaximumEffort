@@ -1,8 +1,10 @@
 #include "states/game_state_main_menu.h"
 #include "assets.h"
-#include "factories.h"
+#include "enemy_type.h"
 #include "game.h"
+#include "prefabs/enemy_spawner_prefab.h"
 #include "prefabs/player_prefab.h"
+#include "prefabs/weapon_boomerang_prefab.h"
 
 void GameStateMainMenu::enter(Game &game)
 {
@@ -22,7 +24,12 @@ void GameStateMainMenu::exit(Game &game)
 	game.world.emplace<TiledMap>(tiled_map, load_tiled_map("map.json"));
 
 	player = prefabs::Player::create(game.world);
+	eyeball_spawner = prefabs::EnemySpawner::create(
+		game.world,
+		player,
+		0.1f,
+		ENEMY_TYPE_EYEBALL
+	);
 
-	make_enemy_spawner(game.world, player, 0.001f, ENEMY_EYEBALL);
-	make_weapon_boomerang(game.world, player);
+	weapon_boomerang = prefabs::WeaponBoomerang::create(game.world, player);
 }

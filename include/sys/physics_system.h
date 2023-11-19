@@ -5,15 +5,14 @@
 
 struct PhysicsSystem : public System
 {
-	PhysicsSystem();
+	PhysicsSystem(AabbGrid<Entity> &enemy_grid);
 
 	void update(World &world) override;
 
 private:
-	AabbGrid<Entity> grid;
+	void handle_enemy_to_enemy_collisions(World &w);
 
-	void update_spatial_hash(World &reg);
-	void handle_enemy_to_enemy_collisions(World &reg);
+	AabbGrid<Entity> &enemy_grid;
 };
 
 //	void physics_system(World &reg, float dt);

@@ -7,19 +7,18 @@
 
 #include <cute.h>
 
-void PhysicsSystem::update_spatial_hash(World &world)
+void update_aabb_grid(World &w, AabbGrid<Entity> &grid)
 {
 	grid.clear();
-	auto players = world.view<PlayerComponent, TransformComponent>();
+	auto players = w.view<PlayerComponent, TransformComponent>();
 	auto player = players.front();
-	auto player_pos = world.get<TransformComponent>(player)
+	auto player_pos = w.get<TransformComponent>(player)
 						  .get_world_transform()
 						  .pos;
 
 	grid.pos = player_pos;
 
-	auto view = world.view<EnemyComponent, TransformComponent, HitboxComponent>(
-	);
+	auto view = w.view<EnemyComponent, TransformComponent, HitboxComponent>();
 	for (auto e : view)
 	{
 		auto p = view.get<TransformComponent>(e).get_world_transform().pos;
@@ -32,10 +31,9 @@ void PhysicsSystem::update_spatial_hash(World &world)
 	}
 }
 
-void PhysicsSystem::handle_enemy_to_enemy_collisions(World &world)
+void PhysicsSystem::handle_enemy_to_enemy_collisions(World &w)
 {
-	auto view = world.view<EnemyComponent, TransformComponent, HitboxComponent>(
-	);
+	auto view = w.view<EnemyComponent, TransformComponent, HitboxComponent>();
 	for (auto a : view)
 	{
 		auto &a_transform = view.get<TransformComponent>(a);
@@ -47,7 +45,7 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(World &world)
 			a_circle.p + cf_v2(a_circle.r, a_circle.r)
 		);
 
-		grid.query(a_aabb, [&](Entity b) {
+		enemy_grid.query(a_aabb, [&](Entity b) {
 			if (a == b)
 			{
 				return true;
@@ -72,13 +70,14 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(World &world)
 	}
 }
 
-PhysicsSystem::PhysicsSystem() : grid(480, 480, 16)
+PhysicsSystem::PhysicsSystem(AabbGrid<Entity> &enemy_grid)
+	: enemy_grid(enemy_grid)
 {
 }
 
 void PhysicsSystem::update(World &world)
 {
-	update_spatial_hash(world);
+	update_aabb_grid(world, enemy_grid);
 
 	handle_enemy_to_enemy_collisions(world);
 	//	handle_player_projectiles(game.world, spatial_hash);
