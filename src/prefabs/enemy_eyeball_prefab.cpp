@@ -1,5 +1,6 @@
 #include "prefabs/enemy_eyeball_prefab.h"
 #include "cmp/enemy_component.h"
+#include "cmp/health_component.h"
 #include "cmp/hitbox_component.h"
 #include "cmp/hurtbox_component.h"
 #include "cmp/movement_behavior_follow_target_component.h"
@@ -30,6 +31,10 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 
 	auto &hurtbox = world.emplace<HurtboxComponent>(e);
 	hurtbox.circle = cf_make_circle({0, 0}, 6);
+
+	auto &health = world.emplace<HealthComponent>(e);
+	health.current = 1000;
+	health.max = 1000;
 
 	auto &sprite = world.emplace<SpriteComponent>(
 		e,

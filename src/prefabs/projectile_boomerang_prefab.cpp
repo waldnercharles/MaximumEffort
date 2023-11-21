@@ -1,4 +1,5 @@
 #include "prefabs/projectile_boomerang_prefab.h"
+#include "cmp/damage_component.h"
 #include "cmp/hitbox_component.h"
 #include "cmp/hurtbox_component.h"
 #include "cmp/lifetime_component.h"
@@ -8,33 +9,38 @@
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
 
-Entity prefabs::ProjectileBoomerang::create(World &world, v2 pos, v2 dir)
+Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir)
 {
-	const Entity e = world.create();
-	world.emplace<ProjectileComponent>(e);
+	const Entity e = w.create();
+	auto &proj = w.emplace<ProjectileComponent>(e);
+	proj.piercing = true;
 
-	auto &t = world.emplace<TransformComponent>(e);
+	auto &t = w.emplace<TransformComponent>(e);
 	t.set_pos(pos);
 
-	auto &behavior = world.emplace<MovementBehavior_ConstantDirectionComponent>(
-		e
-	);
+	auto &behavior = w.emplace<MovementBehavior_ConstantDirectionComponent>(e);
 	behavior.speed = {80, 80};
 	behavior.dir = dir;
 
-	auto &m = world.emplace<MovementComponent>(e);
+	auto &m = w.emplace<MovementComponent>(e);
 	m.angular_vel = PI * 3.f;
 
-	auto &hitbox = world.emplace<HitboxComponent>(e);
+	auto &hitbox = w.emplace<HitboxComponent>(e);
 	hitbox.circle = cf_make_circle({0, 0}, 4);
 
-	auto &hurtbox = world.emplace<HurtboxComponent>(e);
-	hurtbox.circle = cf_make_circle({0, 0}, 24);
+	auto &hurtbox = w.emplace<HurtboxComponent>(e);
+	hurtbox.circle = cf_make_circle({0, 0}, 4);
 
-	auto &lifetime = world.emplace<LifetimeComponent>(e);
+	auto &damage = w.emplace<DamageComponent>(e);
+	damage.min = 10;
+	damage.max = 100;
+
+	auto &lifetime = w.emplace<LifetimeComponent>(e);
 	lifetime = 2.0f;
 
-	world.emplace<SpriteComponent>(e, cf_make_sprite("boomerang.ase"));
+	auto &s = w.emplace<SpriteComponent>(e, cf_make_sprite("boomerang.ase"));
+
+	s.scale = cf_v2(0.85f, 0.85f);
 
 	return e;
 }

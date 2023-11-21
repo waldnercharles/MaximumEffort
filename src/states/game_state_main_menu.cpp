@@ -18,8 +18,6 @@ GameState *GameStateMainMenu::update(Game &game)
 
 void GameStateMainMenu::exit(Game &game)
 {
-	mount_assets_folder();
-
 	tiled_map = game.world.create();
 	game.world.emplace<TiledMap>(tiled_map, load_tiled_map("map.json"));
 

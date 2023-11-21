@@ -5,6 +5,6 @@ namespace prefabs
 {
 	namespace ProjectileBoomerang
 	{
-		Entity create(World &world, v2 pos, v2 dir);
+		Entity create(World &w, v2 pos, v2 dir);
 	}
 }

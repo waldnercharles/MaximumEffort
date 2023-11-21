@@ -17,6 +17,8 @@
 Game::Game()
 	: world(),
 	  enemy_aabb_grid(480, 480, 16),
+	  damage_numbers(std::make_shared<DamageNumbers>(world, event_bus)),
+	  damage_system(std::make_shared<DamageSystem>(world, event_bus)),
 	  lifetime_system(std::make_shared<LifetimeSystem>()),
 	  weapon_system(std::make_shared<WeaponSystem>(enemy_aabb_grid)),
 	  spawner_system(std::make_shared<SpawnerSystem>(
@@ -27,12 +29,14 @@ Game::Game()
 	  movement_behavor_system(std::make_shared<MovementBehaviorSystem>()),
 	  movement_system(std::make_shared<MovementSystem>()),
 	  physics_system(std::make_shared<PhysicsSystem>(enemy_aabb_grid)),
+	  projectile_system(
+		  std::make_shared<ProjectileSystem>(event_bus, enemy_aabb_grid)
+	  ),
 	  player_animation_system(std::make_shared<PlayerAnimationSystem>()),
-	  camera_system(std::make_shared<CameraSystem>(320, 180)),
+	  camera_system(std::make_shared<CameraSystem>(640, 360)),
 	  render_system(std::make_shared<RenderSystem>())
 {
 	register_scene_node_callbacks(world);
-
 	states.current = &states.main_menu;
 }
 
@@ -45,12 +49,17 @@ void Game::update()
 		new_state->enter(*this);
 		states.current = new_state;
 	}
+
+	damage_numbers->update();
 }
 
 void Game::draw()
 {
 	camera_system->update(world);
 	render_system->update(world);
+
+	// TODO: Rendering should maybe be done per-state?
+	damage_numbers->draw();
 
 	if (ImGui::Button("Pause"))
 	{

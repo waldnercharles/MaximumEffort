@@ -2,4 +2,5 @@
 
 struct ProjectileComponent
 {
+	bool piercing = false;
 };

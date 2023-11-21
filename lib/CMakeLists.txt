@@ -14,7 +14,8 @@ set(CF_FRAMEWORK_BUILD_TESTS OFF)
 set(CF_FRAMEWORK_BUILD_SAMPLES OFF)
 fetchcontent_declare(
         cute
-        GIT_REPOSITORY https://github.com/RandyGaul/cute_framework.git
+        GIT_REPOSITORY https://github.com/waldnercharles/cute_framework.git
+        GIT_TAG rename-move-to-cf_move
         GIT_PROGRESS FALSE
         SYSTEM
 )
@@ -53,9 +54,25 @@ fetchcontent_populate(cute_headers)
 add_library(cute_headers STATIC src/cute_headers.cpp)
 target_include_directories(cute_headers SYSTEM PUBLIC ${cute_headers_SOURCE_DIR})
 
+fetchcontent_declare(
+        pico_headers
+        GIT_REPOSITORY https://github.com/empyreanx/pico_headers.git
+        GIT_TAG main
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        SYSTEM
+)
+
+fetchcontent_getproperties(pico_headers)
+fetchcontent_populate(pico_headers)
+
+add_library(pico_headers STATIC src/pico_headers.cpp)
+target_include_directories(pico_headers SYSTEM PUBLIC ${pico_headers_SOURCE_DIR})
+
 set(lib_INCLUDE_DIRS
     ${entt_SOURCE_DIR}/src
     ${cute_headers_SOURCE_DIR}
+    ${pico_headers_SOURCE_DIR}
     ${flecs_SOURCE_DIR}/include
     ${glm_SOURCE_DIR}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)

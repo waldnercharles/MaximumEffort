@@ -1,9 +1,9 @@
 #include <cute.h>
 
+#include "assets.h"
 #include "cmp/transform_component.h"
 #include "game.h"
 #include "imgui.h"
-#include "log.h"
 
 #ifdef _WIN32
 // Use dedicated GPU unless there is an application-specific override
@@ -32,9 +32,11 @@ int main(int argc, char *argv[])
 
 	if (cf_is_error(result))
 	{
-		log_fatal(result.details);
+		//		log_fatal(result.details);
 		return -1;
 	}
+	mount_assets_folder();
+	cf_make_font("ProggyClean.ttf", "ProggyClean");
 
 	cf_app_init_imgui(false);
 

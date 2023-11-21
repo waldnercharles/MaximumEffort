@@ -3,7 +3,6 @@
 #include "cmp/hitbox_component.h"
 #include "cmp/player_component.h"
 #include "cmp/transform_component.h"
-#include "game.h"
 
 #include <cute.h>
 
@@ -78,7 +77,5 @@ PhysicsSystem::PhysicsSystem(AabbGrid<Entity> &enemy_grid)
 void PhysicsSystem::update(World &world)
 {
 	update_aabb_grid(world, enemy_grid);
-
 	handle_enemy_to_enemy_collisions(world);
-	//	handle_player_projectiles(game.world, spatial_hash);
 }
