@@ -23,11 +23,11 @@ void ProjectileSystem::update(World &w)
 		TransformComponent,
 		HurtboxComponent>();
 
-	for (auto proj : view)
+	for (auto proj_entity : view)
 	{
-		bool piercing = view.get<ProjectileComponent>(proj).piercing;
-		auto &proj_transform = view.get<TransformComponent>(proj);
-		auto proj_circle = view.get<HurtboxComponent>(proj).circle;
+		auto proj = view.get<ProjectileComponent>(proj_entity);
+		auto &proj_transform = view.get<TransformComponent>(proj_entity);
+		auto proj_circle = view.get<HurtboxComponent>(proj_entity).circle;
 		proj_circle.p += proj_transform.get_world_transform().pos;
 
 		Aabb proj_aabb = cf_make_aabb(
@@ -35,17 +35,17 @@ void ProjectileSystem::update(World &w)
 			proj_circle.p + cf_v2(proj_circle.r, proj_circle.r)
 		);
 
-		enemy_grid.query(proj_aabb, [&](Entity enemy) {
-			auto &enemy_transform = w.get<TransformComponent>(enemy);
-			auto enemy_circle = w.get<HitboxComponent>(enemy).circle;
+		enemy_grid.query(proj_aabb, [&](Entity enemy_entity) {
+			auto &enemy_transform = w.get<TransformComponent>(enemy_entity);
+			auto enemy_circle = w.get<HitboxComponent>(enemy_entity).circle;
 			enemy_circle.p += enemy_transform.get_world_transform().pos;
 
 			if (cf_circle_to_circle(proj_circle, enemy_circle))
 			{
-				event_bus.emit<HitEvent>(proj, enemy);
-				if (!piercing)
+				event_bus.emit<HitEvent>(proj_entity, enemy_entity);
+				if (!proj.piercing)
 				{
-					w.emplace<FrameDestroyComponent>(proj);
+					w.emplace<FrameDestroyComponent>(proj_entity);
 					return false;
 				}
 			}

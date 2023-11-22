@@ -155,12 +155,12 @@ void TiledMap::draw()
 
 				CF_Sprite s = atlas[gid];
 
-				f32 pos_x = i % map->width * map->tilewidth;
-				f32 pos_y = i / map->width * map->tileheight;
+				s32 pos_x = i % map->width * map->tilewidth;
+				s32 pos_y = i / map->width * map->tileheight;
 
 				s.transform.p = cf_v2(
-					pos_x - map_center.x,
-					map_center.y - pos_y
+					pos_x - (int)map_center.x,
+					(int)map_center.y - pos_y
 				);
 				cf_draw_sprite(&s);
 			}

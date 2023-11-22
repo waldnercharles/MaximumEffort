@@ -8,5 +8,5 @@ struct CameraSystem final : public System
 
 	void update(World &) override;
 
-	v2 camera_size = cf_v2(320, 180);
+	v2 camera_size = cf_v2(640, 480);
 };

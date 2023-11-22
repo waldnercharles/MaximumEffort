@@ -28,7 +28,15 @@ int main(int argc, char *argv[])
 	int options = CF_APP_OPTIONS_WINDOW_POS_CENTERED |
 				  CF_APP_OPTIONS_D3D11_CONTEXT;
 
-	auto result = cf_make_app("Maximum Effort", 0, 0, 1280, 720, options, NULL);
+	auto result = cf_make_app(
+		"Maximum Effort",
+		0,
+		0,
+		640 * 1.5,
+		480 * 1.5,
+		options,
+		NULL
+	);
 
 	if (cf_is_error(result))
 	{

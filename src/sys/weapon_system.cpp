@@ -88,6 +88,7 @@ void WeaponSystem::update(World &world)
 						pos,
 						weapon.targeting_radius
 					);
+
 					has_target = try_get_closest_enemy_dir(
 						world,
 						enemy_aabb_grid,
@@ -104,7 +105,12 @@ void WeaponSystem::update(World &world)
 				Entity e = ECS_NULL;
 				if (weapon.weapon_type == WEAPON_BOOMERANG)
 				{
-					e = prefabs::ProjectileBoomerang::create(world, pos, dir);
+					e = prefabs::ProjectileBoomerang::create(
+						world,
+						pos,
+						dir,
+						0
+					);
 				}
 
 				if (e == ECS_NULL)
