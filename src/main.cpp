@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
 		"Maximum Effort",
 		0,
 		0,
-		640 * 1.5,
-		480 * 1.5,
+		640 * 2,
+		480 * 2,
 		options,
 		NULL
 	);

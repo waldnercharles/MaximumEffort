@@ -57,6 +57,7 @@ Game::Game()
 	  projectile_system(
 		  std::make_shared<ProjectileSystem>(event_bus, enemy_aabb_grid)
 	  ),
+	  hitbox_immunity_system(std::make_shared<HitImmunitySystem>()),
 	  player_animation_system(std::make_shared<PlayerAnimationSystem>()),
 	  camera_system(std::make_shared<CameraSystem>(640, 480)),
 	  render_system(std::make_shared<RenderSystem>())

@@ -1,5 +1,6 @@
 #include "prefabs/projectile_boomerang_prefab.h"
 #include "cmp/damage_component.h"
+#include "cmp/hit_component.h"
 #include "cmp/hitbox_component.h"
 #include "cmp/hurtbox_component.h"
 #include "cmp/lifetime_component.h"
@@ -29,13 +30,15 @@ Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u32 id)
 	hitbox.circle = cf_make_circle({0, 0}, 4);
 
 	auto &hurtbox = w.emplace<HurtboxComponent>(e);
-	hurtbox.id = id;
-	hurtbox.cooldown = .25f;
 	hurtbox.circle = cf_make_circle({0, 0}, 4);
 
 	auto &damage = w.emplace<DamageComponent>(e);
-	damage.min = 10;
-	damage.max = 100;
+	damage.min = 4;
+	damage.max = 17;
+
+	auto &hit = w.emplace<HitComponent>(e);
+	hit.id = id;
+	hit.frame_immunity = 255;
 
 	auto &lifetime = w.emplace<LifetimeComponent>(e);
 	lifetime = 2.0f;

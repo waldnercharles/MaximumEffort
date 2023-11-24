@@ -74,11 +74,11 @@ struct DamageNumbers
 
 	void draw()
 	{
+		cf_draw_push_layer(4096);
+		cf_push_font("ProggyClean");
 		const float font_size = 13.f;
 		for (auto p : particles)
 		{
-			cf_push_font("ProggyClean");
-
 			cf_push_font_size(font_size * p.scale);
 			cf_push_font_blur(1);
 			cf_draw_push_color({0.f, 0.f, 0.f, 1.f});
@@ -92,9 +92,9 @@ struct DamageNumbers
 			cf_draw_text(p.text, p.pos, -1);
 			cf_draw_pop_color();
 			cf_pop_font_size();
-
-			cf_pop_font();
 		}
+		cf_pop_font();
+		cf_draw_pop_layer();
 	}
 
 private:

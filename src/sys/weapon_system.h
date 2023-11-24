@@ -11,4 +11,6 @@ struct WeaponSystem final : public System
 private:
 	Rnd rnd;
 	AabbGrid<Entity> &enemy_aabb_grid;
+
+	u32 next_attack_id;
 };

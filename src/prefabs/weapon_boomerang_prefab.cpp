@@ -14,9 +14,9 @@ Entity prefabs::WeaponBoomerang::create(World &world, Entity parent)
 	parent_transform.add_child(&child_transform);
 
 	auto &wpn = world.emplace<WeaponComponent>(e);
-	wpn.rate = 0.15f;
+	wpn.rate = 0.66f;
 	wpn.weapon_type = WEAPON_BOOMERANG;
-	wpn.targeting_radius = 64.f;
+	wpn.targeting_radius = 128.f;
 	wpn.target_type = TARGET_CLOSEST_ENEMY;
 
 	auto &dbg = world.emplace<DebugDrawCircleComponent>(e);

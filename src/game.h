@@ -8,6 +8,7 @@
 #include "states/game_state_playing.h"
 #include "sys/camera_system.h"
 #include "sys/damage_system.h"
+#include "sys/hit_immunity_system.h"
 #include "sys/input_system.h"
 #include "sys/lifetime_system.h"
 #include "sys/movement_behavior_system.h"
@@ -58,6 +59,7 @@ private:
 	std::shared_ptr<PhysicsSystem> physics_system;
 
 	std::shared_ptr<ProjectileSystem> projectile_system;
+	std::shared_ptr<HitImmunitySystem> hitbox_immunity_system;
 
 	std::shared_ptr<PlayerAnimationSystem> player_animation_system;
 

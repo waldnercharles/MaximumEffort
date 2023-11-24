@@ -109,9 +109,11 @@ void WeaponSystem::update(World &world)
 						world,
 						pos,
 						dir,
-						0
+						next_attack_id
 					);
 				}
+
+				next_attack_id++;
 
 				if (e == ECS_NULL)
 				{

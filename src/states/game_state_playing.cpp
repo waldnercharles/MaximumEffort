@@ -1,6 +1,5 @@
 #include "states/game_state_playing.h"
 #include "cmp/frame_destroy_component.h"
-#include "cmp/transform_component.h"
 #include "game.h"
 
 void GameStatePlaying::enter(Game &game)
@@ -9,6 +8,7 @@ void GameStatePlaying::enter(Game &game)
 
 GameState *GameStatePlaying::update(Game &game)
 {
+	game.hitbox_immunity_system->update(game.world);
 	game.lifetime_system->update(game.world);
 	game.weapon_system->update(game.world);
 	game.spawner_system->update(game.world);

@@ -59,6 +59,9 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/enemy_spawner_component.h
             cmp/frame_destroy_component.h
             cmp/health_component.h
+            cmp/hit_component.h
+            cmp/hit_component.h
+            cmp/hit_immunity_component.h
             cmp/hitbox_component.h
             cmp/hurtbox_component.h
             cmp/input_component.h
@@ -102,6 +105,8 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/camera_system.h
             sys/damage_system.cpp
             sys/damage_system.h
+            sys/hit_immunity_system.cpp
+            sys/hit_immunity_system.h
             sys/input_system.cpp
             sys/input_system.h
             sys/lifetime_system.cpp

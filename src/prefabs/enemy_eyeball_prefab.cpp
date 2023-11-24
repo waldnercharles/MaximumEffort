@@ -23,7 +23,7 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 			e
 		);
 	follow_behavior.entity = target;
-	follow_behavior.speed = {20, 20};
+	follow_behavior.speed = {14, 14};
 	follow_behavior.face_target = true;
 
 	auto &hitbox = world.emplace<HitboxComponent>(e);
@@ -33,8 +33,8 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 	hurtbox.circle = cf_make_circle({0, 0}, 6);
 
 	auto &health = world.emplace<HealthComponent>(e);
-	health.current = 1000;
-	health.max = 1000;
+	health.current = 5;
+	health.max = 5;
 
 	auto &sprite = world.emplace<SpriteComponent>(
 		e,
