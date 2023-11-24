@@ -12,5 +12,5 @@ private:
 	Rnd rnd;
 	AabbGrid<Entity> &enemy_aabb_grid;
 
-	u32 next_attack_id;
+	u16 next_attack_id;
 };

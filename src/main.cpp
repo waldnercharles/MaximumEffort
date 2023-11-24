@@ -21,7 +21,7 @@ void update(void *udata)
 	game->update();
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
 	cf_clear_color(0.5, 0.5, 0.5, 1);
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	{
 		cf_app_update(update);
 
-		fps = fps * alpha + (1.0 - alpha) * (1.0 / DELTA_TIME);
+		fps = fps * alpha + (1.f - alpha) * (1.f / DELTA_TIME);
 		ImGui::Text("%f", fps);
 
 		game.draw();

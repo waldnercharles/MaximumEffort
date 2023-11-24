@@ -36,15 +36,15 @@ if (WIN32 AND NOT MSVC)
     target_link_libraries(${PROJECT_NAME} ws2_32 secur32 shlwapi)
 endif ()
 
-if (MSVC)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0 _CRT_SECURE_NO_WARNINGS)
     add_compile_options(-nologo -fp:fast)
 
     set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-    target_compile_options(${PROJECT_NAME}_static PUBLIC -WX -W4 -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459)
-    target_compile_options(${PROJECT_NAME} PUBLIC -WX -W4 -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459)
+    target_compile_options(${PROJECT_NAME}_static PUBLIC -WX -W4 -permissive- -wd4100 -wd4244) # -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459)
+    target_compile_options(${PROJECT_NAME} PUBLIC -WX -W4 -permissive- -wd4100 -wd4244) # -wd4100 -wd4189 -wd4267 -wd4244 -wd4458 -wd4459)
     set_target_properties(${PROJECT_NAME}_static PROPERTIES LINK_FLAGS "/profile")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/profile")
 endif ()

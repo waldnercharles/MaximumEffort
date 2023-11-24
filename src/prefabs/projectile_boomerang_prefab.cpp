@@ -10,7 +10,7 @@
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
 
-Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u32 id)
+Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u16 id)
 {
 	const Entity e = w.create();
 	auto &proj = w.emplace<ProjectileComponent>(e);

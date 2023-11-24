@@ -7,12 +7,12 @@
 #include <fmt/core.h>
 
 template <typename T, size_t S>
-inline constexpr size_t get_file_name_offset(const T (&str)[S],
-											 size_t i = S - 1)
+inline constexpr size_t
+get_file_name_offset(const T (&str)[S], size_t i = S - 1)
 {
 	return (str[i] == '/' || str[i] == '\\')
-				   ? i + 1
-				   : (i > 0 ? get_file_name_offset(str, i - 1) : 0);
+			   ? i + 1
+			   : (i > 0 ? get_file_name_offset(str, i - 1) : 0);
 }
 
 template <typename T>
@@ -24,7 +24,8 @@ inline constexpr size_t get_file_name_offset(T (&str)[1])
 namespace log_utility
 {
 	template <typename T, T v>
-	struct const_expr_value {
+	struct const_expr_value
+	{
 		static constexpr const T value = v;
 	};
 }
@@ -32,15 +33,19 @@ namespace log_utility
 #define UTILITY_CONST_EXPR_VALUE(exp)                                          \
 	::log_utility::const_expr_value<decltype(exp), exp>::value
 
-#define LOG_FILENAME (__FILE__ + get_file_name_offset(__FILE__))
+#define LOG_FILENAME ((__FILE__) + (get_file_name_offset(__FILE__)))
 #define log(val, lvl, ...)                                                     \
-	fmt::print("{} {} {:<16} {}\n",                                            \
-			   fmt::format(fmt::fg(fmt::terminal_color::white),                \
-						   "{:%H:%M:%S}",                                      \
-						   fmt::localtime(std::time(nullptr))),                \
-			   lvl,                                                            \
-			   fmt::format("{}:{}", LOG_FILENAME, __LINE__),                   \
-			   fmt::format(val, ##__VA_ARGS__))
+	fmt::print(                                                                \
+		"{} {} {:<16} {}\n",                                                   \
+		fmt::format(                                                           \
+			fmt::fg(fmt::terminal_color::white),                               \
+			"{:%H:%M:%S}",                                                     \
+			fmt::localtime(std::time(nullptr))                                 \
+		),                                                                     \
+		lvl,                                                                   \
+		fmt::format("{}:{}", LOG_FILENAME, __LINE__),                          \
+		fmt::format(val, ##__VA_ARGS__)                                        \
+	)
 
 #define log_trace(val, ...)                                                    \
 	log(val,                                                                   \
@@ -69,8 +74,10 @@ namespace log_utility
 
 #define log_fatal(val, ...)                                                    \
 	log(val,                                                                   \
-		fmt::format(fmt::fg(fmt::terminal_color::black) |                      \
-							fmt::bg(fmt::terminal_color::red),                 \
-					"{:5}",                                                    \
-					"fatal"),                                                  \
+		fmt::format(                                                           \
+			fmt::fg(fmt::terminal_color::black) |                              \
+				fmt::bg(fmt::terminal_color::red),                             \
+			"{:5}",                                                            \
+			"fatal"                                                            \
+		),                                                                     \
 		##__VA_ARGS__)

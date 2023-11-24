@@ -1,18 +1,13 @@
 #pragma once
 #include <cstdint>
-
-template <typename T>
-inline static uint32_t type_id()
-{
-	return type_id_builder::get<T>();
-}
+#include <type_traits>
 
 struct type_id_builder
 {
 	template <typename T>
 	inline static uint32_t get()
 	{
-		return sanitized<std::remove_cv_t<cf_remove_reference<T>>>();
+		return sanitized<std::remove_cv_t<std::remove_reference<T>>>();
 	}
 
 private:
@@ -29,3 +24,9 @@ private:
 		return value;
 	}
 };
+
+template <typename T>
+inline static uint32_t type_id()
+{
+	return type_id_builder::get<T>();
+}

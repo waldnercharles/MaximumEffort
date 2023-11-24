@@ -3,7 +3,7 @@
 #include "common.h"
 #include "system.h"
 
-struct PhysicsSystem : public System
+struct PhysicsSystem final : public System
 {
 	PhysicsSystem(AabbGrid<Entity> &enemy_grid);
 

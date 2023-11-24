@@ -46,7 +46,7 @@ struct DamageNumbers
 		p.alpha = 10.f;
 		p.scale = 1.f;
 
-		auto force = 100;
+		float force = 100.f;
 		p.vel = {
 			cf_rnd_next_range_float(&rnd, -force, force),
 			cf_rnd_next_range_float(&rnd, -force, force)};

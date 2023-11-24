@@ -14,7 +14,7 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 	world.emplace<EnemyComponent>(e);
 
 	auto &enemy_transform = world.emplace<TransformComponent>(e);
-	enemy_transform.set_transform({pos});
+	enemy_transform.set_transform({pos, 0.f});
 
 	world.emplace<MovementComponent>(e);
 
