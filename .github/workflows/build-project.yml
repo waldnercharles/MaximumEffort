@@ -53,9 +53,9 @@ jobs:
       - name: Generate artifacts for Windows
         shell: cmd
         run: |
-          robocopy build\Release dist MaximumEffort.exe 
+          robocopy build\Release\bin dist MaximumEffort.exe 
           robocopy build\Release\assets dist\assets /E
-          robocopy build dist MaximumEffort.exe
+          robocopy build\bin dist MaximumEffort.exe
           robocopy build\assets dist\assets /E
           7z a ${{ matrix.platform.artifact }}.zip .\dist\*
         if: runner.os == 'Windows'
@@ -63,7 +63,7 @@ jobs:
       - name: Generate artifacts for MacOS
         run: |
           mkdir -p ./dist
-          cp -R -v ./build/MaximumEffort ./dist
+          cp -R -v ./build/bin/MaximumEffort ./dist
           cp -R -v ./build/assets ./dist/assets
           tar -czvf ${{ matrix.platform.artifact }}.tar.gz -C dist .
         if: runner.os == 'macOS'
@@ -71,7 +71,7 @@ jobs:
       - name: Generate artifacts for Linux
         run: |
           mkdir -p ./dist
-          cp -v ./build/MaximumEffort ./dist
+          cp -v ./build/bin/MaximumEffort ./dist
           cp -r -v ./build/assets ./dist/assets
           tar -czvf ${{ matrix.platform.artifact }}.tar.gz -C dist .
         if: runner.os == 'Linux'
