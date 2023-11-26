@@ -1,4 +1,5 @@
 #include "sys/movement_behavior_system.h"
+#include "cmp/facing_component.h"
 #include "cmp/movement_behavior_constant_direction_component.h"
 #include "cmp/movement_behavior_follow_target_component.h"
 #include "cmp/movement_component.h"
@@ -7,7 +8,7 @@
 void MovementBehaviorSystem::update(World &world)
 {
 	world.view<MovementComponent, MovementBehavior_ConstantDirectionComponent>()
-		.each([](Entity e,
+		.each([](auto e,
 				 MovementComponent &m,
 				 MovementBehavior_ConstantDirectionComponent &t) {
 			m.vel = cf_safe_norm(t.dir) * t.speed;
@@ -18,7 +19,7 @@ void MovementBehaviorSystem::update(World &world)
 			MovementComponent,
 			MovementBehavior_FollowTargetComponent,
 			TransformComponent>()
-		.each([&](Entity e,
+		.each([&](auto e,
 				  MovementComponent &m,
 				  MovementBehavior_FollowTargetComponent &b,
 				  TransformComponent &t) {
@@ -34,8 +35,15 @@ void MovementBehaviorSystem::update(World &world)
 								 .get_world_transform()
 								 .pos;
 
+			auto dist = other_pos - pos;
 			b.dir = cf_safe_norm(other_pos - pos);
 			m.vel = b.dir * b.speed;
+
+			FacingComponent *f = world.try_get<FacingComponent>(e);
+			if (f)
+			{
+				f->facing = dist.y < 0 ? Facing::DOWN : Facing::UP;
+			}
 
 			if (b.face_target)
 			{

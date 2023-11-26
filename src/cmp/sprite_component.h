@@ -3,6 +3,10 @@
 
 struct SpriteComponent final : public Cute::Sprite
 {
+	SpriteComponent(const char *path) : Sprite(cf_make_sprite(path))
+	{
+	}
+
 	SpriteComponent(const Cute::Sprite &s) : Cute::Sprite(s)
 	{
 	}

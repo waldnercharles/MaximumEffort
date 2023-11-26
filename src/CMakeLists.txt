@@ -132,6 +132,10 @@ add_library(${PROJECT_NAME}_static STATIC
             tiled_map.cpp
             tiled_map.h
             type_id.h
+            shaders/blit_shader.h
+            rendering/render_target.h
+            rendering/render_target.cpp
+            cmp/facing_component.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

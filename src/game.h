@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "particle_system.h"
+#include "rendering/render_target.h"
 #include "states/game_state.h"
 #include "states/game_state_main_menu.h"
 #include "states/game_state_playing.h"
@@ -21,11 +22,21 @@
 #include "sys/weapon_system.h"
 #include "tiled_map.h"
 
+#define INTERNAL_RESOLUTION_X 1024
+#define INTERNAL_RESOLUTION_Y 1024
+
+#define CAMERA_RESOLUTION_X 320
+#define CAMERA_RESOLUTION_Y 240
+
 struct Game
 {
 	Game();
+	~Game();
+
 	void update();
 	void draw();
+
+	void resize();
 
 	friend struct GameStateMainMenu;
 	friend struct GameStatePlaying;
@@ -61,8 +72,14 @@ private:
 	std::shared_ptr<ProjectileSystem> projectile_system;
 	std::shared_ptr<HitImmunitySystem> hitbox_immunity_system;
 
-	std::shared_ptr<PlayerAnimationSystem> player_animation_system;
+	std::shared_ptr<AnimationSystem> player_animation_system;
 
 	std::shared_ptr<CameraSystem> camera_system;
 	std::shared_ptr<RenderSystem> render_system;
+
+	CF_Material blit_material = {};
+	CF_Shader blit_shader = {};
+
+	RenderTarget main_render_target = {};
+	CF_Mesh main_render_quad = {};
 };

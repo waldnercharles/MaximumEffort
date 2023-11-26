@@ -9,7 +9,7 @@ void mount_assets_folder()
 	Path path = cf_fs_get_base_directory();
 	path.normalize();
 
-	path += "/assets";
+	path += "../assets";
 	cf_fs_mount(path.c_str(), "/", true);
 
 	log_info("{} mounted to \"/\"", path.c_str());

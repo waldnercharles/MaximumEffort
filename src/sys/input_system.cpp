@@ -1,4 +1,5 @@
 #include "sys/input_system.h"
+#include "cmp/facing_component.h"
 #include "cmp/input_component.h"
 #include "cmp/movement_component.h"
 #include "cmp/player_component.h"
@@ -28,10 +29,11 @@ void InputSystem::update(World &world)
 				i.input_dir.x += 1;
 			}
 
-			PlayerComponent *p = world.try_get<PlayerComponent>(e);
-			if (p)
+			FacingComponent *f = world.try_get<FacingComponent>(e);
+			if (f)
 			{
-				p->facing = i.input_dir.x;
+				//				f->facing = i.input_dir.y > 0 ? Facing::UP : Facing::DOWN;
+				f->facing = i.input_dir.x > 0 ? Facing::RIGHT : Facing::LEFT;
 			}
 
 			m.vel = cf_safe_norm(i.input_dir) * i.speed;

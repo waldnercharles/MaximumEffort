@@ -2,5 +2,4 @@
 
 struct PlayerComponent
 {
-	int facing = 0;
 };

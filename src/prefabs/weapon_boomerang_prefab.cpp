@@ -19,9 +19,9 @@ Entity prefabs::WeaponBoomerang::create(World &world, Entity parent)
 	wpn.targeting_radius = 128.f;
 	wpn.target_type = TARGET_CLOSEST_ENEMY;
 
-	auto &dbg = world.emplace<DebugDrawCircleComponent>(e);
-	dbg.color = cf_make_color_rgba_f(0, 0.5f, 1, 0.5f);
-	dbg.circle = cf_make_circle({0, 0}, wpn.targeting_radius);
+	//	auto &dbg = world.emplace<DebugDrawCircleComponent>(e);
+	//	dbg.color = cf_make_color_rgba_f(0, 0.5f, 1, 0.5f);
+	//	dbg.circle = cf_make_circle({0, 0}, wpn.targeting_radius);
 
 	world.emplace<MovementComponent>(e);
 
