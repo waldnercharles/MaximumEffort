@@ -1,18 +1,7 @@
 #include "game.h"
-#include "assets.h"
-#include "cmp/enemy_component.h"
 #include "cmp/transform_component.h"
 #include "common.h"
 #include "imgui.h"
-#include "sys/camera_system.h"
-#include "sys/input_system.h"
-#include "sys/lifetime_system.h"
-#include "sys/movement_behavior_system.h"
-#include "sys/movement_system.h"
-#include "sys/player_animation_system.h"
-#include "sys/render_system.h"
-#include "sys/spawner_system.h"
-#include "sys/weapon_system.h"
 
 #include "shaders/blit_shader.h"
 
@@ -89,33 +78,31 @@ void Game::resize()
 Game::Game()
 	: world(),
 	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
-	  damage_numbers(std::make_shared<DamageNumbers>(world, event_bus)),
-	  damage_system(std::make_shared<DamageSystem>(world, event_bus)),
-	  lifetime_system(std::make_shared<LifetimeSystem>()),
-	  weapon_system(std::make_shared<WeaponSystem>(enemy_aabb_grid)),
-	  spawner_system(std::make_shared<SpawnerSystem>(
-		  cf_max(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y) * 0.66f,
-		  cf_max(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y)
-	  )),
-	  input_system(std::make_shared<InputSystem>()),
-	  movement_behavor_system(std::make_shared<MovementBehaviorSystem>()),
-	  movement_system(std::make_shared<MovementSystem>()),
-	  physics_system(std::make_shared<PhysicsSystem>(enemy_aabb_grid)),
-	  projectile_system(
-		  std::make_shared<ProjectileSystem>(event_bus, enemy_aabb_grid)
+	  damage_numbers(world, event_bus),
+	  game_timer(1800),
+	  damage_system(world, event_bus),
+	  lifetime_system(),
+	  weapon_system(enemy_aabb_grid),
+	  spawner_system(
+		  CAMERA_OFFSCREEN_DIST,
+		  CAMERA_OFFSCREEN_DIST * 2.f,
+		  game_timer
 	  ),
-	  hitbox_immunity_system(std::make_shared<HitImmunitySystem>()),
-	  player_animation_system(std::make_shared<AnimationSystem>()),
-	  camera_system(std::make_shared<CameraSystem>(
-		  CAMERA_RESOLUTION_X,
-		  CAMERA_RESOLUTION_Y
-	  )),
-	  render_system(std::make_shared<RenderSystem>())
+	  input_system(),
+	  movement_behavior_system(),
+	  movement_system(),
+	  physics_system((enemy_aabb_grid)),
+	  projectile_system(event_bus, enemy_aabb_grid),
+	  hitbox_immunity_system(),
+	  player_animation_system(),
+	  camera_system(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y),
+	  render_system()
 {
 	register_scene_node_callbacks(world);
 
 	blit_material = cf_make_material();
 	blit_shader = CF_MAKE_SOKOL_SHADER(blit_shader);
+
 	resize();
 
 	states.current = &states.main_menu;
@@ -139,9 +126,10 @@ void Game::update()
 		states.current = new_state;
 	}
 
-	damage_numbers->update();
+	damage_numbers.update();
 }
 
+// TODO: This should maybe be per-game-state
 void Game::draw()
 {
 	if (cf_app_was_resized())
@@ -149,21 +137,29 @@ void Game::draw()
 		resize();
 	}
 
-	camera_system->update(world);
-	render_system->update(world);
-	damage_numbers->draw();
-	cf_render_to(main_render_target.canvas, true);
-
-	// Fetch each frame, as it's invalidated during window-resize
-	CF_Canvas app_canvas = cf_app_get_canvas();
-
-	cf_apply_canvas(app_canvas, false);
+	// Draw Game
+	cf_camera_push();
 	{
-		// Draw offscreen texture onto the app's canvas on the left.
-		cf_apply_mesh(main_render_quad);
-		cf_apply_shader(blit_shader, blit_material);
-		cf_draw_elements();
+		camera_system.update(world);
+		render_system.update(world);
+		damage_numbers.draw();
+		cf_render_to(main_render_target.canvas, true);
+
+		// Fetch each frame, as it's invalidated during window-resize
+		CF_Canvas app_canvas = cf_app_get_canvas();
+
+		cf_apply_canvas(app_canvas, false);
+		{
+			// Draw offscreen texture onto the app's canvas on the left.
+			cf_apply_mesh(main_render_quad);
+			cf_apply_shader(blit_shader, blit_material);
+			cf_draw_elements();
+		}
 	}
+	cf_camera_pop();
+
+	// Draw UI
+	game_timer.draw();
 
 	if (ImGui::Button("Pause"))
 	{

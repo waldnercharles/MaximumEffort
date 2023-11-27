@@ -1,8 +1,6 @@
 #include "states/game_state_main_menu.h"
-#include "assets.h"
-#include "enemy_type.h"
 #include "game.h"
-#include "prefabs/enemy_spawner_prefab.h"
+#include "level_1.h"
 #include "prefabs/player_prefab.h"
 #include "prefabs/weapon_boomerang_prefab.h"
 
@@ -22,12 +20,8 @@ void GameStateMainMenu::exit(Game &game)
 	game.world.emplace<TiledMap>(tiled_map, load_tiled_map("map.json"));
 
 	player = prefabs::Player::create(game.world);
-	eyeball_spawner = prefabs::EnemySpawner::create(
-		game.world,
-		player,
-		0.1f,
-		ENEMY_TYPE_EYEBALL
-	);
+	make_level_1(game.world, player);
+
 
 	weapon_boomerang = prefabs::WeaponBoomerang::create(game.world, player);
 }

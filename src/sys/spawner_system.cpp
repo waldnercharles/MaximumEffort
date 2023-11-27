@@ -3,28 +3,29 @@
 #include "cmp/enemy_spawner_component.h"
 #include "cmp/player_component.h"
 #include "cmp/transform_component.h"
-#include "prefabs/enemy_eyeball_prefab.h"
+#include "game_timer.h"
+#include "prefabs/enemy_prefab.h"
 
 #include <cute.h>
 
-SpawnerSystem::SpawnerSystem(f32 spawn_radius, f32 respawn_radius)
-	: spawn_radius(spawn_radius),
-	  respawn_radius(respawn_radius),
-	  rnd(cf_rnd_seed((u64)time(nullptr)))
+SpawnerSystem::SpawnerSystem(
+	f32 spawn_radius,
+	f32 respawn_radius,
+	const GameTimer &game_timer
+)
+	: rnd(cf_rnd_seed((u64)time(nullptr))),
+	  spawn_radius(spawn_radius),
+	  respawn_radius_sq(respawn_radius * respawn_radius),
+	  game_timer(game_timer)
 {
 }
 
 void SpawnerSystem::update(World &world)
 {
 	auto player = world.view<PlayerComponent, TransformComponent>().front();
-	auto &player_scene_node = world.get<TransformComponent>(player);
+	auto &player_transform = world.get<TransformComponent>(player);
 
-	// TODO: Attach an enemy to its spawner.
-	v2 spawner_pos = player_scene_node.get_world_transform().pos;
-	Aabb bounds = cf_make_aabb_center_half_extents(
-		spawner_pos,
-		cf_v2(respawn_radius, respawn_radius)
-	);
+	v2 player_pos = player_transform.get_world_transform().pos;
 
 	// Respawn if out of bounds
 	auto enemies = world.view<EnemyComponent, TransformComponent>();
@@ -33,37 +34,85 @@ void SpawnerSystem::update(World &world)
 		auto &enemy_scene_node = enemies.get<TransformComponent>(e);
 		auto enemy_pos = enemy_scene_node.get_world_transform().pos;
 
-		if (!cf_contains_point(bounds, enemy_pos))
+		if (cf_len_sq(enemy_pos - player_pos) > respawn_radius_sq)
 		{
-			enemy_scene_node.set_pos(spawner_pos + get_spawn_pos());
+			enemy_scene_node.set_pos(player_pos + get_spawn_offset());
 		}
 	}
 
 	// Actually spawn new enemies
-	auto spawners = world.view<EnemySpawnerComponent>();
-	for (auto e : spawners)
-	{
-		auto &s = spawners.get<EnemySpawnerComponent>(e);
-
-		if (cf_on_interval(s.rate, 0))
+	world.view<EnemySpawnerComponent>().each([&](auto e,
+												 EnemySpawnerComponent &s) {
+		float time_remaining = game_timer.get_time_remaining();
+		if (s.start > time_remaining)
 		{
-			switch (s.entity_type)
+			if (s.end > time_remaining)
 			{
-				case ENEMY_TYPE_EYEBALL:
+				world.destroy(e);
+				return;
+			}
+
+			// Update alive count
+			for (int i = s.spawned_enemies.count() - 1; i >= 0; i--)
+			{
+				// TODO: Should we use an event here instead?
+				if (!world.valid(s.spawned_enemies[i]))
 				{
-					prefabs::EnemyEyeball::create(
+					s.spawned_enemies.unordered_remove(i);
+				}
+			}
+
+			if (cf_on_interval(s.interval, 0))
+			{
+				for (int i = 0; i < s.spawns_per_interval; i++)
+				{
+					if (s.spawned_enemies.count() >= s.max_spawns)
+					{
+						break;
+					}
+
+					Entity enemy;
+					const char *name = "blue_slime.ase";
+					switch (s.enemy_type)
+					{
+						case ENEMY_TYPE_BLUE_SLIME:
+							name = "blue_slime.ase";
+							break;
+						case ENEMY_TYPE_GREEN_SLIME:
+							name = "green_slime.ase";
+							break;
+						case ENEMY_TYPE_GREY_SLIME:
+							name = "grey_slime.ase";
+							break;
+						case ENEMY_TYPE_ORANGE_SLIME:
+							name = "orange_slime.ase";
+							break;
+						case ENEMY_TYPE_RED_SLIME:
+							name = "red_slime.ase";
+							break;
+						case ENEMY_TYPE_EYEBALL:
+							name = "eyeball.ase";
+							break;
+					}
+					enemy = prefabs::Enemy::create(
 						world,
-						spawner_pos + get_spawn_pos(),
-						player
+						player_pos + get_spawn_offset(),
+						name
 					);
-					break;
+
+					s.spawned_enemies.add(enemy);
+				}
+
+				if (s.spawn_once)
+				{
+					world.destroy(e);
 				}
 			}
 		}
-	}
+	});
 }
 
-inline v2 SpawnerSystem::get_spawn_pos()
+inline v2 SpawnerSystem::get_spawn_offset()
 {
 	float angle = cf_rnd_next_range_float(&rnd, -PI, PI);
 	v2 dir = cf_v2(cosf(angle), sinf(angle));

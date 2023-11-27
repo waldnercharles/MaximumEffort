@@ -1,4 +1,4 @@
-#include "prefabs/enemy_eyeball_prefab.h"
+#include "prefabs/enemy_prefab.h"
 #include "cmp/enemy_component.h"
 #include "cmp/facing_component.h"
 #include "cmp/health_component.h"
@@ -6,11 +6,14 @@
 #include "cmp/hurtbox_component.h"
 #include "cmp/movement_behavior_follow_target_component.h"
 #include "cmp/movement_component.h"
+#include "cmp/player_component.h"
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
 
-Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
+Entity prefabs::Enemy::create(World &world, v2 pos, const char *path)
 {
+	const Entity player = world.view<PlayerComponent>().front();
+
 	const Entity e = world.create();
 	world.emplace<EnemyComponent>(e);
 
@@ -24,7 +27,7 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 
 	auto &follow_behavior =
 		world.emplace<MovementBehavior_FollowTargetComponent>(e);
-	follow_behavior.entity = target;
+	follow_behavior.entity = player;
 	follow_behavior.speed = {14, 14};
 	follow_behavior.face_target = false;
 
@@ -38,8 +41,7 @@ Entity prefabs::EnemyEyeball::create(World &world, v2 pos, Entity target)
 	health.current = 5;
 	health.max = 5;
 
-	auto &sprite =
-		world.emplace<SpriteComponent>(e, cf_make_sprite("slime.ase"));
+	auto &sprite = world.emplace<SpriteComponent>(e, cf_make_sprite(path));
 	sprite.layer = 50;
 
 	return e;

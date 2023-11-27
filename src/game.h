@@ -2,6 +2,7 @@
 #include <cute_tiled.h>
 
 #include "common.h"
+#include "game_timer.h"
 #include "particle_system.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
@@ -22,14 +23,17 @@
 #include "sys/weapon_system.h"
 #include "tiled_map.h"
 
-#define INTERNAL_RESOLUTION_X 1024
-#define INTERNAL_RESOLUTION_Y 1024
-
-#define CAMERA_RESOLUTION_X 320
-#define CAMERA_RESOLUTION_Y 240
-
 struct Game
 {
+	const int CAMERA_RESOLUTION_X = 320;
+	const int CAMERA_RESOLUTION_Y = 240;
+
+	const float CAMERA_OFFSCREEN_DIST =
+		.5f * cf_distance(
+				  cf_v2(0, 0),
+				  cf_v2(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y)
+			  );
+
 	Game();
 	~Game();
 
@@ -57,25 +61,29 @@ struct Game
 
 	AabbGrid<Entity> enemy_aabb_grid;
 
-	std::shared_ptr<DamageNumbers> damage_numbers;
-	std::shared_ptr<DamageSystem> damage_system;
-
 private:
-	std::shared_ptr<LifetimeSystem> lifetime_system;
-	std::shared_ptr<WeaponSystem> weapon_system;
-	std::shared_ptr<SpawnerSystem> spawner_system;
-	std::shared_ptr<InputSystem> input_system;
-	std::shared_ptr<MovementBehaviorSystem> movement_behavor_system;
-	std::shared_ptr<MovementSystem> movement_system;
-	std::shared_ptr<PhysicsSystem> physics_system;
+	GameTimer game_timer;
+	DamageNumbers damage_numbers;
 
-	std::shared_ptr<ProjectileSystem> projectile_system;
-	std::shared_ptr<HitImmunitySystem> hitbox_immunity_system;
+	// ECS Systems
+	DamageSystem damage_system;
 
-	std::shared_ptr<AnimationSystem> player_animation_system;
+	LifetimeSystem lifetime_system;
+	WeaponSystem weapon_system;
+	SpawnerSystem spawner_system;
+	InputSystem input_system;
+	MovementBehaviorSystem movement_behavior_system;
+	MovementSystem movement_system;
+	PhysicsSystem physics_system;
 
-	std::shared_ptr<CameraSystem> camera_system;
-	std::shared_ptr<RenderSystem> render_system;
+	ProjectileSystem projectile_system;
+	HitImmunitySystem hitbox_immunity_system;
+
+	AnimationSystem player_animation_system;
+
+	// Rendering
+	CameraSystem camera_system;
+	RenderSystem render_system;
 
 	CF_Material blit_material = {};
 	CF_Shader blit_shader = {};

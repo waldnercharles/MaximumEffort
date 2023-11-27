@@ -57,6 +57,7 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/debug_draw_circle_component.h
             cmp/enemy_component.h
             cmp/enemy_spawner_component.h
+            cmp/facing_component.h
             cmp/frame_destroy_component.h
             cmp/health_component.h
             cmp/hit_component.h
@@ -80,13 +81,16 @@ add_library(${PROJECT_NAME}_static STATIC
             enemy_type.h
             event.h
             events/damage_event.h
+            events/enemy_death_event.h
             events/hit_event.h
             game.cpp
             game.h
+            game_timer.cpp
+            game_timer.h
             log.h
             particle_system.h
-            prefabs/enemy_eyeball_prefab.cpp
-            prefabs/enemy_eyeball_prefab.h
+            prefabs/enemy_prefab.cpp
+            prefabs/enemy_prefab.h
             prefabs/enemy_spawner_prefab.cpp
             prefabs/enemy_spawner_prefab.h
             prefabs/player_prefab.cpp
@@ -95,6 +99,9 @@ add_library(${PROJECT_NAME}_static STATIC
             prefabs/projectile_boomerang_prefab.h
             prefabs/weapon_boomerang_prefab.cpp
             prefabs/weapon_boomerang_prefab.h
+            rendering/render_target.cpp
+            rendering/render_target.h
+            shaders/blit_shader.h
             singleton.h
             states/game_state.h
             states/game_state_main_menu.cpp
@@ -132,10 +139,8 @@ add_library(${PROJECT_NAME}_static STATIC
             tiled_map.cpp
             tiled_map.h
             type_id.h
-            shaders/blit_shader.h
-            rendering/render_target.h
-            rendering/render_target.cpp
-            cmp/facing_component.h
+            level_1.h
+            difficulty_modifiers.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)
