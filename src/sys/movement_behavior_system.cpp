@@ -3,6 +3,7 @@
 #include "cmp/movement_behavior_constant_direction_component.h"
 #include "cmp/movement_behavior_follow_target_component.h"
 #include "cmp/movement_component.h"
+#include "cmp/stats_component.h"
 #include "cmp/transform_component.h"
 
 void MovementBehaviorSystem::update(World &world)
@@ -18,11 +19,14 @@ void MovementBehaviorSystem::update(World &world)
 		.view<
 			MovementComponent,
 			MovementBehavior_FollowTargetComponent,
+			StatsComponent,
 			TransformComponent>()
 		.each([&](auto e,
 				  MovementComponent &m,
 				  MovementBehavior_FollowTargetComponent &b,
+				  StatsComponent &s,
 				  TransformComponent &t) {
+			auto stats = s.get_stats();
 			auto pos = t.get_world_transform().pos;
 
 			if (!world.valid(b.entity))
@@ -37,7 +41,7 @@ void MovementBehaviorSystem::update(World &world)
 
 			auto dist = other_pos - pos;
 			b.dir = cf_safe_norm(other_pos - pos);
-			m.vel = b.dir * b.speed;
+			m.vel = b.dir * stats.speed;
 
 			FacingComponent *f = world.try_get<FacingComponent>(e);
 			if (f)

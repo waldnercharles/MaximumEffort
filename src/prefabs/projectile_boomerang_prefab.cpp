@@ -33,8 +33,8 @@ Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u16 id)
 	hurtbox.circle = cf_make_circle({0, 0}, 4);
 
 	auto &damage = w.emplace<DamageComponent>(e);
-	damage.min = 4;
-	damage.max = 17;
+	damage.min = 80;
+	damage.max = 140;
 
 	auto &hit = w.emplace<HitComponent>(e);
 	hit.id = id;

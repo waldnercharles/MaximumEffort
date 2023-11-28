@@ -23,7 +23,6 @@ void GameTimer::draw()
 	int seconds = fmodf(time_remaining, 60);
 	sprintf(text, "%02d:%02d", minutes, seconds);
 
-
 	cf_draw_push_layer(4096);
 	cf_push_font("ProggyClean");
 	const float font_size = 24.f;

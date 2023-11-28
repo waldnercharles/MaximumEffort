@@ -1,5 +1,6 @@
 #pragma once
-#include "game_timer.h"
+#include "cmp/stats_component.h"
+#include "system.h"
 
 struct LevelDifficulty
 {
@@ -25,21 +26,23 @@ struct LevelDifficulty
 	float gold_time_modifier;
 };
 
-struct DifficultySystem
-{
-	void update()
-	{
-	}
+struct GameTimer;
 
-	float get_health_modifier()
-	{
-		float modifier = 1 + difficulty.speed_offset;
-		modifier += time_progress * difficulty.speed_time_modifier;
-	}
+struct DifficultySystem final : public System
+{
+	DifficultySystem(LevelDifficulty difficulty, GameTimer &game_timer);
+
+	void update(World &world) override;
+
+	StatsModifier get_stats_modifier() const;
 
 	LevelDifficulty difficulty = {};
-	GameTimer &game_timer;
 
 private:
 	float time_progress;
+
+	GameTimer &game_timer;
+
+	Modifier get_health_modifier() const;
+	Modifier get_speed_modifier() const;
 };

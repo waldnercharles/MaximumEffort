@@ -73,22 +73,25 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/player_component.h
             cmp/projectile_component.h
             cmp/sprite_component.h
+            cmp/stats_component.cpp
+            cmp/stats_component.h
             cmp/transform_component.cpp
             cmp/transform_component.h
             cmp/weapon_component.h
             common.h
             cute_headers.cpp
+            damage_numbers.cpp
+            damage_numbers.h
             enemy_type.h
             event.h
             events/damage_event.h
-            events/enemy_death_event.h
             events/hit_event.h
             game.cpp
             game.h
             game_timer.cpp
             game_timer.h
+            level_1.h
             log.h
-            particle_system.h
             prefabs/enemy_prefab.cpp
             prefabs/enemy_prefab.h
             prefabs/enemy_spawner_prefab.cpp
@@ -112,6 +115,10 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/camera_system.h
             sys/damage_system.cpp
             sys/damage_system.h
+            sys/difficulty_system.cpp
+            sys/difficulty_system.h
+            sys/health_system.cpp
+            sys/health_system.h
             sys/hit_immunity_system.cpp
             sys/hit_immunity_system.h
             sys/input_system.cpp
@@ -139,8 +146,6 @@ add_library(${PROJECT_NAME}_static STATIC
             tiled_map.cpp
             tiled_map.h
             type_id.h
-            level_1.h
-            difficulty_modifiers.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

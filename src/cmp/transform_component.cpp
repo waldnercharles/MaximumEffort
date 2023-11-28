@@ -39,8 +39,8 @@ Transform TransformComponent::get_parent_transform() const
 	{
 		is_cached = true;
 
-		cached_parent_transform = parent ? parent->get_world_transform()
-										 : Transform {};
+		cached_parent_transform =
+			parent ? parent->get_world_transform() : Transform {};
 	}
 
 	return cached_parent_transform;
@@ -132,20 +132,25 @@ TransformComponent &TransformComponent::operator-=(const v2 &p)
 	return *this;
 }
 
-void link_transform_with_entity(World &world, Entity e)
+void on_transform_construct(World &world, Entity e)
 {
 	world.get<TransformComponent>(e).entity = e;
 }
 
-void register_scene_node_callbacks(World &world)
+void on_transform_update(World &world, Entity e)
 {
-	world.on_construct<TransformComponent>()
-		.connect<&link_transform_with_entity>();
-	world.on_update<TransformComponent>().connect<&link_transform_with_entity>(
-	);
+	world.get<TransformComponent>(e).entity = e;
 }
 
-Transform operator*(const Transform &a, const Transform &b)
+void on_transform_destroy(World &world, Entity e)
 {
-	return {a.pos + b.pos, a.angle + b.angle};
+	auto &t = world.get<TransformComponent>(e);
+	t.~TransformComponent();
+}
+
+void register_transform_callbacks(World &world)
+{
+	world.on_construct<TransformComponent>().connect<&on_transform_construct>();
+	world.on_update<TransformComponent>().connect<&on_transform_update>();
+	world.on_destroy<TransformComponent>().connect<&on_transform_destroy>();
 }

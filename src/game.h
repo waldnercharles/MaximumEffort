@@ -2,14 +2,16 @@
 #include <cute_tiled.h>
 
 #include "common.h"
+#include "damage_numbers.h"
 #include "game_timer.h"
-#include "particle_system.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
 #include "states/game_state_main_menu.h"
 #include "states/game_state_playing.h"
 #include "sys/camera_system.h"
 #include "sys/damage_system.h"
+#include "sys/difficulty_system.h"
+#include "sys/health_system.h"
 #include "sys/hit_immunity_system.h"
 #include "sys/input_system.h"
 #include "sys/lifetime_system.h"
@@ -66,16 +68,21 @@ private:
 	DamageNumbers damage_numbers;
 
 	// ECS Systems
+	// TODO: Rename to DamageEventHandler?
 	DamageSystem damage_system;
 
 	LifetimeSystem lifetime_system;
-	WeaponSystem weapon_system;
+
+	DifficultySystem difficulty_system;
 	SpawnerSystem spawner_system;
+	HealthSystem stats_system;
+
 	InputSystem input_system;
 	MovementBehaviorSystem movement_behavior_system;
 	MovementSystem movement_system;
 	PhysicsSystem physics_system;
 
+	WeaponSystem weapon_system;
 	ProjectileSystem projectile_system;
 	HitImmunitySystem hitbox_immunity_system;
 

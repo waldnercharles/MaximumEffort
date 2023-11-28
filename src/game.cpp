@@ -3,6 +3,7 @@
 #include "common.h"
 #include "imgui.h"
 
+#include "cmp/health_component.h"
 #include "shaders/blit_shader.h"
 
 static void quad_verts(float x, float y, float sx, float sy, Vertex quad[6])
@@ -83,11 +84,14 @@ Game::Game()
 	  damage_system(world, event_bus),
 	  lifetime_system(),
 	  weapon_system(enemy_aabb_grid),
+	  difficulty_system({}, game_timer),
 	  spawner_system(
 		  CAMERA_OFFSCREEN_DIST,
 		  CAMERA_OFFSCREEN_DIST * 2.f,
-		  game_timer
+		  game_timer,
+		  difficulty_system
 	  ),
+	  stats_system(),
 	  input_system(),
 	  movement_behavior_system(),
 	  movement_system(),
@@ -98,7 +102,7 @@ Game::Game()
 	  camera_system(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y),
 	  render_system()
 {
-	register_scene_node_callbacks(world);
+	register_transform_callbacks(world);
 
 	blit_material = cf_make_material();
 	blit_shader = CF_MAKE_SOKOL_SHADER(blit_shader);
@@ -142,7 +146,33 @@ void Game::draw()
 	{
 		camera_system.update(world);
 		render_system.update(world);
-		damage_numbers.draw();
+		//		damage_numbers.draw();
+
+
+		char text[12] = {0};
+		world.view<TransformComponent, HealthComponent>().each(
+			[&](TransformComponent &t, HealthComponent &h) {
+				auto pos = t.get_world_transform().pos;
+				int health = h.current;
+
+				sprintf(text, "%d", health);
+
+				cf_draw_push_layer(4096);
+				cf_push_font("ProggyClean");
+				cf_push_font_size(13.f);
+
+				pos.x -= cf_text_width(text) * .5f;
+
+				cf_draw_push_color({1.f, 0.f, 0.f, 1.f});
+				cf_draw_text(text, pos, -1);
+				cf_draw_pop_color();
+				cf_pop_font_size();
+				cf_pop_font();
+				cf_draw_pop_layer();
+			}
+		);
+
+
 		cf_render_to(main_render_target.canvas, true);
 
 		// Fetch each frame, as it's invalidated during window-resize

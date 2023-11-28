@@ -5,18 +5,21 @@
 #include "cmp/transform_component.h"
 #include "game_timer.h"
 #include "prefabs/enemy_prefab.h"
+#include "sys/difficulty_system.h"
 
 #include <cute.h>
 
 SpawnerSystem::SpawnerSystem(
 	f32 spawn_radius,
 	f32 respawn_radius,
-	const GameTimer &game_timer
+	const GameTimer &game_timer,
+	const DifficultySystem &difficulty_system
 )
 	: rnd(cf_rnd_seed((u64)time(nullptr))),
 	  spawn_radius(spawn_radius),
 	  respawn_radius_sq(respawn_radius * respawn_radius),
-	  game_timer(game_timer)
+	  game_timer(game_timer),
+	  difficulty_system(difficulty_system)
 {
 }
 
@@ -72,23 +75,32 @@ void SpawnerSystem::update(World &world)
 					}
 
 					Entity enemy;
+					auto modifier = difficulty_system.get_stats_modifier();
 					const char *name = "blue_slime.ase";
 					switch (s.enemy_type)
 					{
 						case ENEMY_TYPE_BLUE_SLIME:
 							name = "blue_slime.ase";
+							modifier.health.flat += 400;
 							break;
 						case ENEMY_TYPE_GREEN_SLIME:
 							name = "green_slime.ase";
+							modifier.health.flat += 50;
+							modifier.speed.flat += 8;
 							break;
 						case ENEMY_TYPE_GREY_SLIME:
 							name = "grey_slime.ase";
+							modifier.health.flat += 250;
+							modifier.speed.flat -= 5;
 							break;
 						case ENEMY_TYPE_ORANGE_SLIME:
 							name = "orange_slime.ase";
+							modifier.health.flat += 750;
+							modifier.speed.flat += 3;
 							break;
 						case ENEMY_TYPE_RED_SLIME:
 							name = "red_slime.ase";
+							modifier.health.flat += 10000;
 							break;
 						case ENEMY_TYPE_EYEBALL:
 							name = "eyeball.ase";
@@ -97,6 +109,7 @@ void SpawnerSystem::update(World &world)
 					enemy = prefabs::Enemy::create(
 						world,
 						player_pos + get_spawn_offset(),
+						modifier,
 						name
 					);
 

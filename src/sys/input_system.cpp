@@ -2,14 +2,20 @@
 #include "cmp/facing_component.h"
 #include "cmp/input_component.h"
 #include "cmp/movement_component.h"
-#include "cmp/player_component.h"
+#include "cmp/stats_component.h"
 
 #include <cute.h>
 
 void InputSystem::update(World &world)
 {
-	world.view<InputComponent, MovementComponent>().each(
-		[&world](auto e, InputComponent &i, MovementComponent &m) {
+	world.view<InputComponent, MovementComponent, StatsComponent>().each(
+		[&world](
+			auto e,
+			InputComponent &i,
+			MovementComponent &m,
+			StatsComponent &s
+		) {
+			auto stats = s.get_stats();
 			i.input_dir = {};
 
 			if (cf_key_down(CF_KEY_W) || cf_key_down(CF_KEY_UP))
@@ -36,7 +42,7 @@ void InputSystem::update(World &world)
 				f->facing = i.input_dir.x > 0 ? Facing::RIGHT : Facing::LEFT;
 			}
 
-			m.vel = cf_safe_norm(i.input_dir) * i.speed;
+			m.vel = cf_safe_norm(i.input_dir) * stats.speed;
 		}
 	);
 }

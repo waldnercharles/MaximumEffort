@@ -10,12 +10,25 @@
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
 
-Entity prefabs::Enemy::create(World &world, v2 pos, const char *path)
+Entity prefabs::Enemy::create(
+	World &world,
+	v2 pos,
+	StatsModifier stats_modifier,
+	const char *path
+)
 {
 	const Entity player = world.view<PlayerComponent>().front();
 
 	const Entity e = world.create();
 	world.emplace<EnemyComponent>(e);
+
+	// TODO: Read from file
+	Stats stats;
+	stats.health = 100;
+	stats.speed = 10;
+
+	auto &stats_component = world.emplace<StatsComponent>(e, stats);
+	stats_component.add_modifier(stats_modifier);
 
 	auto &f = world.emplace<FacingComponent>(e);
 	f.facing = Facing::NONE;
@@ -28,7 +41,6 @@ Entity prefabs::Enemy::create(World &world, v2 pos, const char *path)
 	auto &follow_behavior =
 		world.emplace<MovementBehavior_FollowTargetComponent>(e);
 	follow_behavior.entity = player;
-	follow_behavior.speed = {14, 14};
 	follow_behavior.face_target = false;
 
 	auto &hitbox = world.emplace<HitboxComponent>(e);
@@ -38,8 +50,7 @@ Entity prefabs::Enemy::create(World &world, v2 pos, const char *path)
 	hurtbox.circle = cf_make_circle({0, 0}, 6);
 
 	auto &health = world.emplace<HealthComponent>(e);
-	health.current = 5;
-	health.max = 5;
+	health.current = stats_component.get_stats().health;
 
 	auto &sprite = world.emplace<SpriteComponent>(e, cf_make_sprite(path));
 	sprite.layer = 50;

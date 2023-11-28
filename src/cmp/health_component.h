@@ -1,7 +1,8 @@
 #pragma once
+#include "common.h"
+#include "stats_component.h"
 
 struct HealthComponent
 {
-	int current;
-	int max;
+	float current;
 };

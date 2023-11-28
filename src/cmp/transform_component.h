@@ -10,7 +10,16 @@ struct Transform
 	float angle;
 };
 
-Transform operator*(const Transform &a, const Transform &b);
+inline Transform operator*(const Transform &a, const Transform &b)
+{
+	return {a.pos + b.pos, a.angle + b.angle};
+}
+
+void on_transform_construct(World &world, Entity e);
+void on_transform_update(World &world, Entity e);
+void on_transform_destroy(World &world, Entity e);
+
+void register_transform_callbacks(World &world);
 
 struct TransformComponent
 {
@@ -55,9 +64,7 @@ private:
 	void invalidate_cached_parent_transform();
 	void invalidate_cached_parent_transform_for_children();
 
-	friend void link_transform_with_entity(World &world, Entity e);
+	friend void on_transform_construct(World &world, Entity e);
+	friend void on_transform_update(World &world, Entity e);
+	friend void on_transform_destroy(World &world, Entity e);
 };
-
-void link_transform_with_entity(World &world, Entity e);
-
-void register_scene_node_callbacks(World &world);
