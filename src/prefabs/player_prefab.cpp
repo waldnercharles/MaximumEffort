@@ -20,8 +20,7 @@ Entity prefabs::Player::create(World &world)
 
 	world.emplace<StatsComponent>(e, stats);
 
-	auto &f = world.emplace<FacingComponent>(e);
-	f.facing = Facing::NONE;
+	world.emplace<FacingComponent>(e);
 
 	world.emplace<InputComponent>(e);
 	world.emplace<MovementComponent>(e);

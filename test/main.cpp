@@ -16,6 +16,7 @@
 #include <cute.h>
 
 TEST_SUITE(test_event_system);
+TEST_SUITE(test_csv_suite);
 
 int main(int argc, char *argv[])
 {
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
 	pu_display_colors(true);
 
 	RUN_TEST_SUITE(test_event_system);
+	RUN_TEST_SUITE(test_csv_suite);
 
 	pu_print_stats();
 	return pu_test_failed();

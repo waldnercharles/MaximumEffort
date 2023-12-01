@@ -146,31 +146,31 @@ void Game::draw()
 	{
 		camera_system.update(world);
 		render_system.update(world);
-		//		damage_numbers.draw();
+		damage_numbers.draw();
 
 
-		char text[12] = {0};
-		world.view<TransformComponent, HealthComponent>().each(
-			[&](TransformComponent &t, HealthComponent &h) {
-				auto pos = t.get_world_transform().pos;
-				int health = h.current;
-
-				sprintf(text, "%d", health);
-
-				cf_draw_push_layer(4096);
-				cf_push_font("ProggyClean");
-				cf_push_font_size(13.f);
-
-				pos.x -= cf_text_width(text) * .5f;
-
-				cf_draw_push_color({1.f, 0.f, 0.f, 1.f});
-				cf_draw_text(text, pos, -1);
-				cf_draw_pop_color();
-				cf_pop_font_size();
-				cf_pop_font();
-				cf_draw_pop_layer();
-			}
-		);
+		//		char text[12] = {0};
+		//		world.view<TransformComponent, HealthComponent>().each(
+		//			[&](TransformComponent &t, HealthComponent &h) {
+		//				auto pos = t.get_world_transform().pos;
+		//				int health = h.current;
+		//
+		//				sprintf(text, "%d", health);
+		//
+		//				cf_draw_push_layer(4096);
+		//				cf_push_font("ProggyClean");
+		//				cf_push_font_size(13.f);
+		//
+		//				pos.x -= cf_text_width(text) * .5f;
+		//
+		//				cf_draw_push_color({1.f, 0.f, 0.f, 1.f});
+		//				cf_draw_text(text, pos, -1);
+		//				cf_draw_pop_color();
+		//				cf_pop_font_size();
+		//				cf_pop_font();
+		//				cf_draw_pop_layer();
+		//			}
+		//		);
 
 
 		cf_render_to(main_render_target.canvas, true);

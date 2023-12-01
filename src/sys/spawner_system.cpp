@@ -77,30 +77,32 @@ void SpawnerSystem::update(World &world)
 					Entity enemy;
 					auto modifier = difficulty_system.get_stats_modifier();
 					const char *name = "blue_slime.ase";
+					float scale = 1.f;
 					switch (s.enemy_type)
 					{
 						case ENEMY_TYPE_BLUE_SLIME:
-							name = "blue_slime.ase";
-							modifier.health.flat += 400;
+							name = "eyeball.ase";
+							modifier.health.flat += 300;
 							break;
 						case ENEMY_TYPE_GREEN_SLIME:
-							name = "green_slime.ase";
-							modifier.health.flat += 50;
-							modifier.speed.flat += 8;
+							name = "bat.ase";
+							modifier.speed.flat += 12;
+							scale = .4f;
 							break;
 						case ENEMY_TYPE_GREY_SLIME:
-							name = "grey_slime.ase";
-							modifier.health.flat += 250;
-							modifier.speed.flat -= 5;
+							name = "blue_mushroom.ase";
+							modifier.health.flat += 100;
+							scale = .4f;
 							break;
 						case ENEMY_TYPE_ORANGE_SLIME:
 							name = "orange_slime.ase";
-							modifier.health.flat += 750;
-							modifier.speed.flat += 3;
+							modifier.health.flat += 200;
+							scale = 1.2f;
 							break;
 						case ENEMY_TYPE_RED_SLIME:
 							name = "red_slime.ase";
-							modifier.health.flat += 10000;
+							modifier.health.flat += 5000;
+							scale = 2.25f;
 							break;
 						case ENEMY_TYPE_EYEBALL:
 							name = "eyeball.ase";
@@ -110,7 +112,8 @@ void SpawnerSystem::update(World &world)
 						world,
 						player_pos + get_spawn_offset(),
 						modifier,
-						name
+						name,
+						scale
 					);
 
 					s.spawned_enemies.add(enemy);

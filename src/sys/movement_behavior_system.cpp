@@ -46,7 +46,7 @@ void MovementBehaviorSystem::update(World &world)
 			FacingComponent *f = world.try_get<FacingComponent>(e);
 			if (f)
 			{
-				f->facing = dist.y < 0 ? Facing::DOWN : Facing::UP;
+				f->facing = cf_sign_v2(dist);
 			}
 
 			if (b.face_target)

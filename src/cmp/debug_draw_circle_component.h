@@ -5,6 +5,8 @@
 struct DebugDrawCircleComponent
 {
 	Circle circle = {};
-	Color color = {};
-	float thickness = {};
+	Color fill = cf_color_invisible();
+	Color outline = cf_color_invisible();
+
+	float thickness = 0.1f;
 };

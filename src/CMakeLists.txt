@@ -132,8 +132,8 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/movement_system.h
             sys/physics_system.cpp
             sys/physics_system.h
-            sys/player_animation_system.cpp
-            sys/player_animation_system.h
+            sys/animation_system.cpp
+            sys/animation_system.h
             sys/projectile_system.cpp
             sys/projectile_system.h
             sys/render_system.cpp
@@ -146,6 +146,7 @@ add_library(${PROJECT_NAME}_static STATIC
             tiled_map.cpp
             tiled_map.h
             type_id.h
+            cmp/age_component.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

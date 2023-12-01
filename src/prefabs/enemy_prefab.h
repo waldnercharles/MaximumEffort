@@ -6,6 +6,12 @@ namespace prefabs
 {
 	namespace Enemy
 	{
-		Entity create(World &world, v2 pos, StatsModifier, const char *path);
+		Entity create(
+			World &world,
+			v2 pos,
+			StatsModifier,
+			const char *path,
+			float scale = 1.f
+		);
 	}
 }

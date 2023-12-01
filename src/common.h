@@ -28,6 +28,8 @@ using Map [[maybe_unused]] = Cute::Map<K, T>;
 
 using v2 [[maybe_unused]] = CF_V2;
 
+using String [[maybe_unused]] = Cute::String;
+
 CF_INLINE v2 operator+(v2 a, v2 b) { return cf_v2(a.x + b.x, a.y + b.y); }
 CF_INLINE v2 operator-(v2 a, v2 b) { return cf_v2(a.x - b.x, a.y - b.y); }
 CF_INLINE v2& operator+=(v2& a, v2 b) { return a = a + b; }

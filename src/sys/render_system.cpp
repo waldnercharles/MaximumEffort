@@ -14,19 +14,19 @@ void RenderSystem::update(World &world)
 
 	world.view<DebugDrawCircleComponent, TransformComponent>().each(
 		[](auto e, DebugDrawCircleComponent &dbg, TransformComponent &t) {
-			Color color = dbg.color;
-
 			Circle circle = dbg.circle;
 			circle.p += t.get_world_transform().pos;
 
-			cf_draw_push_color(color);
+			cf_draw_push_color(dbg.fill);
 			cf_draw_circle_fill(circle);
 			cf_draw_pop_color();
 
-			color.a = 1.f;
-			cf_draw_push_color(color);
-			cf_draw_circle(circle, 0.1f);
-			cf_draw_pop_color();
+			if (dbg.thickness > 0)
+			{
+				cf_draw_push_color(dbg.outline);
+				cf_draw_circle(circle, dbg.thickness);
+				cf_draw_pop_color();
+			}
 		}
 	);
 
