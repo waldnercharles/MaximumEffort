@@ -1,0 +1,11 @@
+{
+	"name": "bat",
+	"stats": {
+		"health": 100,
+		"speed": 25
+	},
+	"hitbox": 16,
+	"hurtbox": 16,
+	"scale": 1,
+	"sprite": "bat.ase"
+}

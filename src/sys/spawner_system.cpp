@@ -1,9 +1,12 @@
 #include "sys/spawner_system.h"
 #include "cmp/enemy_component.h"
 #include "cmp/enemy_spawner_component.h"
+#include "cmp/health_component.h"
 #include "cmp/player_component.h"
 #include "cmp/transform_component.h"
+#include "game.h"
 #include "game_timer.h"
+#include "log.h"
 #include "prefabs/enemy_prefab.h"
 #include "sys/difficulty_system.h"
 
@@ -13,13 +16,15 @@ SpawnerSystem::SpawnerSystem(
 	f32 spawn_radius,
 	f32 respawn_radius,
 	const GameTimer &game_timer,
-	const DifficultySystem &difficulty_system
+	const DifficultySystem &difficulty_system,
+	const EnemeyPrototypeMap &prototypes
 )
 	: rnd(cf_rnd_seed((u64)time(nullptr))),
 	  spawn_radius(spawn_radius),
 	  respawn_radius_sq(respawn_radius * respawn_radius),
 	  game_timer(game_timer),
-	  difficulty_system(difficulty_system)
+	  difficulty_system(difficulty_system),
+	  prototypes(prototypes)
 {
 }
 
@@ -65,7 +70,7 @@ void SpawnerSystem::update(World &world)
 				}
 			}
 
-			if (cf_on_interval(s.interval, 0))
+			if (game_timer.on_interval(s.interval))
 			{
 				for (int i = 0; i < s.spawns_per_interval; i++)
 				{
@@ -74,47 +79,19 @@ void SpawnerSystem::update(World &world)
 						break;
 					}
 
-					Entity enemy;
-					auto modifier = difficulty_system.get_stats_modifier();
-					const char *name = "blue_slime.ase";
-					float scale = 1.f;
-					switch (s.enemy_type)
+					auto pos = player_pos + get_spawn_offset();
+
+					auto *spawn_fn = prototypes.try_get(sintern(s.enemy_type));
+					if (!spawn_fn)
 					{
-						case ENEMY_TYPE_BLUE_SLIME:
-							name = "eyeball.ase";
-							modifier.health.flat += 300;
-							break;
-						case ENEMY_TYPE_GREEN_SLIME:
-							name = "bat.ase";
-							modifier.speed.flat += 12;
-							scale = .4f;
-							break;
-						case ENEMY_TYPE_GREY_SLIME:
-							name = "blue_mushroom.ase";
-							modifier.health.flat += 100;
-							scale = .4f;
-							break;
-						case ENEMY_TYPE_ORANGE_SLIME:
-							name = "orange_slime.ase";
-							modifier.health.flat += 200;
-							scale = 1.2f;
-							break;
-						case ENEMY_TYPE_RED_SLIME:
-							name = "red_slime.ase";
-							modifier.health.flat += 5000;
-							scale = 2.25f;
-							break;
-						case ENEMY_TYPE_EYEBALL:
-							name = "eyeball.ase";
-							break;
+						log_error("Unable to find enemy: {}", s.enemy_type);
+						return;
 					}
-					enemy = prefabs::Enemy::create(
-						world,
-						player_pos + get_spawn_offset(),
-						modifier,
-						name,
-						scale
-					);
+
+					auto enemy = (*spawn_fn)(world, rnd, pos);
+					auto &stats = world.get<StatsComponent>(enemy);
+					auto &health = world.get<HealthComponent>(enemy);
+					health.current = stats.get_stats().health;
 
 					s.spawned_enemies.add(enemy);
 				}

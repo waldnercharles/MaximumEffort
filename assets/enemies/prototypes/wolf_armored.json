@@ -1,0 +1,12 @@
+{
+	"name": "wolf_armored",
+	"stats": {
+		"health": 500,
+		"speed": 25
+	},
+	"hitbox": 8,
+	"hurtbox": 6,
+	"scale": 1.25,
+	"mass": 50.0,
+	"sprite": "enemies/sprites/wolf_armored.ase"
+}

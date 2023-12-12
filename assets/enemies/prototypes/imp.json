@@ -1,0 +1,11 @@
+{
+	"name": "imp",
+	"stats": {
+		"health": 200,
+		"speed": 70
+	},
+	"hitbox": 32,
+	"hurtbox": 32,
+	"scale": 0.33,
+	"sprite": "stump.ase"
+}

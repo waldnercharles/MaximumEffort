@@ -1,0 +1,11 @@
+{
+	"name": "wolf",
+	"stats": {
+		"health": 150,
+		"speed": 35
+	},
+	"hitbox": 8,
+	"hurtbox": 4,
+	"scale": 1,
+	"sprite": "enemies/sprites/wolf.ase"
+}

@@ -38,7 +38,15 @@ void InputSystem::update(World &world)
 			FacingComponent *f = world.try_get<FacingComponent>(e);
 			if (f)
 			{
-				f->facing = cf_sign_v2(i.input_dir);
+				if (i.input_dir.x != 0)
+				{
+					f->facing_x = cf_sign_int((int)i.input_dir.x);
+				}
+
+				if (i.input_dir.y != 0)
+				{
+					f->facing_y = cf_sign_int((int)i.input_dir.y);
+				}
 			}
 
 			m.vel = cf_safe_norm(i.input_dir) * stats.speed;

@@ -1,0 +1,11 @@
+{
+	"name": "skeleton",
+	"stats": {
+		"health": 100,
+		"speed": 25
+	},
+	"hitbox": 6,
+	"hurtbox": 4,
+	"scale": 1.15,
+	"sprite": "enemies/sprites/skeleton.ase"
+}

@@ -4,6 +4,7 @@
 #include "common.h"
 #include "damage_numbers.h"
 #include "game_timer.h"
+#include "prototype_map.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
 #include "states/game_state_main_menu.h"
@@ -62,6 +63,8 @@ struct Game
 	EventBus event_bus;
 
 	AabbGrid<Entity> enemy_aabb_grid;
+
+	EnemeyPrototypeMap enemy_prototypes;
 
 private:
 	GameTimer game_timer;

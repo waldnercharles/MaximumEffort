@@ -3,18 +3,20 @@
 #include "cmp/movement_component.h"
 #include "cmp/transform_component.h"
 #include "cmp/weapon_component.h"
+#include "log.h"
 
 Entity prefabs::WeaponBoomerang::create(World &world, Entity parent)
 {
 	const Entity e = world.create();
+	log_info("Created weapon: {}", (u64)e);
 
 	auto &parent_transform = world.get<TransformComponent>(parent);
 	auto &child_transform = world.emplace<TransformComponent>(e);
 
 	parent_transform.add_child(&child_transform);
 
-	auto &wpn = world.emplace<WeaponComponent>(e);
-	wpn.rate = 0.66f;
+	auto &wpn = world.emplace<BulletEmitterComponent>(e);
+	wpn.rate = 1.f;
 	wpn.weapon_type = WEAPON_BOOMERANG;
 	wpn.targeting_radius = 128.f;
 	wpn.target_type = TARGET_CLOSEST_ENEMY;

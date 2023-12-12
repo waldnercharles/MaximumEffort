@@ -1,6 +1,7 @@
 #include "sys/weapon_system.h"
 #include "cmp/transform_component.h"
 #include "cmp/weapon_component.h"
+#include "game_timer.h"
 #include "prefabs/projectile_boomerang_prefab.h"
 
 #include <cute.h>
@@ -24,10 +25,8 @@ bool try_get_closest_enemy_dir(
 	v2 source_pos = circle.p;
 	float radius = circle.r;
 
-	auto aabb = cf_make_aabb_center_half_extents(
-		circle.p,
-		{circle.r, circle.r}
-	);
+	auto aabb =
+		cf_make_aabb_center_half_extents(circle.p, {circle.r, circle.r});
 
 	enemy_aabb_grid.query(aabb, [&](Entity enemy) {
 		if (!world.valid(enemy))
@@ -35,9 +34,8 @@ bool try_get_closest_enemy_dir(
 			return true;
 		}
 
-		auto enemy_pos = world.get<TransformComponent>(enemy)
-							 .get_world_transform()
-							 .pos;
+		auto enemy_pos =
+			world.get<TransformComponent>(enemy).get_world_transform().pos;
 
 		float dist = cf_distance(source_pos, enemy_pos);
 
@@ -59,19 +57,23 @@ bool try_get_closest_enemy_dir(
 	return closest_entity != ECS_NULL;
 }
 
-WeaponSystem::WeaponSystem(AabbGrid<Entity> &enemy_aabb_grid)
+WeaponSystem::WeaponSystem(
+	AabbGrid<Entity> &enemy_aabb_grid,
+	GameTimer &game_timer
+)
 	: rnd(cf_rnd_seed((u64)time(nullptr))),
-	  enemy_aabb_grid(enemy_aabb_grid)
+	  enemy_aabb_grid(enemy_aabb_grid),
+	  game_timer(game_timer)
 {
 }
 
 void WeaponSystem::update(World &world)
 {
-	world.view<WeaponComponent, TransformComponent>().each(
+	world.view<BulletEmitterComponent, TransformComponent>().each(
 		[&](auto weapon_entity,
-			WeaponComponent &weapon,
+			BulletEmitterComponent &weapon,
 			TransformComponent &scene_node) {
-			if (cf_on_interval(weapon.rate, 0))
+			if (game_timer.on_interval(weapon.rate))
 			{
 				v2 pos = scene_node.get_world_transform().pos;
 				v2 dir = {};
@@ -84,10 +86,8 @@ void WeaponSystem::update(World &world)
 				}
 				else if (weapon.target_type == TARGET_CLOSEST_ENEMY)
 				{
-					auto targeting_circle = cf_make_circle(
-						pos,
-						weapon.targeting_radius
-					);
+					auto targeting_circle =
+						cf_make_circle(pos, weapon.targeting_radius);
 
 					has_target = try_get_closest_enemy_dir(
 						world,

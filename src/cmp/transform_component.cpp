@@ -1,4 +1,7 @@
 #include "cmp/transform_component.h"
+#include "log.h"
+#include "player_component.h"
+#include "weapon_component.h"
 
 Entity TransformComponent::get_entity() const
 {
@@ -35,7 +38,7 @@ void TransformComponent::set_rotation(const float radians)
 
 Transform TransformComponent::get_parent_transform() const
 {
-	if (!is_cached)
+	//	if (!is_cached)
 	{
 		is_cached = true;
 
@@ -57,7 +60,7 @@ void TransformComponent::remove_child(TransformComponent *child)
 {
 	assert(child->parent == this);
 	int i;
-	for (i = 0; i < children.count(); i++)
+	for (i = children.count() - 1; i >= 0; i--)
 	{
 		if (children[i] == child)
 		{
@@ -68,19 +71,6 @@ void TransformComponent::remove_child(TransformComponent *child)
 	}
 
 	assert(false && "Parent child relationship is broken.");
-}
-
-TransformComponent::~TransformComponent()
-{
-	if (parent)
-	{
-		parent->remove_child(this);
-	}
-
-	for (const auto &child : children)
-	{
-		child->clear_parent();
-	}
 }
 
 void TransformComponent::set_parent(TransformComponent *p)
@@ -102,7 +92,7 @@ void TransformComponent::invalidate_cached_parent_transform()
 
 void TransformComponent::invalidate_cached_parent_transform_for_children()
 {
-	for (const auto &child : children)
+	for (auto child : children)
 	{
 		child->invalidate_cached_parent_transform();
 	}
@@ -145,7 +135,16 @@ void on_transform_update(World &world, Entity e)
 void on_transform_destroy(World &world, Entity e)
 {
 	auto &t = world.get<TransformComponent>(e);
-	t.~TransformComponent();
+
+	if (t.parent)
+	{
+		t.parent->remove_child(&t);
+	}
+
+	for (const auto &child : t.children)
+	{
+		child->clear_parent();
+	}
 }
 
 void register_transform_callbacks(World &world)

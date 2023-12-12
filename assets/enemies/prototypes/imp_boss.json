@@ -1,0 +1,11 @@
+{
+	"name": "imp_boss",
+	"stats": {
+		"health": 12000,
+		"speed": 30
+	},
+	"hitbox": 32,
+	"hurtbox": 32,
+	"scale": 1,
+	"sprite": "stump.ase"
+}

@@ -1,0 +1,11 @@
+{
+	"name": "lich_boss",
+	"stats": {
+		"health": 36000,
+		"speed": 30
+	},
+	"hitbox": 32,
+	"hurtbox": 32,
+	"scale": 1.5,
+	"sprite": "stump.ase"
+}

@@ -17,7 +17,7 @@ fetchcontent_declare(
 )
 fetchcontent_makeavailable(cute)
 
-add_compile_definitions(ENTT_DISABLE_ASSERT)
+#add_compile_definitions(ENTT_DISABLE_ASSERT)
 fetchcontent_declare(
         entt
         GIT_REPOSITORY https://github.com/skypjack/entt.git
@@ -147,6 +147,13 @@ add_library(${PROJECT_NAME}_static STATIC
             tiled_map.h
             type_id.h
             cmp/age_component.h
+            prototype_map.h
+            level_1.cpp
+            json.h
+            json.cpp
+            enemies.h
+            enemies.cpp
+            cmp/physics_component.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)
@@ -154,7 +161,21 @@ target_include_directories(${PROJECT_NAME}_static PUBLIC .)
 
 target_link_libraries(${PROJECT_NAME}_static cute fmt)
 
-add_custom_target(copy-assets ALL
-                  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
+add_custom_target(always_run ALL
+                  DEPENDS
+                  copy_assets
+)
 
-add_dependencies(${PROJECT_NAME}_static copy-assets)
+add_custom_command(
+        OUTPUT copy_assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${CMAKE_SOURCE_DIR}/assets ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+        DEPENDS
+        always_rebuild
+)
+
+add_custom_command(
+        OUTPUT always_rebuild
+        COMMAND cmake -E echo
+)
+
+add_dependencies(${PROJECT_NAME}_static always_run)

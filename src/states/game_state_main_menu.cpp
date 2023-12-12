@@ -16,12 +16,4 @@ GameState *GameStateMainMenu::update(Game &game)
 
 void GameStateMainMenu::exit(Game &game)
 {
-	tiled_map = game.world.create();
-	game.world.emplace<TiledMap>(tiled_map, load_tiled_map("map.json"));
-
-	player = prefabs::Player::create(game.world);
-	make_level_1(game.world, player);
-
-
-	weapon_boomerang = prefabs::WeaponBoomerang::create(game.world, player);
 }

@@ -13,6 +13,12 @@ void GameTimer::update()
 {
 	elapsed += CF_DELTA_TIME_FIXED;
 	time_remaining -= CF_DELTA_TIME_FIXED;
+
+	if (cf_key_just_pressed(CF_KEY_SPACE))
+	{
+		elapsed += 30;
+		time_remaining -= 30;
+	}
 }
 
 void GameTimer::draw()

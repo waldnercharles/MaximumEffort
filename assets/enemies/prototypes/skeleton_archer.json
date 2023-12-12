@@ -1,0 +1,11 @@
+{
+	"name": "skeleton_archer",
+	"stats": {
+		"health": 400,
+		"speed": 20
+	},
+	"hitbox": 16,
+	"hurtbox": 16,
+	"scale": 0.5,
+	"sprite": "bat.ase"
+}

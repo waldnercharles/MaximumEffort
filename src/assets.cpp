@@ -8,7 +8,7 @@ void mount_assets_folder()
 	Path path = cf_fs_get_base_directory();
 	path.normalize();
 
-	path += "../assets";
+	path += "assets";
 	cf_fs_mount(path.c_str(), "/", true);
 
 	log_info("{} mounted to \"/\"", path.c_str());
@@ -78,13 +78,13 @@ Array<String> parse_csv_row(const String &row)
 	return fields;
 }
 
-Array<Array<String>> parse_csv(const char *str)
+Array<Array<String>> parse_csv_str(const char *str)
 {
 	String s = String(str);
 
 	Array<Array<String>> table;
 
-	for (String row : s.split('\n'))
+	for (String &row : s.split('\n'))
 	{
 		table.add(parse_csv_row(row));
 	}
@@ -92,37 +92,10 @@ Array<Array<String>> parse_csv(const char *str)
 	return table;
 }
 
-//Array<Array<const char *>> parse_csv(const char *str)
-//{
-//	Array<Array<const char *>> parsed = {};
-//
-//	char *row = nullptr;
-//	char *row_copy = nullptr;
-//
-//	char *cell = nullptr;
-//
-//	row_copy = cf_sset(row_copy, str);
-//	while ((row = cf_ssplit_once(row_copy, '\n')))
-//	{
-//		auto &arr = parsed.add();
-//		char *cell_copy = nullptr;
-//		cell_copy = cf_sset(cell_copy, row);
-//		while ((cell = cf_string_split_once(cell_copy, ',')))
-//		{
-//			arr.add(cell);
-//		}
-//		arr.add(cell_copy); // Add the last cell
-//	}
-//
-//	// Add the last row
-//	auto &arr = parsed.add();
-//	char *cell_copy = nullptr;
-//	cell_copy = cf_sset(cell_copy, row_copy);
-//	while ((cell = cf_string_split_once(row_copy, ',')))
-//	{
-//		arr.add(cell);
-//	}
-//	arr.add(cell_copy); // Add the last cell
-//
-//	return parsed;
-//}
+Array<Array<String>> parse_csv_file(const char *path)
+{
+	const char *csv =
+		cf_fs_read_entire_file_to_memory_and_nul_terminate(path, nullptr);
+
+	return parse_csv_str(csv);
+}

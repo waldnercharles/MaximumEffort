@@ -15,8 +15,8 @@ Entity prefabs::Player::create(World &world)
 
 	// TODO: Read from file
 	Stats stats;
-	stats.health = 100.f;
-	stats.speed = 45.f;
+	stats.health = 350.f;
+	stats.speed = 90.f;
 
 	world.emplace<StatsComponent>(e, stats);
 
@@ -25,7 +25,7 @@ Entity prefabs::Player::create(World &world)
 	world.emplace<InputComponent>(e);
 	world.emplace<MovementComponent>(e);
 
-	auto &sprite = world.emplace<SpriteComponent>(e, "character.ase");
+	auto &sprite = world.emplace<SpriteComponent>(e, "character_new.ase");
 	sprite.layer = 100;
 
 	return e;

@@ -83,13 +83,14 @@ Game::Game()
 	  game_timer(1800),
 	  damage_system(world, event_bus),
 	  lifetime_system(),
-	  weapon_system(enemy_aabb_grid),
+	  weapon_system(enemy_aabb_grid, game_timer),
 	  difficulty_system({}, game_timer),
 	  spawner_system(
 		  CAMERA_OFFSCREEN_DIST,
 		  CAMERA_OFFSCREEN_DIST * 2.f,
 		  game_timer,
-		  difficulty_system
+		  difficulty_system,
+		  enemy_prototypes
 	  ),
 	  stats_system(),
 	  input_system(),
@@ -191,10 +192,10 @@ void Game::draw()
 	// Draw UI
 	game_timer.draw();
 
-	if (ImGui::Button("Pause"))
-	{
-		paused = !paused;
-	}
+	//	if (ImGui::Button("Pause"))
+	//	{
+	//		paused = !paused;
+	//	}
 
 	cf_app_draw_onto_screen(false);
 }

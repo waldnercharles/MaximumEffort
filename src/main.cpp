@@ -37,6 +37,7 @@ int main(int, char *[])
 		return -1;
 	}
 	mount_assets_folder();
+
 	cf_make_font("ProggyClean.ttf", "ProggyClean");
 
 	cf_app_init_imgui(false);

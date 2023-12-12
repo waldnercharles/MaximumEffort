@@ -1,0 +1,11 @@
+{
+	"name": "skeleton_boss",
+	"stats": {
+		"health": 24000,
+		"speed": 70
+	},
+	"hitbox": 16,
+	"hurtbox": 16,
+	"scale": 0.8,
+	"sprite": "bat.ase"
+}

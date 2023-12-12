@@ -41,8 +41,6 @@ struct TransformComponent
 	TransformComponent &operator+=(const v2 &pos);
 	TransformComponent &operator-=(const v2 &pos);
 
-	~TransformComponent();
-
 private:
 	Entity entity = entt::null;
 
@@ -54,10 +52,6 @@ private:
 	mutable bool is_cached = false;
 	mutable Transform cached_parent_transform = {};
 
-	// Ensure components are not relocated in memory. This allows us to use regular
-	// pointers pointing to them.
-	static constexpr auto in_place_delete = true;
-
 	void set_parent(TransformComponent *p);
 	void clear_parent();
 
@@ -67,4 +61,13 @@ private:
 	friend void on_transform_construct(World &world, Entity e);
 	friend void on_transform_update(World &world, Entity e);
 	friend void on_transform_destroy(World &world, Entity e);
+};
+
+// Ensure TransformComponents are not relocated in memory. (Allows stable pointer)
+template <>
+struct entt::component_traits<TransformComponent>
+{
+	using type = TransformComponent;
+	static constexpr bool in_place_delete = true;
+	static constexpr std::size_t page_size = ENTT_PACKED_PAGE;
 };

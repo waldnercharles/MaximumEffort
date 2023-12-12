@@ -8,7 +8,7 @@ namespace prefabs
 	{
 		Entity create(
 			World &,
-			EnemyType,
+			const char *type,
 			int start,
 			int end,
 			float interval,

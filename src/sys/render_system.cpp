@@ -30,8 +30,13 @@ void RenderSystem::update(World &world)
 		}
 	);
 
-	world.view<SpriteComponent, TransformComponent>().each(
-		[](auto e, SpriteComponent &sprite, TransformComponent &transform) {
+	//	world.sort<TransformComponent>([](const auto &lhs, const auto &rhs) {
+	//		return lhs.get_world_transform().pos.y <
+	//			   rhs.get_world_transform().pos.y;
+	//	});
+
+	world.view<TransformComponent, SpriteComponent>().each(
+		[](auto e, TransformComponent &transform, SpriteComponent &sprite) {
 			auto world_transform = transform.get_world_transform();
 
 			sprite.transform.p = world_transform.pos;

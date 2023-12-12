@@ -3,7 +3,7 @@
 
 struct EnemySpawnerComponent
 {
-	EnemyType enemy_type;
+	const char *enemy_type;
 
 	int start, end;
 

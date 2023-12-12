@@ -1,0 +1,11 @@
+{
+	"name": "hellhound",
+	"stats": {
+		"health": 250,
+		"speed": 55
+	},
+	"hitbox": 16,
+	"hurtbox": 16,
+	"scale": 0.4,
+	"sprite": "boar.ase"
+}

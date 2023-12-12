@@ -6,13 +6,21 @@
 #include "cmp/stats_component.h"
 #include "cmp/transform_component.h"
 
+
 void MovementBehaviorSystem::update(World &world)
 {
+	world.view<MovementComponent, RayMovementComponent>().each(
+		[](MovementComponent &m, RayMovementComponent &r) {
+			r.speed -= r.speed * r.damping * CF_DELTA_TIME_FIXED;
+			m.vel = cf_safe_norm(r.dir) * r.speed;
+		}
+	);
+
 	world.view<MovementComponent, MovementBehavior_ConstantDirectionComponent>()
 		.each([](auto e,
 				 MovementComponent &m,
 				 MovementBehavior_ConstantDirectionComponent &t) {
-			m.vel = cf_safe_norm(t.dir) * t.speed;
+			m.vel = cf_safe_norm(t.dir) * t.speed * CF_DELTA_TIME_FIXED;
 		});
 
 	world
@@ -46,7 +54,8 @@ void MovementBehaviorSystem::update(World &world)
 			FacingComponent *f = world.try_get<FacingComponent>(e);
 			if (f)
 			{
-				f->facing = cf_sign_v2(dist);
+				f->facing_x = cf_sign_int((int)dist.x);
+				f->facing_y = cf_sign_int((int)dist.y);
 			}
 
 			if (b.face_target)

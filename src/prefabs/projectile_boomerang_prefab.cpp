@@ -18,13 +18,14 @@ Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u16 id)
 
 	auto &t = w.emplace<TransformComponent>(e);
 	t.set_pos(pos);
+	t.set_rotation(atan2(dir.y, dir.x));
 
-	auto &behavior = w.emplace<MovementBehavior_ConstantDirectionComponent>(e);
-	behavior.speed = {80, 80};
+	auto &behavior = w.emplace<RayMovementComponent>(e);
+	behavior.speed = 540;
 	behavior.dir = dir;
+	behavior.damping = 0.5f;
 
-	auto &m = w.emplace<MovementComponent>(e);
-	m.angular_vel = PI * 3.f;
+	w.emplace<MovementComponent>(e);
 
 	auto &hitbox = w.emplace<HitboxComponent>(e);
 	hitbox.circle = cf_make_circle({0, 0}, 4);
@@ -43,7 +44,7 @@ Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u16 id)
 	auto &lifetime = w.emplace<LifetimeComponent>(e);
 	lifetime = 2.0f;
 
-	auto &s = w.emplace<SpriteComponent>(e, cf_make_sprite("boomerang.ase"));
+	auto &s = w.emplace<SpriteComponent>(e, cf_make_sprite("arrow.ase"));
 
 	s.scale = cf_v2(0.85f, 0.85f);
 

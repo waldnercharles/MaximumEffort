@@ -5,7 +5,7 @@
 
 Entity prefabs::EnemySpawner::create(
 	World &world,
-	EnemyType enemy_type,
+	const char *type,
 	int start,
 	int end,
 	float interval,
@@ -24,7 +24,7 @@ Entity prefabs::EnemySpawner::create(
 	auto &s = world.emplace<EnemySpawnerComponent>(e);
 	s.start = start;
 	s.end = end;
-	s.enemy_type = enemy_type;
+	s.enemy_type = type;
 	s.interval = interval;
 	s.spawns_per_interval = spawns_per_interval;
 	s.max_spawns = max_spawns;

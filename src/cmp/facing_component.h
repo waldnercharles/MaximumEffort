@@ -3,5 +3,6 @@
 
 struct FacingComponent
 {
-	v2 facing = {};
+	int facing_x = {};
+	int facing_y = {};
 };

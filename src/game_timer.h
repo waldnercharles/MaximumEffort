@@ -1,4 +1,5 @@
 #pragma once
+#include <cute.h>
 
 struct GameTimer
 {
@@ -20,6 +21,13 @@ struct GameTimer
 	inline float get_time_remaining() const
 	{
 		return time_remaining;
+	}
+
+	inline bool on_interval(float interval) const
+	{
+		int prev = (int)((elapsed - CF_DELTA_TIME_FIXED) / interval);
+		int next = (int)(elapsed / interval);
+		return prev < next;
 	}
 
 private:
