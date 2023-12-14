@@ -19,15 +19,12 @@ ProjectileSystem::ProjectileSystem(
 
 void ProjectileSystem::update(World &w)
 {
-	auto view = w.view<
-		ProjectileComponent,
-		TransformComponent,
-		HurtboxComponent>();
+	auto view = w.view<C_Projectile, C_Transform, C_Hurtbox>();
 
 	for (auto proj : view)
 	{
-		auto &proj_transform = view.get<TransformComponent>(proj);
-		const auto &proj_hurtbox = view.get<HurtboxComponent>(proj);
+		auto &proj_transform = view.get<C_Transform>(proj);
+		const auto &proj_hurtbox = view.get<C_Hurtbox>(proj);
 		auto proj_circle = proj_hurtbox.circle;
 		proj_circle.p += proj_transform.get_world_transform().pos;
 
@@ -37,16 +34,16 @@ void ProjectileSystem::update(World &w)
 		);
 
 		enemy_grid.query(proj_aabb, [&](Entity enemy) {
-			auto &enemy_transform = w.get<TransformComponent>(enemy);
-			auto &enemy_hitbox = w.get<HitboxComponent>(enemy);
+			auto &enemy_transform = w.get<C_Transform>(enemy);
+			auto &enemy_hitbox = w.get<C_Hitbox>(enemy);
 
 			auto enemy_circle = enemy_hitbox.circle;
 			enemy_circle.p += enemy_transform.get_world_transform().pos;
 
 			if (cf_circle_to_circle(proj_circle, enemy_circle))
 			{
-				auto &hit = w.get<HitComponent>(proj);
-				auto *immunity = w.try_get<HitImmunityComponent>(enemy);
+				auto &hit = w.get<C_Hit>(proj);
+				auto *immunity = w.try_get<C_HitImmunity>(enemy);
 
 				if (immunity != nullptr)
 				{
@@ -60,9 +57,9 @@ void ProjectileSystem::update(World &w)
 				}
 
 				event_bus.emit<HitEvent>(proj, enemy);
-				if (!view.get<ProjectileComponent>(proj).piercing)
+				if (!view.get<C_Projectile>(proj).piercing)
 				{
-					w.emplace<FrameDestroyComponent>(proj);
+					w.emplace<C_FrameDestroy>(proj);
 					return false;
 				}
 			}

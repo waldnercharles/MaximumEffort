@@ -10,22 +10,22 @@
 Entity prefabs::Player::create(World &world)
 {
 	const Entity e = world.create();
-	world.emplace<TransformComponent>(e);
-	world.emplace<PlayerComponent>(e);
+	world.emplace<C_Transform>(e);
+	world.emplace<C_Player>(e);
 
 	// TODO: Read from file
 	Stats stats;
 	stats.health = 350.f;
 	stats.speed = 90.f;
 
-	world.emplace<StatsComponent>(e, stats);
+	world.emplace<C_Stats>(e, stats);
 
-	world.emplace<FacingComponent>(e);
+	world.emplace<C_Facing>(e);
 
-	world.emplace<InputComponent>(e);
-	world.emplace<MovementComponent>(e);
+	world.emplace<C_Input>(e);
+	world.emplace<C_Movement>(e);
 
-	auto &sprite = world.emplace<SpriteComponent>(e, "character_new.ase");
+	auto &sprite = world.emplace<C_Sprite>(e, "character_new.ase");
 	sprite.layer = 100;
 
 	return e;

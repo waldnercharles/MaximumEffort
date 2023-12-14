@@ -11,12 +11,11 @@ CameraSystem::CameraSystem(int width, int height)
 
 void CameraSystem::update(World &w)
 {
-	auto player = w.view<PlayerComponent, TransformComponent>().front();
+	auto player = w.view<C_Player, C_Transform>().front();
 
 	if (player != ECS_NULL)
 	{
-		auto player_pos =
-			w.get<TransformComponent>(player).get_world_transform().pos;
+		auto player_pos = w.get<C_Transform>(player).get_world_transform().pos;
 
 		cf_camera_dimensions(camera_size.x, camera_size.y);
 		cf_camera_look_at(player_pos.x, player_pos.y);

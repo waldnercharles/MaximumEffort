@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-struct InputComponent
+struct C_Input
 {
 	v2 input_dir = {};
 };

@@ -3,15 +3,15 @@
 
 #include "common.h"
 #include "damage_numbers.h"
+#include "event_handlers/damage_event_handler.h"
+#include "factories/enemy_factory.h"
 #include "game_timer.h"
-#include "prototype_map.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
 #include "states/game_state_main_menu.h"
 #include "states/game_state_playing.h"
 #include "sys/animation_system.h"
 #include "sys/camera_system.h"
-#include "sys/damage_system.h"
 #include "sys/difficulty_system.h"
 #include "sys/health_system.h"
 #include "sys/hit_immunity_system.h"
@@ -24,7 +24,7 @@
 #include "sys/render_system.h"
 #include "sys/spawner_system.h"
 #include "sys/weapon_system.h"
-#include "tiled_map.h"
+#include "tiled/tiled_map.h"
 
 struct Game
 {
@@ -60,19 +60,21 @@ struct Game
 	bool exit = false;
 
 	World world;
+	Rnd rnd;
+
 	EventBus event_bus;
+
+private:
+	EnemyFactory enemy_factory;
 
 	AabbGrid<Entity> enemy_aabb_grid;
 
-	EnemeyPrototypeMap enemy_prototypes;
-
-private:
 	GameTimer game_timer;
 	DamageNumbers damage_numbers;
 
 	// ECS Systems
 	// TODO: Rename to DamageEventHandler?
-	DamageSystem damage_system;
+	DamageEventHandler damage_system;
 
 	LifetimeSystem lifetime_system;
 

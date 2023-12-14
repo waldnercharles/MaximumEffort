@@ -21,7 +21,7 @@ void on_transform_destroy(World &world, Entity e);
 
 void register_transform_callbacks(World &world);
 
-struct TransformComponent
+struct C_Transform
 {
 	Entity get_entity() const;
 
@@ -33,26 +33,26 @@ struct TransformComponent
 	void set_pos(const v2 pos);
 	void set_rotation(const float radians);
 
-	void add_child(TransformComponent *child);
-	void remove_child(TransformComponent *child);
+	void add_child(C_Transform *child);
+	void remove_child(C_Transform *child);
 
-	TransformComponent &operator=(const Transform &);
-	TransformComponent &operator=(const v2 &);
-	TransformComponent &operator+=(const v2 &pos);
-	TransformComponent &operator-=(const v2 &pos);
+	C_Transform &operator=(const Transform &);
+	C_Transform &operator=(const v2 &);
+	C_Transform &operator+=(const v2 &pos);
+	C_Transform &operator-=(const v2 &pos);
 
 private:
 	Entity entity = entt::null;
 
-	TransformComponent *parent = nullptr;
-	Array<TransformComponent *> children = {};
+	C_Transform *parent = nullptr;
+	Array<C_Transform *> children = {};
 
 	Transform transform = {};
 
 	mutable bool is_cached = false;
 	mutable Transform cached_parent_transform = {};
 
-	void set_parent(TransformComponent *p);
+	void set_parent(C_Transform *p);
 	void clear_parent();
 
 	void invalidate_cached_parent_transform();
@@ -65,9 +65,9 @@ private:
 
 // Ensure TransformComponents are not relocated in memory. (Allows stable pointer)
 template <>
-struct entt::component_traits<TransformComponent>
+struct entt::component_traits<C_Transform>
 {
-	using type = TransformComponent;
+	using type = C_Transform;
 	static constexpr bool in_place_delete = true;
 	static constexpr std::size_t page_size = ENTT_PACKED_PAGE;
 };

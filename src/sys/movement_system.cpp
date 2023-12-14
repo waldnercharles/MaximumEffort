@@ -6,8 +6,8 @@
 
 void MovementSystem::update(World &world)
 {
-	world.view<MovementComponent, TransformComponent>().each(
-		[](auto e, MovementComponent &m, TransformComponent &transform) {
+	world.view<C_Movement, C_Transform>().each(
+		[](auto e, C_Movement &m, C_Transform &transform) {
 			const Transform &local_transform = transform.get_local_transform();
 
 			transform = local_transform;

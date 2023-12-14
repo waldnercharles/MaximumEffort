@@ -53,9 +53,9 @@ inline Stats operator/(const Stats &s, const StatsModifier &m)
 	return {s.health / m.health, s.speed / m.speed};
 }
 
-struct StatsComponent
+struct C_Stats
 {
-	inline StatsComponent(Stats stats) : base(stats), modified(stats)
+	inline C_Stats(Stats stats) : base(stats), modified(stats)
 	{
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "subscription.h"
 #include "type_id.h"
 
 #include <functional>
@@ -8,36 +9,10 @@
 #include <stack>
 #include <vector>
 
-enum SubscriptionType : u8
-{
-	Forever,
-	Once
-};
-
-struct subscription_id
-{
-	int type_id;
-	int id;
-};
-
-inline static bool
-operator==(const subscription_id &a, const subscription_id &b)
-{
-	return a.type_id == b.type_id && a.id == b.id;
-}
-
-struct Subscription
-{
-	subscription_id id;
-	Func<void, void *> fn;
-
-	bool once;
-};
-
 struct EventBus
 {
 	template <typename EventType, typename CallbackFn>
-	subscription_id on(CallbackFn fn)
+	Subscription on(CallbackFn fn)
 	{
 		const int index = type_id<EventType>();
 		subscriptions.ensure_count(index + 1);
@@ -56,19 +31,19 @@ struct EventBus
 		auto fn_wrapper = [fn](void *event) {
 			fn(*(EventType *)event);
 		};
-		subscriptions[index].add({{index, id}, fn_wrapper, false});
 
-		return {index, id};
+		return subscriptions[index].add({{index, id}, fn_wrapper});
 	}
 
-	void off(subscription_id s)
+	void off(Subscription s)
 	{
-		for (int i = 0; i < subscriptions[s.type_id].size(); i++)
+		auto subscription_id = s.id;
+		for (int i = 0; i < subscriptions[subscription_id.type_id].size(); i++)
 		{
-			if (subscriptions[s.type_id][i].id == s)
+			if (subscriptions[subscription_id.type_id][i].id == subscription_id)
 			{
-				subscriptions[s.type_id].unordered_remove(i);
-				free_list.push(s.id);
+				subscriptions[subscription_id.type_id].unordered_remove(i);
+				free_list.push(subscription_id.id);
 				return;
 			}
 		}

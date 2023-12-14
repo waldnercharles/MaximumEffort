@@ -1,6 +1,6 @@
 #pragma once
 #include "common.h"
-#include "prototype_map.h"
+#include "factories/enemy_factory.h"
 #include "system.h"
 
 struct GameTimer;
@@ -9,25 +9,24 @@ struct DifficultySystem;
 struct SpawnerSystem final : public System
 {
 	SpawnerSystem(
+		Rnd &rnd,
+		GameTimer &game_timer,
+		DifficultySystem &difficulty_system,
+		EnemyFactory &enemy_factory,
 		f32 spawn_radius,
-		f32 respawn_radius,
-		const GameTimer &game_timer,
-		const DifficultySystem &difficulty_system,
-		const EnemeyPrototypeMap &prototypes
+		f32 respawn_radius
 	);
 
 	void update(World &world) override;
 
 private:
-	v2 get_spawn_offset();
-
-	Rnd rnd;
+	Rnd &rnd;
+	GameTimer &game_timer;
+	DifficultySystem &difficulty_system;
+	EnemyFactory &enemy_factory;
 
 	f32 spawn_radius;
 	f32 respawn_radius_sq;
 
-	const GameTimer &game_timer;
-	const DifficultySystem &difficulty_system;
-
-	const EnemeyPrototypeMap &prototypes;
+	v2 get_spawn_offset();
 };

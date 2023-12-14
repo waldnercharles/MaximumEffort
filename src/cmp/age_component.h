@@ -1,7 +1,7 @@
 #pragma once
 #include <cute.h>
 
-struct AgeComponent
+struct C_Age
 {
 	double alive_since = CF_SECONDS;
 };

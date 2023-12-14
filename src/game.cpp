@@ -1,9 +1,7 @@
 #include "game.h"
 #include "cmp/transform_component.h"
 #include "common.h"
-#include "imgui.h"
 
-#include "cmp/health_component.h"
 #include "shaders/blit_shader.h"
 
 static void quad_verts(float x, float y, float sx, float sy, Vertex quad[6])
@@ -78,6 +76,8 @@ void Game::resize()
 
 Game::Game()
 	: world(),
+	  rnd(cf_rnd_seed(time(nullptr))),
+	  enemy_factory(world, rnd, "enemies/prototypes/"),
 	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
 	  damage_numbers(world, event_bus),
 	  game_timer(1800),
@@ -86,11 +86,12 @@ Game::Game()
 	  weapon_system(enemy_aabb_grid, game_timer),
 	  difficulty_system({}, game_timer),
 	  spawner_system(
-		  CAMERA_OFFSCREEN_DIST,
-		  CAMERA_OFFSCREEN_DIST * 2.f,
+		  rnd,
 		  game_timer,
 		  difficulty_system,
-		  enemy_prototypes
+		  enemy_factory,
+		  CAMERA_OFFSCREEN_DIST,
+		  CAMERA_OFFSCREEN_DIST * 2.f
 	  ),
 	  stats_system(),
 	  input_system(),
@@ -149,31 +150,6 @@ void Game::draw()
 		render_system.update(world);
 		damage_numbers.draw();
 
-
-		//		char text[12] = {0};
-		//		world.view<TransformComponent, HealthComponent>().each(
-		//			[&](TransformComponent &t, HealthComponent &h) {
-		//				auto pos = t.get_world_transform().pos;
-		//				int health = h.current;
-		//
-		//				sprintf(text, "%d", health);
-		//
-		//				cf_draw_push_layer(4096);
-		//				cf_push_font("ProggyClean");
-		//				cf_push_font_size(13.f);
-		//
-		//				pos.x -= cf_text_width(text) * .5f;
-		//
-		//				cf_draw_push_color({1.f, 0.f, 0.f, 1.f});
-		//				cf_draw_text(text, pos, -1);
-		//				cf_draw_pop_color();
-		//				cf_pop_font_size();
-		//				cf_pop_font();
-		//				cf_draw_pop_layer();
-		//			}
-		//		);
-
-
 		cf_render_to(main_render_target.canvas, true);
 
 		// Fetch each frame, as it's invalidated during window-resize
@@ -191,11 +167,6 @@ void Game::draw()
 
 	// Draw UI
 	game_timer.draw();
-
-	//	if (ImGui::Button("Pause"))
-	//	{
-	//		paused = !paused;
-	//	}
 
 	cf_app_draw_onto_screen(false);
 }

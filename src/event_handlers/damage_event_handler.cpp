@@ -1,4 +1,4 @@
-#include "sys/damage_system.h"
+#include "event_handlers/damage_event_handler.h"
 #include "cmp/damage_component.h"
 #include "cmp/frame_destroy_component.h"
 #include "cmp/health_component.h"
@@ -8,7 +8,7 @@
 #include "events/damage_event.h"
 #include "events/hit_event.h"
 
-DamageSystem::DamageSystem(World &world, EventBus &event_bus)
+DamageEventHandler::DamageEventHandler(World &world, EventBus &event_bus)
 	: event_bus(event_bus),
 	  rnd(cf_rnd_seed(time(nullptr)))
 {
@@ -16,15 +16,15 @@ DamageSystem::DamageSystem(World &world, EventBus &event_bus)
 		Entity a = event.attacker;
 		Entity b = event.defender;
 
-		const auto &hit = world.get<HitComponent>(a);
-		auto &hit_immunity = world.get_or_emplace<HitImmunityComponent>(b);
+		const auto &hit = world.get<C_Hit>(a);
+		auto &hit_immunity = world.get_or_emplace<C_HitImmunity>(b);
 
 		hit_immunity.hits[hit_immunity.count] = {hit.id, hit.frame_immunity};
 
 		hit_immunity.count = cf_min(hit_immunity.count + 1, HIT_IMMUNITY_COUNT);
 
-		auto *attacker_dmg = world.try_get<DamageComponent>(a);
-		auto *defender_health = world.try_get<HealthComponent>(b);
+		auto *attacker_dmg = world.try_get<C_Damage>(a);
+		auto *defender_health = world.try_get<C_Health>(b);
 
 		if (attacker_dmg && defender_health)
 		{
@@ -40,16 +40,16 @@ DamageSystem::DamageSystem(World &world, EventBus &event_bus)
 
 			if (defender_health->current <= 0)
 			{
-				if (!world.all_of<FrameDestroyComponent>(event.defender))
+				if (!world.all_of<C_FrameDestroy>(event.defender))
 				{
-					world.emplace<FrameDestroyComponent>(event.defender);
+					world.emplace<C_FrameDestroy>(event.defender);
 				}
 			}
 		}
 	});
 }
 
-DamageSystem::~DamageSystem()
+DamageEventHandler::~DamageEventHandler()
 {
 	event_bus.off(subscription);
 }

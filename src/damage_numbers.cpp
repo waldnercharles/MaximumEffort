@@ -5,8 +5,7 @@ DamageNumbers::DamageNumbers(World &world, EventBus &event_bus)
 	  lifetime(0.66f)
 {
 	subscription = event_bus.on<DamageEvent>([&](DamageEvent e) {
-		auto pos =
-			world.get<TransformComponent>(e.entity).get_world_transform().pos;
+		auto pos = world.get<C_Transform>(e.entity).get_world_transform().pos;
 
 		add(pos, e.damage);
 	});

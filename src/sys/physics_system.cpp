@@ -10,18 +10,17 @@
 void update_aabb_grid(World &w, AabbGrid<Entity> &grid)
 {
 	grid.clear();
-	auto players = w.view<PlayerComponent, TransformComponent>();
+	auto players = w.view<C_Player, C_Transform>();
 	auto player = players.front();
-	auto player_pos =
-		w.get<TransformComponent>(player).get_world_transform().pos;
+	auto player_pos = w.get<C_Transform>(player).get_world_transform().pos;
 
 	grid.pos = player_pos;
 
-	auto view = w.view<EnemyComponent, TransformComponent, HitboxComponent>();
+	auto view = w.view<C_Enemy, C_Transform, C_Hitbox>();
 	for (auto e : view)
 	{
-		auto p = view.get<TransformComponent>(e).get_world_transform().pos;
-		auto c = view.get<HitboxComponent>(e).circle;
+		auto p = view.get<C_Transform>(e).get_world_transform().pos;
+		auto c = view.get<C_Hitbox>(e).circle;
 		c.p += p;
 
 		Aabb aabb = cf_make_aabb(c.p - cf_v2(c.r, c.r), c.p + cf_v2(c.r, c.r));
@@ -32,11 +31,11 @@ void update_aabb_grid(World &w, AabbGrid<Entity> &grid)
 
 void PhysicsSystem::handle_enemy_to_enemy_collisions(World &w)
 {
-	auto view = w.view<EnemyComponent, TransformComponent, PhysicsComponent>();
+	auto view = w.view<C_Enemy, C_Transform, C_Physics>();
 	for (auto a : view)
 	{
-		auto &a_transform = view.get<TransformComponent>(a);
-		auto &a_physics = view.get<PhysicsComponent>(a);
+		auto &a_transform = view.get<C_Transform>(a);
+		auto &a_physics = view.get<C_Physics>(a);
 
 		auto a_circle = a_physics.shape;
 		a_circle.p += a_transform.get_world_transform().pos;
@@ -53,8 +52,8 @@ void PhysicsSystem::handle_enemy_to_enemy_collisions(World &w)
 			{
 				return true;
 			}
-			auto &b_transform = view.get<TransformComponent>(b);
-			auto &b_physics = view.get<PhysicsComponent>(b);
+			auto &b_transform = view.get<C_Transform>(b);
+			auto &b_physics = view.get<C_Physics>(b);
 
 			auto b_circle = b_physics.shape;
 			b_circle.p += b_transform.get_world_transform().pos;

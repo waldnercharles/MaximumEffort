@@ -50,9 +50,10 @@ fetchcontent_populate(cute_headers)
 
 add_library(${PROJECT_NAME}_static STATIC
             aabb_grid.h
-            array_algorithms.h
             assets.cpp
             assets.h
+            cmp/age_component.h
+            cmp/bullet_emitter_component.h
             cmp/damage_component.h
             cmp/debug_draw_circle_component.h
             cmp/enemy_component.h
@@ -70,30 +71,33 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/movement_behavior_constant_direction_component.h
             cmp/movement_behavior_follow_target_component.h
             cmp/movement_component.h
+            cmp/physics_component.h
             cmp/player_component.h
             cmp/projectile_component.h
             cmp/sprite_component.h
-            cmp/stats_component.cpp
             cmp/stats_component.h
             cmp/transform_component.cpp
             cmp/transform_component.h
-            cmp/weapon_component.h
             common.h
-            cute_headers.cpp
             damage_numbers.cpp
             damage_numbers.h
-            enemy_type.h
-            event.h
+            event_handlers/damage_event_handler.cpp
+            event_handlers/damage_event_handler.h
             events/damage_event.h
+            events/event_bus.h
             events/hit_event.h
+            events/subscription.h
+            events/type_id.h
+            factories/enemy_factory.cpp
+            factories/enemy_factory.h
             game.cpp
             game.h
             game_timer.cpp
             game_timer.h
+            level_1.cpp
             level_1.h
+            lib/cute_headers.cpp
             log.h
-            prefabs/enemy_prefab.cpp
-            prefabs/enemy_prefab.h
             prefabs/enemy_spawner_prefab.cpp
             prefabs/enemy_spawner_prefab.h
             prefabs/player_prefab.cpp
@@ -104,17 +108,18 @@ add_library(${PROJECT_NAME}_static STATIC
             prefabs/weapon_boomerang_prefab.h
             rendering/render_target.cpp
             rendering/render_target.h
+            serialization/json.cpp
+            serialization/json.h
             shaders/blit_shader.h
-            singleton.h
             states/game_state.h
             states/game_state_main_menu.cpp
             states/game_state_main_menu.h
             states/game_state_playing.cpp
             states/game_state_playing.h
+            sys/animation_system.cpp
+            sys/animation_system.h
             sys/camera_system.cpp
             sys/camera_system.h
-            sys/damage_system.cpp
-            sys/damage_system.h
             sys/difficulty_system.cpp
             sys/difficulty_system.h
             sys/health_system.cpp
@@ -132,8 +137,6 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/movement_system.h
             sys/physics_system.cpp
             sys/physics_system.h
-            sys/animation_system.cpp
-            sys/animation_system.h
             sys/projectile_system.cpp
             sys/projectile_system.h
             sys/render_system.cpp
@@ -143,17 +146,8 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/system.h
             sys/weapon_system.cpp
             sys/weapon_system.h
-            tiled_map.cpp
-            tiled_map.h
-            type_id.h
-            cmp/age_component.h
-            prototype_map.h
-            level_1.cpp
-            json.h
-            json.cpp
-            enemies.h
-            enemies.cpp
-            cmp/physics_component.h
+            tiled/tiled_map.cpp
+            tiled/tiled_map.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

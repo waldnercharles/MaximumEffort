@@ -7,7 +7,7 @@
 
 void make_level_1(Game &game)
 {
-	auto player = game.world.view<PlayerComponent>().front();
+	auto player = game.world.view<C_Player>().front();
 
 	auto csv = parse_csv_file("waves.csv");
 	for (int i = 1; i < csv.count(); i++)

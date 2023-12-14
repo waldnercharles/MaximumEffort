@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-struct PhysicsComponent
+struct C_Physics
 {
 	Circle shape;
 	float mass;

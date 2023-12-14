@@ -5,20 +5,17 @@
 
 void HitImmunitySystem::update(World &world)
 {
-	world.view<HitImmunityComponent>().each(
-		[](HitImmunityComponent &hit_immunity) {
-			for (int i = hit_immunity.count - 1; i >= 0; i--)
+	world.view<C_HitImmunity>().each([](C_HitImmunity &hit_immunity) {
+		for (int i = hit_immunity.count - 1; i >= 0; i--)
+		{
+			hit_immunity.hits[i].remaining_frames--;
+			if (hit_immunity.hits[i].remaining_frames == 0)
 			{
-				hit_immunity.hits[i].remaining_frames--;
-				if (hit_immunity.hits[i].remaining_frames == 0)
-				{
-					hit_immunity.hits[i] = cf_move(
-						hit_immunity.hits[hit_immunity.count]
-					);
+				hit_immunity.hits[i] =
+					cf_move(hit_immunity.hits[hit_immunity.count]);
 
-					hit_immunity.count--;
-				}
+				hit_immunity.count--;
 			}
 		}
-	);
+	});
 }

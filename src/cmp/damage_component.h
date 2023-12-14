@@ -1,6 +1,6 @@
 #pragma once
 
-struct DamageComponent
+struct C_Damage
 {
 	int min;
 	int max;

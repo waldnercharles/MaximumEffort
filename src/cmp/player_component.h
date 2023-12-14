@@ -1,5 +1,5 @@
 #pragma once
 
-struct PlayerComponent
+struct C_Player
 {
 };

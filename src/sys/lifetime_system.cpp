@@ -3,8 +3,7 @@
 
 void LifetimeSystem::update(World &world)
 {
-	world.view<LifetimeComponent>().each([&](auto e,
-											 LifetimeComponent &lifetime) {
+	world.view<C_Lifetime>().each([&](auto e, C_Lifetime &lifetime) {
 		lifetime -= DELTA_TIME_FIXED;
 
 		if (lifetime <= 0)

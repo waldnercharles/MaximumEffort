@@ -1,5 +1,4 @@
 #pragma once
-#include "array_algorithms.h"
 #include "common.h"
 
 #include <cute.h>

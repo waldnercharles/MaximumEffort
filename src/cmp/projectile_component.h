@@ -1,7 +1,6 @@
 #pragma once
 
-struct ProjectileComponent
+struct C_Projectile
 {
-	u64 id = 0;
 	bool piercing = false;
 };

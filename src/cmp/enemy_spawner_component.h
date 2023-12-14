@@ -1,7 +1,6 @@
 #pragma once
-#include "enemy_type.h"
 
-struct EnemySpawnerComponent
+struct C_EnemySpawner
 {
 	const char *enemy_type;
 

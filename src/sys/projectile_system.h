@@ -1,6 +1,6 @@
 #pragma once
 #include "aabb_grid.h"
-#include "event.h"
+#include "events/event_bus.h"
 #include "system.h"
 
 struct ProjectileSystem final : public System

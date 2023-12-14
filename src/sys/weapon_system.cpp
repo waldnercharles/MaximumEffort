@@ -1,6 +1,6 @@
 #include "sys/weapon_system.h"
+#include "cmp/bullet_emitter_component.h"
 #include "cmp/transform_component.h"
-#include "cmp/weapon_component.h"
 #include "game_timer.h"
 #include "prefabs/projectile_boomerang_prefab.h"
 
@@ -35,7 +35,7 @@ bool try_get_closest_enemy_dir(
 		}
 
 		auto enemy_pos =
-			world.get<TransformComponent>(enemy).get_world_transform().pos;
+			world.get<C_Transform>(enemy).get_world_transform().pos;
 
 		float dist = cf_distance(source_pos, enemy_pos);
 
@@ -69,10 +69,9 @@ WeaponSystem::WeaponSystem(
 
 void WeaponSystem::update(World &world)
 {
-	world.view<BulletEmitterComponent, TransformComponent>().each(
-		[&](auto weapon_entity,
-			BulletEmitterComponent &weapon,
-			TransformComponent &scene_node) {
+	world.view<C_BulletEmitter, C_Transform>().each(
+		[&](auto weapon_entity, C_BulletEmitter &weapon, C_Transform &scene_node
+		) {
 			if (game_timer.on_interval(weapon.rate))
 			{
 				v2 pos = scene_node.get_world_transform().pos;

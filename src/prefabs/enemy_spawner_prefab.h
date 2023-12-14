@@ -1,6 +1,5 @@
 #pragma once
 #include "common.h"
-#include "enemy_type.h"
 
 namespace prefabs
 {

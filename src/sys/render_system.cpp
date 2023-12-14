@@ -2,7 +2,7 @@
 #include "cmp/debug_draw_circle_component.h"
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
-#include "tiled_map.h"
+#include "tiled/tiled_map.h"
 
 #include <cute.h>
 
@@ -12,8 +12,8 @@ void RenderSystem::update(World &world)
 		map.draw();
 	});
 
-	world.view<DebugDrawCircleComponent, TransformComponent>().each(
-		[](auto e, DebugDrawCircleComponent &dbg, TransformComponent &t) {
+	world.view<C_DebugDrawCircle, C_Transform>().each(
+		[](auto e, C_DebugDrawCircle &dbg, C_Transform &t) {
 			Circle circle = dbg.circle;
 			circle.p += t.get_world_transform().pos;
 
@@ -35,8 +35,8 @@ void RenderSystem::update(World &world)
 	//			   rhs.get_world_transform().pos.y;
 	//	});
 
-	world.view<TransformComponent, SpriteComponent>().each(
-		[](auto e, TransformComponent &transform, SpriteComponent &sprite) {
+	world.view<C_Transform, C_Sprite>().each(
+		[](auto e, C_Transform &transform, C_Sprite &sprite) {
 			auto world_transform = transform.get_world_transform();
 
 			sprite.transform.p = world_transform.pos;

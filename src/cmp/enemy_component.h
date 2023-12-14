@@ -1,5 +1,5 @@
 #pragma once
 
-struct EnemyComponent
+struct C_Enemy
 {
 };

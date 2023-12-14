@@ -15,7 +15,7 @@ enum TargetType
 	TARGET_PLAYER
 };
 
-struct BulletEmitterComponent
+struct C_BulletEmitter
 {
 	float rate = {};
 	float targeting_radius = {};

@@ -8,13 +8,8 @@
 
 void InputSystem::update(World &world)
 {
-	world.view<InputComponent, MovementComponent, StatsComponent>().each(
-		[&world](
-			auto e,
-			InputComponent &i,
-			MovementComponent &m,
-			StatsComponent &s
-		) {
+	world.view<C_Input, C_Movement, C_Stats>().each(
+		[&world](auto e, C_Input &i, C_Movement &m, C_Stats &s) {
 			auto stats = s.get_stats();
 			i.input_dir = {};
 
@@ -35,7 +30,7 @@ void InputSystem::update(World &world)
 				i.input_dir.x += 1;
 			}
 
-			FacingComponent *f = world.try_get<FacingComponent>(e);
+			C_Facing *f = world.try_get<C_Facing>(e);
 			if (f)
 			{
 				if (i.input_dir.x != 0)

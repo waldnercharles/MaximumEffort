@@ -1,6 +1,5 @@
 #include "prefabs/enemy_spawner_prefab.h"
 #include "cmp/enemy_spawner_component.h"
-#include "cmp/lifetime_component.h"
 #include "cmp/transform_component.h"
 
 Entity prefabs::EnemySpawner::create(
@@ -17,11 +16,11 @@ Entity prefabs::EnemySpawner::create(
 {
 	const Entity e = world.create();
 
-	auto &parent_transform = world.get<TransformComponent>(parent);
-	auto &spawner_transform = world.emplace<TransformComponent>(e);
+	auto &parent_transform = world.get<C_Transform>(parent);
+	auto &spawner_transform = world.emplace<C_Transform>(e);
 	parent_transform.add_child(&spawner_transform);
 
-	auto &s = world.emplace<EnemySpawnerComponent>(e);
+	auto &s = world.emplace<C_EnemySpawner>(e);
 	s.start = start;
 	s.end = end;
 	s.enemy_type = type;

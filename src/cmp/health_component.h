@@ -2,7 +2,7 @@
 #include "common.h"
 #include "stats_component.h"
 
-struct HealthComponent
+struct C_Health
 {
 	float current;
 };

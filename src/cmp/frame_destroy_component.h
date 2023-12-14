@@ -1,5 +1,5 @@
 #pragma once
 
-struct FrameDestroyComponent
+struct C_FrameDestroy
 {
 };

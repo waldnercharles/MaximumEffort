@@ -1,8 +1,8 @@
 #pragma once
 #include "cmp/transform_component.h"
 #include "common.h"
-#include "event.h"
 #include "events/damage_event.h"
+#include "events/event_bus.h"
 #include <charconv>
 
 struct DamageNumberParticle
@@ -20,12 +20,9 @@ struct DamageNumberParticle
 struct DamageNumbers
 {
 	DamageNumbers(World &world, EventBus &event_bus);
-
 	~DamageNumbers();
 
-
 	void update();
-
 	void draw();
 
 	void add(v2 pos, int damage_number);
@@ -34,8 +31,6 @@ private:
 	EventBus &event_bus;
 
 	const float lifetime;
-
 	Array<DamageNumberParticle> particles;
-
-	subscription_id subscription;
+	Subscription subscription;
 };

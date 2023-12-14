@@ -2,7 +2,7 @@
 #include "common.h"
 #include <cute.h>
 
-struct RayMovementComponent
+struct C_RayMovement
 {
 	v2 dir;
 

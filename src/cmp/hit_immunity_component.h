@@ -3,7 +3,7 @@
 
 #define HIT_IMMUNITY_COUNT 64
 
-struct HitImmunityComponent
+struct C_HitImmunity
 {
 	struct HitImmunity
 	{

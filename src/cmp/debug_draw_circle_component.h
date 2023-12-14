@@ -2,7 +2,7 @@
 #include "common.h"
 #include <cute.h>
 
-struct DebugDrawCircleComponent
+struct C_DebugDrawCircle
 {
 	Circle circle = {};
 	Color fill = cf_color_invisible();

@@ -9,31 +9,30 @@
 
 void MovementBehaviorSystem::update(World &world)
 {
-	world.view<MovementComponent, RayMovementComponent>().each(
-		[](MovementComponent &m, RayMovementComponent &r) {
-			r.speed -= r.speed * r.damping * CF_DELTA_TIME_FIXED;
-			m.vel = cf_safe_norm(r.dir) * r.speed;
+	world.view<C_Movement, C_RayMovement>().each([](C_Movement &m,
+													C_RayMovement &r) {
+		r.speed -= r.speed * r.damping * CF_DELTA_TIME_FIXED;
+		m.vel = cf_safe_norm(r.dir) * r.speed;
+	});
+
+	world.view<C_Movement, MovementBehavior_ConstantDirectionComponent>().each(
+		[](auto e, C_Movement &m, MovementBehavior_ConstantDirectionComponent &t
+		) {
+			m.vel = cf_safe_norm(t.dir) * t.speed * CF_DELTA_TIME_FIXED;
 		}
 	);
 
-	world.view<MovementComponent, MovementBehavior_ConstantDirectionComponent>()
-		.each([](auto e,
-				 MovementComponent &m,
-				 MovementBehavior_ConstantDirectionComponent &t) {
-			m.vel = cf_safe_norm(t.dir) * t.speed * CF_DELTA_TIME_FIXED;
-		});
-
 	world
 		.view<
-			MovementComponent,
+			C_Movement,
 			MovementBehavior_FollowTargetComponent,
-			StatsComponent,
-			TransformComponent>()
+			C_Stats,
+			C_Transform>()
 		.each([&](auto e,
-				  MovementComponent &m,
+				  C_Movement &m,
 				  MovementBehavior_FollowTargetComponent &b,
-				  StatsComponent &s,
-				  TransformComponent &t) {
+				  C_Stats &s,
+				  C_Transform &t) {
 			auto stats = s.get_stats();
 			auto pos = t.get_world_transform().pos;
 
@@ -43,15 +42,14 @@ void MovementBehaviorSystem::update(World &world)
 				return;
 			}
 
-			auto other_pos = world.get<TransformComponent>(b.entity)
-								 .get_world_transform()
-								 .pos;
+			auto other_pos =
+				world.get<C_Transform>(b.entity).get_world_transform().pos;
 
 			auto dist = other_pos - pos;
 			b.dir = cf_safe_norm(other_pos - pos);
 			m.vel = b.dir * stats.speed;
 
-			FacingComponent *f = world.try_get<FacingComponent>(e);
+			C_Facing *f = world.try_get<C_Facing>(e);
 			if (f)
 			{
 				f->facing_x = cf_sign_int((int)dist.x);
