@@ -23,6 +23,9 @@ void register_transform_callbacks(World &world);
 
 struct C_Transform
 {
+	C_Transform();
+	C_Transform(v2 pos);
+
 	Entity get_entity() const;
 
 	const Transform &get_local_transform() const;

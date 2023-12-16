@@ -17,6 +17,9 @@ struct AabbGrid
 
 	void add(Aabb aabb, T value);
 	void query(Aabb aabb, Func<bool, T> fn);
+
+	void remove(Aabb aabb, T value);
+
 	void clear();
 
 	v2 pos;
@@ -51,7 +54,6 @@ AabbGrid<T>::AabbGrid(f32 width, f32 height, f32 cell_size)
 template <typename T>
 void AabbGrid<T>::add(Aabb aabb, T value)
 {
-
 	const v2 min = (aabb.min - pos + half_extents) / cell_size;
 	const v2 max = (aabb.max - pos + half_extents) / cell_size;
 
@@ -73,9 +75,38 @@ void AabbGrid<T>::add(Aabb aabb, T value)
 }
 
 template <typename T>
+void AabbGrid<T>::remove(Aabb aabb, T value)
+{
+	const v2 min = (aabb.min - pos + half_extents) / cell_size;
+	const v2 max = (aabb.max - pos + half_extents) / cell_size;
+
+	if (min.x < 0 || min.y < 0 || max.x >= max_tiles_x || max.y >= max_tiles_y)
+	{
+		return;
+	}
+
+	++next_id;
+
+	for (int x = min.x; x <= max.x; x++)
+	{
+		for (int y = min.y; y <= max.y; y++)
+		{
+			int cell_index = y * max_tiles_x + x;
+			for (int i = cells[cell_index].count() - 1; i >= 0; i--)
+			{
+				auto &cell_value = cells[cell_index][i];
+				if (cell_value == value)
+				{
+					cells[cell_index].unordered_remove(i);
+				}
+			}
+		}
+	}
+}
+
+template <typename T>
 void AabbGrid<T>::query(Aabb aabb, Func<bool, T> fn)
 {
-
 	static Array<size_t> visited;
 	visited.clear();
 

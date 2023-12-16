@@ -15,7 +15,7 @@ Entity prefabs::WeaponBoomerang::create(World &world, Entity parent)
 
 	parent_transform.add_child(&child_transform);
 
-	auto &wpn = world.emplace<C_BulletEmitter>(e);
+	auto &wpn = world.emplace<C_BulletEmitter>(e, parent);
 	wpn.rate = 1.f;
 	wpn.weapon_type = WEAPON_BOOMERANG;
 	wpn.targeting_radius = 128.f;

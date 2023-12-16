@@ -5,6 +5,7 @@ struct Stats
 {
 	float health;
 	float speed;
+	float projectile_amount;
 };
 
 struct Modifier
@@ -36,21 +37,31 @@ struct StatsModifier
 {
 	Modifier health;
 	Modifier speed;
+	Modifier projectile_amount;
 };
 
 inline StatsModifier operator+(const StatsModifier &a, const StatsModifier &b)
 {
-	return {a.health + b.health, a.speed + b.speed};
+	return {
+		a.health + b.health,
+		a.speed + b.speed,
+		a.projectile_amount + b.projectile_amount};
 }
 
 inline Stats operator*(const Stats &s, const StatsModifier &m)
 {
-	return {s.health * m.health, s.speed * m.speed};
+	return {
+		s.health * m.health,
+		s.speed * m.speed,
+		s.projectile_amount * m.projectile_amount};
 }
 
 inline Stats operator/(const Stats &s, const StatsModifier &m)
 {
-	return {s.health / m.health, s.speed / m.speed};
+	return {
+		s.health / m.health,
+		s.speed / m.speed,
+		s.projectile_amount / m.projectile_amount};
 }
 
 struct C_Stats

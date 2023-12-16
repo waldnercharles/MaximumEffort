@@ -1,6 +1,7 @@
 #include "enemy_factory.h"
 #include "cmp/age_component.h"
 #include "cmp/debug_draw_circle_component.h"
+#include "cmp/drop_xp_component.h"
 #include "cmp/enemy_component.h"
 #include "cmp/facing_component.h"
 #include "cmp/health_component.h"
@@ -44,6 +45,7 @@ Func<Entity, v2> EnemyFactory::load_prototype(const char *path)
 		Entity e = world.create();
 		world.emplace<C_Enemy>(e);
 		world.emplace<C_Age>(e);
+		world.emplace<C_DropXp>(e, 1);
 		auto &t = world.emplace<C_Transform>(e);
 		t.set_pos(pos);
 
@@ -70,10 +72,9 @@ Func<Entity, v2> EnemyFactory::load_prototype(const char *path)
 		dbg.circle = hitbox;
 		dbg.outline = cf_color_red();
 
-		Sprite sprite = cf_make_sprite(sprite_path);
+		auto &sprite = world.emplace<C_Sprite>(e, sprite_path);
 		sprite.scale = cf_v2(rnd_scale, rnd_scale);
-
-		world.emplace<C_Sprite>(e, sprite);
+		sprite.layer = 100;
 
 		auto &health = world.emplace<C_Health>(e);
 		health.current = c_stats.get_stats().health;

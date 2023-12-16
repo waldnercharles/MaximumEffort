@@ -1,7 +1,9 @@
 #include "sys/weapon_system.h"
 #include "cmp/bullet_emitter_component.h"
+#include "cmp/stats_component.h"
 #include "cmp/transform_component.h"
 #include "game_timer.h"
+#include "log.h"
 #include "prefabs/projectile_boomerang_prefab.h"
 
 #include <cute.h>
@@ -70,11 +72,11 @@ WeaponSystem::WeaponSystem(
 void WeaponSystem::update(World &world)
 {
 	world.view<C_BulletEmitter, C_Transform>().each(
-		[&](auto weapon_entity, C_BulletEmitter &weapon, C_Transform &scene_node
+		[&](auto weapon_entity, C_BulletEmitter &weapon, C_Transform &transform
 		) {
 			if (game_timer.on_interval(weapon.rate))
 			{
-				v2 pos = scene_node.get_world_transform().pos;
+				v2 pos = transform.get_world_transform().pos;
 				v2 dir = {};
 
 				bool has_target = false;
@@ -101,23 +103,44 @@ void WeaponSystem::update(World &world)
 					return;
 				}
 
-				Entity e = ECS_NULL;
+				auto stats = world.get<C_Stats>(weapon.owner);
+
 				if (weapon.weapon_type == WEAPON_BOOMERANG)
 				{
-					e = prefabs::ProjectileBoomerang::create(
-						world,
-						pos,
-						dir,
-						next_attack_id
-					);
+					int projectile_amount = stats.get_stats().projectile_amount;
+					if (projectile_amount == 0)
+					{
+						return;
+					}
+
+					dir = cf_safe_norm(dir);
+					auto angle = atan2(dir.y, dir.x);
+					auto angle_delta = 0.f;
+
+					if (projectile_amount > 1)
+					{
+						auto arc = PI * 0.125f;
+						angle_delta = arc * 2 / (projectile_amount - 1);
+
+						angle -= arc;
+					}
+
+					log_trace("{}", projectile_amount);
+
+					for (auto i = 0; i < projectile_amount; i++)
+					{
+						prefabs::ProjectileBoomerang::create(
+							world,
+							pos,
+							angle,
+							next_attack_id
+						);
+
+						angle += angle_delta;
+					}
 				}
 
 				next_attack_id++;
-
-				if (e == ECS_NULL)
-				{
-					return;
-				}
 			}
 		}
 	);

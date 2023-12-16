@@ -15,7 +15,10 @@ struct EventBus
 	Subscription on(CallbackFn fn)
 	{
 		const int index = type_id<EventType>();
-		subscriptions.ensure_count(index + 1);
+		if (subscriptions.size() <= index)
+		{
+			subscriptions.ensure_count(index + 1);
+		}
 
 		int id;
 		if (free_list.size())

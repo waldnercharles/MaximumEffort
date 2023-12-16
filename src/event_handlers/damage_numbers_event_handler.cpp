@@ -1,6 +1,10 @@
-#include "damage_numbers.h"
+#include "damage_numbers_event_handler.h"
+#include <charconv>
 
-DamageNumbers::DamageNumbers(World &world, EventBus &event_bus)
+DamageNumbersEventHandler::DamageNumbersEventHandler(
+	World &world,
+	EventBus &event_bus
+)
 	: event_bus(event_bus),
 	  lifetime(0.66f)
 {
@@ -11,12 +15,12 @@ DamageNumbers::DamageNumbers(World &world, EventBus &event_bus)
 	});
 }
 
-DamageNumbers::~DamageNumbers()
+DamageNumbersEventHandler::~DamageNumbersEventHandler()
 {
 	event_bus.off(subscription);
 }
 
-void DamageNumbers::update()
+void DamageNumbersEventHandler::update()
 {
 	for (int i = particles.size() - 1; i >= 0; i--)
 	{
@@ -32,7 +36,7 @@ void DamageNumbers::update()
 	}
 }
 
-void DamageNumbers::draw()
+void DamageNumbersEventHandler::draw()
 {
 	cf_draw_push_layer(4096);
 	cf_push_font("ProggyClean");
@@ -57,7 +61,7 @@ void DamageNumbers::draw()
 	cf_draw_pop_layer();
 }
 
-void DamageNumbers::add(v2 pos, int damage_number)
+void DamageNumbersEventHandler::add(v2 pos, int damage_number)
 {
 	DamageNumberParticle p = {};
 	std::to_chars(p.text, p.text + 12, damage_number);

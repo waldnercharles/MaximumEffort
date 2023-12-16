@@ -56,6 +56,7 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/bullet_emitter_component.h
             cmp/damage_component.h
             cmp/debug_draw_circle_component.h
+            cmp/drop_xp_component.h
             cmp/enemy_component.h
             cmp/enemy_spawner_component.h
             cmp/facing_component.h
@@ -65,6 +66,7 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/hit_component.h
             cmp/hit_immunity_component.h
             cmp/hitbox_component.h
+            cmp/homing_mover_component.h
             cmp/hurtbox_component.h
             cmp/input_component.h
             cmp/lifetime_component.h
@@ -72,18 +74,24 @@ add_library(${PROJECT_NAME}_static STATIC
             cmp/movement_behavior_follow_target_component.h
             cmp/movement_component.h
             cmp/physics_component.h
+            cmp/pickup_collector_component.h
+            cmp/pickup_component.h
             cmp/player_component.h
             cmp/projectile_component.h
             cmp/sprite_component.h
             cmp/stats_component.h
             cmp/transform_component.cpp
             cmp/transform_component.h
+            cmp/xp_component.h
             common.h
-            damage_numbers.cpp
-            damage_numbers.h
-            event_handlers/damage_event_handler.cpp
-            event_handlers/damage_event_handler.h
+            event_handlers/damage_numbers_event_handler.cpp
+            event_handlers/damage_numbers_event_handler.h
+            event_handlers/death_event_handler.cpp
+            event_handlers/death_event_handler.h
+            event_handlers/hit_event_handler.cpp
+            event_handlers/hit_event_handler.h
             events/damage_event.h
+            events/death_event.h
             events/event_bus.h
             events/hit_event.h
             events/subscription.h
@@ -126,6 +134,8 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/health_system.h
             sys/hit_immunity_system.cpp
             sys/hit_immunity_system.h
+            sys/homing_mover_system.cpp
+            sys/homing_mover_system.h
             sys/input_system.cpp
             sys/input_system.h
             sys/lifetime_system.cpp
@@ -137,6 +147,8 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/movement_system.h
             sys/physics_system.cpp
             sys/physics_system.h
+            sys/pickup_system.cpp
+            sys/pickup_system.h
             sys/projectile_system.cpp
             sys/projectile_system.h
             sys/render_system.cpp
@@ -146,8 +158,16 @@ add_library(${PROJECT_NAME}_static STATIC
             sys/system.h
             sys/weapon_system.cpp
             sys/weapon_system.h
+            sys/xp_system.cpp
+            sys/xp_system.h
             tiled/tiled_map.cpp
             tiled/tiled_map.h
+            events/pickup_collected_event.h
+            cmp/level_component.h
+            events/xp_gained_event.h
+            events/level_up_event.h
+            states/game_state_loading_level.cpp
+            states/game_state_loading_level.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

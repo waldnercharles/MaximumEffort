@@ -17,6 +17,8 @@ enum TargetType
 
 struct C_BulletEmitter
 {
+	Entity owner;
+
 	float rate = {};
 	float targeting_radius = {};
 

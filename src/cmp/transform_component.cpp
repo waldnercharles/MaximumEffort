@@ -1,7 +1,14 @@
 #include "cmp/transform_component.h"
 #include "bullet_emitter_component.h"
-#include "log.h"
-#include "player_component.h"
+
+C_Transform::C_Transform()
+{
+}
+
+C_Transform::C_Transform(v2 pos)
+{
+	set_pos(pos);
+}
 
 Entity C_Transform::get_entity() const
 {

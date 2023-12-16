@@ -77,14 +77,19 @@ void Game::resize()
 Game::Game()
 	: world(),
 	  rnd(cf_rnd_seed(time(nullptr))),
+	  event_bus(),
 	  enemy_factory(world, rnd, "enemies/prototypes/"),
-	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
-	  damage_numbers(world, event_bus),
+
 	  game_timer(1800),
-	  damage_system(world, event_bus),
+	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
+
+	  hit_event_handler(world, event_bus),
+	  death_event_handler(world, event_bus),
+	  damage_numbers_event_handler(world, event_bus),
+
 	  lifetime_system(),
 	  weapon_system(enemy_aabb_grid, game_timer),
-	  difficulty_system({}, game_timer),
+	  difficulty_system(LevelDifficulty(), game_timer),
 	  spawner_system(
 		  rnd,
 		  game_timer,
@@ -93,14 +98,20 @@ Game::Game()
 		  CAMERA_OFFSCREEN_DIST,
 		  CAMERA_OFFSCREEN_DIST * 2.f
 	  ),
-	  stats_system(),
+	  health_system(event_bus),
 	  input_system(),
+
 	  movement_behavior_system(),
+	  homing_mover_system(),
 	  movement_system(),
+
 	  physics_system((enemy_aabb_grid)),
 	  projectile_system(event_bus, enemy_aabb_grid),
 	  hitbox_immunity_system(),
-	  player_animation_system(),
+	  animation_system(),
+	  xp_system(world, event_bus),
+	  pickup_system(event_bus),
+
 	  camera_system(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y),
 	  render_system()
 {
@@ -132,7 +143,7 @@ void Game::update()
 		states.current = new_state;
 	}
 
-	damage_numbers.update();
+	damage_numbers_event_handler.update();
 }
 
 // TODO: This should maybe be per-game-state
@@ -148,7 +159,8 @@ void Game::draw()
 	{
 		camera_system.update(world);
 		render_system.update(world);
-		damage_numbers.draw();
+
+		damage_numbers_event_handler.draw();
 
 		cf_render_to(main_render_target.canvas, true);
 

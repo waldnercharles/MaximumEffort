@@ -2,12 +2,14 @@
 #include <cute_tiled.h>
 
 #include "common.h"
-#include "damage_numbers.h"
-#include "event_handlers/damage_event_handler.h"
+#include "event_handlers/damage_numbers_event_handler.h"
+#include "event_handlers/death_event_handler.h"
+#include "event_handlers/hit_event_handler.h"
 #include "factories/enemy_factory.h"
 #include "game_timer.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
+#include "states/game_state_loading_level.h"
 #include "states/game_state_main_menu.h"
 #include "states/game_state_playing.h"
 #include "sys/animation_system.h"
@@ -15,15 +17,18 @@
 #include "sys/difficulty_system.h"
 #include "sys/health_system.h"
 #include "sys/hit_immunity_system.h"
+#include "sys/homing_mover_system.h"
 #include "sys/input_system.h"
 #include "sys/lifetime_system.h"
 #include "sys/movement_behavior_system.h"
 #include "sys/movement_system.h"
 #include "sys/physics_system.h"
+#include "sys/pickup_system.h"
 #include "sys/projectile_system.h"
 #include "sys/render_system.h"
 #include "sys/spawner_system.h"
 #include "sys/weapon_system.h"
+#include "sys/xp_system.h"
 #include "tiled/tiled_map.h"
 
 struct Game
@@ -46,12 +51,14 @@ struct Game
 	void resize();
 
 	friend struct GameStateMainMenu;
+	friend struct GameStateLoadingLevel;
 	friend struct GameStatePlaying;
 	friend struct GameState;
 
 	struct
 	{
 		GameStateMainMenu main_menu;
+		GameStateLoadingLevel loading;
 		GameStatePlaying playing;
 		GameState *current;
 	} states;
@@ -60,38 +67,43 @@ struct Game
 	bool exit = false;
 
 	World world;
-	Rnd rnd;
-
 	EventBus event_bus;
+	Rnd rnd;
 
 private:
 	EnemyFactory enemy_factory;
 
+	GameTimer game_timer;
 	AabbGrid<Entity> enemy_aabb_grid;
 
-	GameTimer game_timer;
-	DamageNumbers damage_numbers;
+	// Event Handlers
+	HitEventHandler hit_event_handler;
+	DeathEventHandler death_event_handler;
+	DamageNumbersEventHandler damage_numbers_event_handler;
 
 	// ECS Systems
-	// TODO: Rename to DamageEventHandler?
-	DamageEventHandler damage_system;
-
 	LifetimeSystem lifetime_system;
 
 	DifficultySystem difficulty_system;
 	SpawnerSystem spawner_system;
-	HealthSystem stats_system;
+	HealthSystem health_system;
 
 	InputSystem input_system;
+
 	MovementBehaviorSystem movement_behavior_system;
 	MovementSystem movement_system;
+	HomingMoverSystem homing_mover_system;
+
 	PhysicsSystem physics_system;
 
 	WeaponSystem weapon_system;
 	ProjectileSystem projectile_system;
 	HitImmunitySystem hitbox_immunity_system;
 
-	AnimationSystem player_animation_system;
+	AnimationSystem animation_system;
+
+	XpSystem xp_system;
+	PickupSystem pickup_system;
 
 	// Rendering
 	CameraSystem camera_system;

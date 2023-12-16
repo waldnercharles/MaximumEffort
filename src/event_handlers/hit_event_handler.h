@@ -3,10 +3,10 @@
 #include "common.h"
 #include "events/event_bus.h"
 
-struct DamageEventHandler
+struct HitEventHandler
 {
-	DamageEventHandler(World &, EventBus &);
-	~DamageEventHandler();
+	HitEventHandler(World &, EventBus &);
+	~HitEventHandler();
 
 private:
 	EventBus &event_bus;

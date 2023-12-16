@@ -3,7 +3,6 @@
 #include "common.h"
 #include "events/damage_event.h"
 #include "events/event_bus.h"
-#include <charconv>
 
 struct DamageNumberParticle
 {
@@ -17,10 +16,10 @@ struct DamageNumberParticle
 	float scale;
 };
 
-struct DamageNumbers
+struct DamageNumbersEventHandler
 {
-	DamageNumbers(World &world, EventBus &event_bus);
-	~DamageNumbers();
+	DamageNumbersEventHandler(World &world, EventBus &event_bus);
+	~DamageNumbersEventHandler();
 
 	void update();
 	void draw();

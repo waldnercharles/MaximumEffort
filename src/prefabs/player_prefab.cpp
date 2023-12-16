@@ -1,7 +1,9 @@
 #include "prefabs/player_prefab.h"
 #include "cmp/facing_component.h"
 #include "cmp/input_component.h"
+#include "cmp/level_component.h"
 #include "cmp/movement_component.h"
+#include "cmp/pickup_collector_component.h"
 #include "cmp/player_component.h"
 #include "cmp/sprite_component.h"
 #include "cmp/stats_component.h"
@@ -17,8 +19,10 @@ Entity prefabs::Player::create(World &world)
 	Stats stats;
 	stats.health = 350.f;
 	stats.speed = 90.f;
+	stats.projectile_amount = 1;
 
 	world.emplace<C_Stats>(e, stats);
+	world.emplace<C_Level>(e);
 
 	world.emplace<C_Facing>(e);
 
@@ -27,6 +31,8 @@ Entity prefabs::Player::create(World &world)
 
 	auto &sprite = world.emplace<C_Sprite>(e, "character_new.ase");
 	sprite.layer = 100;
+
+	world.emplace<C_PickupCollector>(e, 64.f);
 
 	return e;
 }

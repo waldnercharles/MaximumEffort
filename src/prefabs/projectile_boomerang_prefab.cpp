@@ -10,19 +10,20 @@
 #include "cmp/sprite_component.h"
 #include "cmp/transform_component.h"
 
-Entity prefabs::ProjectileBoomerang::create(World &w, v2 pos, v2 dir, u16 id)
+Entity
+prefabs::ProjectileBoomerang::create(World &w, v2 pos, float angle, u16 id)
 {
 	const Entity e = w.create();
 	auto &proj = w.emplace<C_Projectile>(e);
-	proj.piercing = true;
+	proj.piercing = false;
 
 	auto &t = w.emplace<C_Transform>(e);
 	t.set_pos(pos);
-	t.set_rotation(atan2(dir.y, dir.x));
+	t.set_rotation(angle);
 
 	auto &behavior = w.emplace<C_RayMovement>(e);
 	behavior.speed = 540;
-	behavior.dir = dir;
+	behavior.dir = cf_v2(cosf(angle), sinf(angle));
 	behavior.damping = 0.5f;
 
 	w.emplace<C_Movement>(e);
