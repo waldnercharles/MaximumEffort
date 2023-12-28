@@ -10,7 +10,7 @@ void HealthSystem::update(World &world)
 {
 	world.view<C_Health, C_Stats>().each(
 		[this](auto e, C_Health &h, C_Stats &s) {
-			h.current = cf_min(h.current, s.get_stats().health);
+			h.current = cf_min(h.current, s.get(Stat::health));
 
 			if (h.current <= 0)
 			{

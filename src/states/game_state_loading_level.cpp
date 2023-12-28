@@ -2,7 +2,7 @@
 #include "game.h"
 #include "level_1.h"
 #include "prefabs/player_prefab.h"
-#include "prefabs/weapon_boomerang_prefab.h"
+#include "prefabs/weapon_prefab.h"
 
 void GameStateLoadingLevel::enter(Game &game)
 {
@@ -19,11 +19,19 @@ GameState *GameStateLoadingLevel::update(Game &game)
 	auto player = prefabs::Player::create(game.world);
 	make_level_1(game);
 
-	prefabs::WeaponBoomerang::create(game.world, player);
+	prefabs::Weapon::create(game.world, player);
 
 	return &game.states.playing;
 }
 
 void GameStateLoadingLevel::exit(Game &game)
+{
+}
+
+void GameStateLoadingLevel::draw_world(Game &game)
+{
+}
+
+void GameStateLoadingLevel::draw_ui(Game &game)
 {
 }

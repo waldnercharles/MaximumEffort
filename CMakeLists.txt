@@ -16,6 +16,7 @@ add_subdirectory(src)
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_static)
 
+add_subdirectory(src/http)
 add_subdirectory(test)
 
 if (EMSCRIPTEN)

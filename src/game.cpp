@@ -81,6 +81,7 @@ Game::Game()
 	  enemy_factory(world, rnd, "enemies/prototypes/"),
 
 	  game_timer(1800),
+
 	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
 
 	  hit_event_handler(world, event_bus),
@@ -157,19 +158,17 @@ void Game::draw()
 	// Draw Game
 	cf_camera_push();
 	{
-		camera_system.update(world);
-		render_system.update(world);
+		states.current->draw_world(*this);
 
-		damage_numbers_event_handler.draw();
 
 		cf_render_to(main_render_target.canvas, true);
 
-		// Fetch each frame, as it's invalidated during window-resize
+		// Fetch canvas each frame, because it's invalidated during window-resize
 		CF_Canvas app_canvas = cf_app_get_canvas();
 
 		cf_apply_canvas(app_canvas, false);
 		{
-			// Draw offscreen texture onto the app's canvas on the left.
+			// Draw offscreen texture onto the app's canvas
 			cf_apply_mesh(main_render_quad);
 			cf_apply_shader(blit_shader, blit_material);
 			cf_draw_elements();
@@ -178,6 +177,7 @@ void Game::draw()
 	cf_camera_pop();
 
 	// Draw UI
+	states.current->draw_ui(*this);
 	game_timer.draw();
 
 	cf_app_draw_onto_screen(false);

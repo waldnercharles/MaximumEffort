@@ -19,9 +19,15 @@ struct C_BulletEmitter
 {
 	Entity owner;
 
-	float rate = {};
-	float targeting_radius = {};
+	float projectiles_per_interval = 1;
+	float interval = {};
 
-	TargetType target_type = {};
-	WeaponType weapon_type = {};
+	float emission_radius = {};
+	float emission_degrees = {};
+	v2 emission_offset = {};
+
+	const char *bullet_type = nullptr;
+
+	//	TargetType target_type = {};
+	//	WeaponType weapon_type = {};
 };

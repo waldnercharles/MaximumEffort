@@ -36,7 +36,7 @@ namespace log_utility
 #define LOG_FILENAME ((__FILE__) + (get_file_name_offset(__FILE__)))
 #define log(val, lvl, ...)                                                     \
 	fmt::print(                                                                \
-		"{} {} {:<16} {}\n",                                                   \
+		"{} {} {:<24} {}\n",                                                   \
 		fmt::format(                                                           \
 			fmt::fg(fmt::terminal_color::white),                               \
 			"{:%H:%M:%S}",                                                     \

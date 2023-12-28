@@ -47,7 +47,7 @@ void MovementBehaviorSystem::update(World &world)
 
 			auto dist = other_pos - pos;
 			b.dir = cf_safe_norm(other_pos - pos);
-			m.vel = b.dir * stats.speed;
+			m.vel = b.dir * stats[Stat::speed];
 
 			C_Facing *f = world.try_get<C_Facing>(e);
 			if (f)

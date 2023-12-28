@@ -3,7 +3,7 @@
 
 namespace prefabs
 {
-	namespace WeaponBoomerang
+	namespace Weapon
 	{
 		Entity create(World &world, Entity parent);
 	}

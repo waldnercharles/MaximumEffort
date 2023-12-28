@@ -21,6 +21,7 @@ struct DamageNumbersEventHandler
 	DamageNumbersEventHandler(World &world, EventBus &event_bus);
 	~DamageNumbersEventHandler();
 
+	// TODO: This should be moved into its own system
 	void update();
 	void draw();
 

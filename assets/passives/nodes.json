@@ -1,0 +1,449 @@
+[
+	{
+		"id": "lEh-nb0c2Q5yyh4CEeWbD",
+		"type": "passive",
+		"data": {
+			"name": "Range and Damage",
+			"passives": [
+				"+5 to Range",
+				"15% increased Damage"
+			],
+			"isRoot": false
+		},
+		"position": {
+			"x": 0,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 150,
+		"height": 64,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 0,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "QAt-pLvtJvDUKit1fmM3l",
+		"type": "passive",
+		"data": {
+			"name": "Attack Speed and Damage",
+			"passives": [
+				"4% increased Attack Speed",
+				"10% increased Damage",
+				""
+			],
+			"isRoot": false
+		},
+		"position": {
+			"x": 200,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 195,
+		"height": 64,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 200,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "ZiDur4F7lv_KWlIUNJ1TG",
+		"type": "passive",
+		"data": {
+			"name": "Damage ",
+			"passives": [
+				"10% increased Damage"
+			]
+		},
+		"position": {
+			"x": 450,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 150,
+		"height": 51,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 450,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "6HceJNJsWABDlPcuP9q7j",
+		"type": "passive",
+		"data": {
+			"name": "Damage",
+			"passives": [
+				"10% increased Damage"
+			]
+		},
+		"position": {
+			"x": 650,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 150,
+		"height": 51,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 650,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "jxxfBZQzPWwW5pteLO7Ch",
+		"type": "passive",
+		"data": {
+			"name": "Damage",
+			"passives": [
+				"10% increased Damage"
+			]
+		},
+		"position": {
+			"x": 850,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 150,
+		"height": 51,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 850,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "Epj_doshxpcWn1S7GxKPF",
+		"type": "passive",
+		"data": {
+			"name": "Attack Speed",
+			"passives": [
+				"4% increased Attack Speed"
+			]
+		},
+		"position": {
+			"x": 450,
+			"y": -300
+		},
+		"dragHandle": ".dragHandle",
+		"width": 153,
+		"height": 51,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 450,
+			"y": -300
+		},
+		"dragging": false
+	},
+	{
+		"id": "94d-H2F6hhxOUE7RFG8x_",
+		"type": "passive",
+		"data": {
+			"name": "Attack Speed",
+			"passives": [
+				"4% increased Attack Speed"
+			]
+		},
+		"position": {
+			"x": 650,
+			"y": -300
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 153,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 650,
+			"y": -300
+		},
+		"dragging": false
+	},
+	{
+		"id": "NneGfkOsc72Ra_3gAot9b",
+		"type": "passive",
+		"data": {
+			"name": "Attack Speed",
+			"passives": [
+				"4% increased Attack Speed"
+			]
+		},
+		"position": {
+			"x": 850,
+			"y": -300
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 153,
+		"height": 51,
+		"dragging": false,
+		"positionAbsolute": {
+			"x": 850,
+			"y": -300
+		}
+	},
+	{
+		"id": "Y6mX6DpOX8zYB5dB2POFH",
+		"type": "passive",
+		"data": {
+			"name": "Ballistics",
+			"passives": [
+				"+2 to Range",
+				"20% increased Damage",
+				"20% increased Projectile Speed"
+			]
+		},
+		"position": {
+			"x": 1050,
+			"y": -400
+		},
+		"dragHandle": ".dragHandle",
+		"width": 174,
+		"height": 76,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 1050,
+			"y": -400
+		},
+		"dragging": false
+	},
+	{
+		"id": "3KnPiSvDrwQvKLkpVoCfU",
+		"type": "passive",
+		"data": {
+			"name": "Evasion and Life",
+			"passives": [
+				"+10 to Evasion",
+				"+15 to maximum Life"
+			],
+			"isRoot": false
+		},
+		"position": {
+			"x": 0,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"width": 150,
+		"height": 64,
+		"selected": false,
+		"positionAbsolute": {
+			"x": 0,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "L2_45VOpU1R8ldu-Rc1Xv",
+		"type": "passive",
+		"data": {
+			"name": "Evasion and Life",
+			"passives": [
+				"+15 to Evasion",
+				"5% increased maximum Life"
+			],
+			"isRoot": false
+		},
+		"position": {
+			"x": 200,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 153,
+		"height": 64,
+		"positionAbsolute": {
+			"x": 200,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "cpIdeuguZTTnVeB5P0sak",
+		"type": "passive",
+		"data": {
+			"name": "Evasion",
+			"passives": [
+				"15% increased Evasion"
+			]
+		},
+		"position": {
+			"x": 450,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 150,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 450,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "J_hNWZEj1hdZecJsAhOVt",
+		"type": "passive",
+		"data": {
+			"name": "Evasion",
+			"passives": [
+				"15% increased Evasion"
+			]
+		},
+		"position": {
+			"x": 650,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 150,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 650,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "QDtBlTVjksL6KD5vlsfH3",
+		"type": "passive",
+		"data": {
+			"name": "Evasion",
+			"passives": [
+				"15% increased Evasion"
+			]
+		},
+		"position": {
+			"x": 850,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 150,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 850,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "ZE5OO_CO-_N84LnwziKLk",
+		"type": "passive",
+		"data": {
+			"name": "Life",
+			"passives": [
+				"+10 to maximum Life"
+			]
+		},
+		"position": {
+			"x": 450,
+			"y": -100
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 150,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 450,
+			"y": -100
+		},
+		"dragging": false
+	},
+	{
+		"id": "vvan-eLDQ-RGiJrjIHoAQ",
+		"type": "passive",
+		"data": {
+			"name": "Life",
+			"passives": [
+				"5% increased maximum Life"
+			]
+		},
+		"position": {
+			"x": 650,
+			"y": -100
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 153,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 650,
+			"y": -100
+		},
+		"dragging": false
+	},
+	{
+		"id": "bUzst740FZPOwRjBLqMV1",
+		"type": "passive",
+		"data": {
+			"name": "Life",
+			"passives": [
+				"+10 to maximum Life"
+			]
+		},
+		"position": {
+			"x": 850,
+			"y": -100
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 150,
+		"height": 51,
+		"positionAbsolute": {
+			"x": 850,
+			"y": -100
+		},
+		"dragging": false
+	},
+	{
+		"id": "fDEkVq4UMHDNm7QI7HUyv",
+		"type": "passive",
+		"data": {
+			"name": "Swift Feet",
+			"passives": [
+				"10% increased Movement Speed",
+				"20% increased Evasion",
+				""
+			]
+		},
+		"position": {
+			"x": 1050,
+			"y": -200
+		},
+		"dragHandle": ".dragHandle",
+		"selected": false,
+		"width": 166,
+		"height": 64,
+		"positionAbsolute": {
+			"x": 1050,
+			"y": -200
+		},
+		"dragging": false
+	},
+	{
+		"id": "wdBMsoJPaWfcbY7JAGHs3",
+		"type": "passive",
+		"data": {
+			"name": "Super Mega Damage",
+			"passives": [
+				"+100 to Damage"
+			],
+			"isRoot": true
+		},
+		"position": {
+			"x": -300,
+			"y": -300
+		},
+		"dragHandle": ".dragHandle",
+		"width": 157,
+		"height": 51,
+		"selected": true,
+		"dragging": false
+	}
+]

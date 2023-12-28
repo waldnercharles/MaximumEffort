@@ -1,16 +1,18 @@
 #include "sys/input_system.h"
+#include "aabb_grid.h"
 #include "cmp/facing_component.h"
 #include "cmp/input_component.h"
 #include "cmp/movement_component.h"
+#include "cmp/player_component.h"
 #include "cmp/stats_component.h"
+#include "cmp/transform_component.h"
 
 #include <cute.h>
 
 void InputSystem::update(World &world)
 {
-	world.view<C_Input, C_Movement, C_Stats>().each(
+	world.view<C_Player, C_Input, C_Movement, C_Stats>().each(
 		[&world](auto e, C_Input &i, C_Movement &m, C_Stats &s) {
-			auto stats = s.get_stats();
 			i.input_dir = {};
 
 			if (cf_key_down(CF_KEY_W) || cf_key_down(CF_KEY_UP))
@@ -44,7 +46,8 @@ void InputSystem::update(World &world)
 				}
 			}
 
-			m.vel = cf_safe_norm(i.input_dir) * stats.speed;
+			float speed = s.get(Stat::speed);
+			m.vel = cf_safe_norm(i.input_dir) * speed;
 		}
 	);
 }

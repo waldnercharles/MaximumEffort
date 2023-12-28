@@ -1,6 +1,6 @@
 #include <pico_unit.h>
 
-#include "event.h"
+#include "events/event_bus.h"
 
 struct Event
 {

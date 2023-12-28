@@ -14,3 +14,11 @@ GameState *GameStateMainMenu::update(Game &game)
 void GameStateMainMenu::exit(Game &game)
 {
 }
+
+void GameStateMainMenu::draw_world(Game &game)
+{
+}
+
+void GameStateMainMenu::draw_ui(Game &game)
+{
+}

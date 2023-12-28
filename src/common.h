@@ -45,6 +45,14 @@ bool arr_contains(T *begin, T *end, T val)
 template <typename K, typename T>
 using Map [[maybe_unused]] = Cute::Map<K, T>;
 
+#include <unordered_set>
+template <
+	class K,
+	class HashFn = std::hash<K>,
+	class EqFn = std::equal_to<K>,
+	class Alloc = std::allocator<K>>
+using Set [[maybe_unused]] = std::unordered_set<K, HashFn, EqFn, Alloc>;
+
 using String [[maybe_unused]] = Cute::String;
 using Sprite [[maybe_unused]] = Cute::Sprite;
 

@@ -6,6 +6,8 @@
 #include "imgui.h"
 #include "log.h"
 
+#include "http/http_server.h"
+
 #ifdef _WIN32
 // Use dedicated GPU unless there is an application-specific override
 extern "C"
@@ -36,10 +38,15 @@ int main(int, char *[])
 		log_fatal(result.details);
 		return -1;
 	}
-	mount_assets_folder();
+
+	cf_app_set_vsync(true);
+
+	mount_assets_dir();
+
+	// Server should be started after assets have been mounted
+	start_http_server_thread();
 
 	cf_make_font("ProggyClean.ttf", "ProggyClean");
-
 	cf_app_init_imgui(false);
 
 	Game game;
@@ -47,7 +54,7 @@ int main(int, char *[])
 	cf_set_fixed_timestep(60);
 	cf_set_update_udata(&game);
 
-	const f32 alpha = 0.75f;
+	const f32 alpha = 0.95f;
 	f32 fps = 60;
 
 	while (cf_app_is_running() && !game.exit)

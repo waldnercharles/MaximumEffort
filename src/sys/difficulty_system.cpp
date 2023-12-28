@@ -18,8 +18,8 @@ void DifficultySystem::update(World &world)
 StatsModifier DifficultySystem::get_stats_modifier() const
 {
 	StatsModifier stats_modifier = {};
-	stats_modifier.health = get_health_modifier();
-	stats_modifier.speed = get_speed_modifier();
+	stats_modifier[Stat::health] = get_health_modifier();
+	stats_modifier[Stat::speed] = get_speed_modifier();
 
 	return stats_modifier;
 }

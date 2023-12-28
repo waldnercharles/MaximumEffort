@@ -3,15 +3,19 @@
 
 #include <cute.h>
 
-void mount_assets_folder()
+void mount_dir(const char *dir)
 {
 	Path path = cf_fs_get_base_directory();
 	path.normalize();
-
-	path += "assets";
+	path += dir;
 	cf_fs_mount(path.c_str(), "/", true);
 
-	log_info("{} mounted to \"/\"", path.c_str());
+	log_info("{} mounted to \"/\"", dir);
+}
+
+void mount_assets_dir()
+{
+	mount_dir("assets");
 }
 
 enum CSVState
@@ -80,11 +84,10 @@ Array<String> parse_csv_row(const String &row)
 
 Array<Array<String>> parse_csv_str(const char *str)
 {
-	String s = String(str);
-
 	Array<Array<String>> table;
 
-	for (String &row : s.split('\n'))
+	auto s = String(str).replace("\r\n", "\n");
+	for (auto &row : s.split('\n'))
 	{
 		table.add(parse_csv_row(row));
 	}

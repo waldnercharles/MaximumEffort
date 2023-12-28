@@ -87,7 +87,7 @@ void SpawnerSystem::update(World &world)
 
 						auto &stats = world.get<C_Stats>(enemy);
 						auto &health = world.get<C_Health>(enemy);
-						health.current = stats.get_stats().health;
+						health.current = stats.get(Stat::health);
 
 						s.spawned_enemies.add(enemy);
 					}

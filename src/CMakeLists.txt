@@ -110,10 +110,10 @@ add_library(${PROJECT_NAME}_static STATIC
             prefabs/enemy_spawner_prefab.h
             prefabs/player_prefab.cpp
             prefabs/player_prefab.h
-            prefabs/projectile_boomerang_prefab.cpp
-            prefabs/projectile_boomerang_prefab.h
-            prefabs/weapon_boomerang_prefab.cpp
-            prefabs/weapon_boomerang_prefab.h
+            prefabs/projectile_prefab.cpp
+            prefabs/projectile_prefab.h
+            prefabs/weapon_prefab.cpp
+            prefabs/weapon_prefab.h
             rendering/render_target.cpp
             rendering/render_target.h
             serialization/json.cpp
@@ -168,6 +168,16 @@ add_library(${PROJECT_NAME}_static STATIC
             events/level_up_event.h
             states/game_state_loading_level.cpp
             states/game_state_loading_level.h
+            passive_tree.h
+            passive_tree.cpp
+            cmp/modifiers_component.h
+            http/httplib.h
+            http/http_server.cpp
+            http/http_server.h
+            event_handlers/level_up_event_handler.cpp
+            event_handlers/level_up_event_handler.h
+            leveling_overlay.cpp
+            leveling_overlay.h
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

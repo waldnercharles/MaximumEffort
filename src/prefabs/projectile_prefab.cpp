@@ -1,4 +1,4 @@
-#include "prefabs/projectile_boomerang_prefab.h"
+#include "prefabs/projectile_prefab.h"
 #include "cmp/damage_component.h"
 #include "cmp/hit_component.h"
 #include "cmp/hitbox_component.h"
@@ -8,11 +8,14 @@
 #include "cmp/movement_component.h"
 #include "cmp/projectile_component.h"
 #include "cmp/sprite_component.h"
+#include "cmp/stats_component.h"
 #include "cmp/transform_component.h"
 
 Entity
-prefabs::ProjectileBoomerang::create(World &w, v2 pos, float angle, u16 id)
+prefabs::Projectile::create(World &w, Entity owner, v2 pos, float angle, u16 id)
 {
+	auto &owner_stats = w.get<C_Stats>(owner);
+
 	const Entity e = w.create();
 	auto &proj = w.emplace<C_Projectile>(e);
 	proj.piercing = false;
@@ -35,8 +38,8 @@ prefabs::ProjectileBoomerang::create(World &w, v2 pos, float angle, u16 id)
 	hurtbox.circle = cf_make_circle({0, 0}, 4);
 
 	auto &damage = w.emplace<C_Damage>(e);
-	damage.min = 80;
-	damage.max = 140;
+	damage.min = owner_stats.get(Stat::damage);
+	damage.max = owner_stats.get(Stat::damage);
 
 	auto &hit = w.emplace<C_Hit>(e);
 	hit.id = id;

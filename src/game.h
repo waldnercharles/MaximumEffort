@@ -7,6 +7,7 @@
 #include "event_handlers/hit_event_handler.h"
 #include "factories/enemy_factory.h"
 #include "game_timer.h"
+#include "passive_tree.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
 #include "states/game_state_loading_level.h"
@@ -74,6 +75,7 @@ private:
 	EnemyFactory enemy_factory;
 
 	GameTimer game_timer;
+
 	AabbGrid<Entity> enemy_aabb_grid;
 
 	// Event Handlers

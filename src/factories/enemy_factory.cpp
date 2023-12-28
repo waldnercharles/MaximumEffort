@@ -29,8 +29,8 @@ Func<Entity, v2> EnemyFactory::load_prototype(const char *path)
 	Stats stats;
 	{
 		auto stats_json = cf_json_get(obj, "stats");
-		stats.health = cf_json_get_float(stats_json, "health");
-		stats.speed = cf_json_get_float(stats_json, "speed");
+		stats[Stat::health] = cf_json_get_float(stats_json, "health");
+		stats[Stat::speed] = cf_json_get_float(stats_json, "speed");
 	}
 
 	float scale = cf_json_get_float(obj, "scale");
@@ -77,7 +77,7 @@ Func<Entity, v2> EnemyFactory::load_prototype(const char *path)
 		sprite.layer = 100;
 
 		auto &health = world.emplace<C_Health>(e);
-		health.current = c_stats.get_stats().health;
+		health.current = c_stats.get(Stat::health);
 
 		return e;
 	};
