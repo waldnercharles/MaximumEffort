@@ -48,14 +48,10 @@ TiledMap load_tiled_map(const char *path)
 	TiledMap tiled_map;
 	buffer = cf_fs_read_entire_file_to_memory(path, &buffer_size);
 
-	tiled_map.map = cute_tiled_load_map_from_memory(
-		buffer,
-		(int)buffer_size,
-		nullptr
-	);
+	tiled_map.map =
+		cute_tiled_load_map_from_memory(buffer, (int)buffer_size, nullptr);
 	tiled_map.pos = cf_v2(0, 0);
 
-	cf_free(buffer);
 
 	cute_tiled_tileset_t *tileset = tiled_map.map->tilesets;
 	while (tileset)
@@ -87,6 +83,8 @@ TiledMap load_tiled_map(const char *path)
 		cf_free(sprites);
 		tileset = tileset->next;
 	}
+
+	cf_free(buffer);
 
 	return tiled_map;
 }
@@ -139,8 +137,8 @@ void TiledMap::draw()
 		{
 			for (int x = bot_lft.x; x <= top_rgt.x; x++)
 			{
-				int i = ((half_map_size.y - y) * map->width) + x +
-						half_map_size.x;
+				int i =
+					((half_map_size.y - y) * map->width) + x + half_map_size.x;
 
 				if (i < 0 || i > data_count)
 				{
@@ -158,10 +156,8 @@ void TiledMap::draw()
 				s32 pos_x = i % map->width * map->tilewidth;
 				s32 pos_y = i / map->width * map->tileheight;
 
-				s.transform.p = cf_v2(
-					pos_x - (int)map_center.x,
-					(int)map_center.y - pos_y
-				);
+				s.transform.p =
+					cf_v2(pos_x - (int)map_center.x, (int)map_center.y - pos_y);
 				cf_draw_sprite(&s);
 			}
 		}
