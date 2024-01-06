@@ -1,6 +1,6 @@
 #include "rendering/render_target.h"
 
-RenderTarget make_render_target(int w, int h)
+RenderTarget make_render_target(int w, int h, CF_Filter filter)
 {
 	RenderTarget render_target;
 	render_target.w = w;
@@ -9,6 +9,7 @@ RenderTarget make_render_target(int w, int h)
 	// Backbuffer
 	{
 		CF_TextureParams params = cf_texture_defaults();
+		params.filter = filter;
 		params.width = w;
 		params.height = h;
 		params.render_target = true;

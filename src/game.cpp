@@ -23,7 +23,7 @@ static void quad_verts(float x, float y, float sx, float sy, Vertex quad[6])
 	// clang-format on
 }
 
-static CF_Mesh make_main_render_quad(float x, float y, float sx, float sy)
+static CF_Mesh make_render_quad(float x, float y, float sx, float sy)
 {
 	auto quad = cf_make_mesh(CF_USAGE_TYPE_IMMUTABLE, sizeof(Vertex) * 6, 0, 0);
 
@@ -51,27 +51,44 @@ void Game::resize()
 	w = CF_ALIGN_TRUNCATE(w, 2);
 	h = CF_ALIGN_TRUNCATE(h, 2);
 
-	f32 desired_aspect = 4.f / 3.f;
-	f32 actual_aspect = (f32)w / (f32)h;
-	f32 aspect = (desired_aspect / actual_aspect);
-
-	if (main_render_quad.id)
+	// Main Render Target
 	{
-		cf_destroy_mesh(main_render_quad);
+		f32 desired_aspect =
+			(f32)CAMERA_RESOLUTION_X / (f32)CAMERA_RESOLUTION_Y;
+		f32 actual_aspect = (f32)w / (f32)h;
+		f32 aspect = (desired_aspect / actual_aspect);
+
+		if (main_render_quad.id)
+		{
+			cf_destroy_mesh(main_render_quad);
+		}
+		main_render_quad = make_render_quad(0, 0, 2 * aspect, 2);
+
+		destroy_render_target(main_render_target);
+
+		int multiplier =
+			cf_max(1, cf_max(h / CAMERA_RESOLUTION_Y, w / CAMERA_RESOLUTION_X));
+
+		main_render_target = make_render_target(
+			CAMERA_RESOLUTION_X * multiplier,
+			CAMERA_RESOLUTION_Y * multiplier
+		);
 	}
-	main_render_quad = make_main_render_quad(0, 0, 2 * aspect, 2);
+
+	// UI Render Target
+	{
+		if (ui_render_quad.id)
+		{
+			cf_destroy_mesh(ui_render_quad);
+		}
+		ui_render_quad = make_render_quad(0, 0, 2, 2);
+
+		destroy_render_target(ui_render_target);
+		ui_render_target = make_render_target(w, h, CF_FILTER_LINEAR);
+	}
 
 	cf_app_set_size(w, h);
 	cf_app_set_canvas_size(w, h);
-
-	destroy_render_target(main_render_target);
-	main_render_target = make_render_target(640, 480);
-
-	cf_material_set_texture_fs(
-		blit_material,
-		"u_image",
-		main_render_target.backbuffer
-	);
 }
 
 Game::Game()
@@ -80,7 +97,7 @@ Game::Game()
 	  event_bus(),
 	  enemy_factory(world, rnd, "enemies/prototypes/"),
 
-	  game_timer(1800),
+	  game_timer(*this, 1800),
 
 	  enemy_aabb_grid(CAMERA_RESOLUTION_X * 2, CAMERA_RESOLUTION_Y * 2, 16),
 
@@ -112,14 +129,27 @@ Game::Game()
 	  animation_system(),
 	  xp_system(world, event_bus),
 	  pickup_system(event_bus),
+	  leveling_overlay(),
 
 	  camera_system(CAMERA_RESOLUTION_X, CAMERA_RESOLUTION_Y),
 	  render_system()
 {
 	register_transform_callbacks(world);
 
+	auto state = cf_render_state_defaults();
+
+	state.blend.enabled = true;
+	state.blend.rgb_src_blend_factor = CF_BLENDFACTOR_SRC_ALPHA;
+	state.blend.rgb_dst_blend_factor = CF_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+	state.blend.rgb_op = CF_BLEND_OP_ADD;
+	state.blend.alpha_src_blend_factor = CF_BLENDFACTOR_SRC_ALPHA;
+	state.blend.alpha_dst_blend_factor = CF_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+	state.blend.alpha_op = CF_BLEND_OP_ADD;
+
 	blit_material = cf_make_material();
 	blit_shader = CF_MAKE_SOKOL_SHADER(blit_shader);
+
+	cf_material_set_render_state(blit_material, state);
 
 	resize();
 
@@ -155,19 +185,28 @@ void Game::draw()
 		resize();
 	}
 
+	// Fetch canvas each frame, because it's invalidated during window-resize
+	CF_Canvas app_canvas = cf_app_get_canvas();
+
 	// Draw Game
+	cf_clear_color(0.5, 0.5, 0.5, 1);
 	cf_camera_push();
 	{
-		states.current->draw_world(*this);
+		// Draw to the main render target
+		{
+			states.current->draw_world(*this);
+			cf_render_to(main_render_target.canvas, true);
+		}
 
-
-		cf_render_to(main_render_target.canvas, true);
-
-		// Fetch canvas each frame, because it's invalidated during window-resize
-		CF_Canvas app_canvas = cf_app_get_canvas();
-
+		// Copy to the app canvas
 		cf_apply_canvas(app_canvas, false);
 		{
+			cf_material_set_texture_fs(
+				blit_material,
+				"u_image",
+				main_render_target.backbuffer
+			);
+
 			// Draw offscreen texture onto the app's canvas
 			cf_apply_mesh(main_render_quad);
 			cf_apply_shader(blit_shader, blit_material);
@@ -177,8 +216,31 @@ void Game::draw()
 	cf_camera_pop();
 
 	// Draw UI
-	states.current->draw_ui(*this);
-	game_timer.draw();
+	cf_clear_color(0, 0, 0, 0);
+	cf_camera_push();
+	{
+		// Draw to the ui render target
+		{
+			states.current->draw_ui(*this);
+			cf_render_to(ui_render_target.canvas, true);
+		}
+
+		// Draw to the app canvas
+		cf_apply_canvas(app_canvas, false);
+		{
+			cf_material_set_texture_fs(
+				blit_material,
+				"u_image",
+				ui_render_target.backbuffer
+			);
+
+			// Draw offscreen texture onto the app's canvas
+			cf_apply_mesh(ui_render_quad);
+			cf_apply_shader(blit_shader, blit_material);
+			cf_draw_elements();
+		}
+	}
+	cf_camera_pop();
 
 	cf_app_draw_onto_screen(false);
 }

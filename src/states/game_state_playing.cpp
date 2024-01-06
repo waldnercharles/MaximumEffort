@@ -5,12 +5,33 @@
 #include "game.h"
 #include "log.h"
 
+Array<int> get_random_indices(Rnd &rnd, int min, int max, int n)
+{
+	Array<int> res;
+
+	n = std::max(0, std::min(max - min, n));
+
+	for (int i = 0; i < n && i < max - min; i++)
+	{
+		int r;
+		do
+		{
+			r = cf_rnd_next_range_int(&rnd, min, max - 1);
+
+		} while (arr_contains(res.begin(), res.end(), r));
+
+		res.add(r);
+	}
+
+	return res;
+}
+
 void GameStatePlaying::enter(Game &game)
 {
 	state = PLAYING;
 
 	subscriptions.add(game.event_bus.on<LevelUpEvent>([&](LevelUpEvent e) {
-		//		state = LEVELING;
+		state = LEVELING;
 
 		auto &passive_tree = game.world.get<C_PassiveTree>(e.entity);
 		auto &available_passives = passive_tree.get_available_passives();
@@ -20,20 +41,28 @@ void GameStatePlaying::enter(Game &game)
 			return;
 		}
 
-		auto rnd_int =
-			cf_rnd_next_range_int(&game.rnd, 0, available_passives.count() - 1);
+		auto indices =
+			get_random_indices(game.rnd, 0, available_passives.count(), 3);
 
-		auto &rnd_passive = available_passives[rnd_int];
-		passive_tree.unlock_passive(rnd_passive);
+		Array<Passive> passives;
 
-		auto &stats = game.world.get<C_Stats>(e.entity);
-		stats.add_modifier(rnd_passive.stats_modifier);
-
-		log_info("Unlocked passive:");
-		for (const char *desc : rnd_passive.description)
+		for (auto i : indices)
 		{
-			log_info(desc);
+			passives.add(available_passives[i]);
 		}
+
+		game.leveling_overlay.set_passives(passives);
+
+		//		passive_tree.unlock_passive(rnd_passive);
+		//
+		//		auto &stats = game.world.get<C_Stats>(e.entity);
+		//		stats.add_modifier(rnd_passive.stats_modifier);
+		//
+		//		log_info("Unlocked passive:");
+		//		for (const char *desc : rnd_passive.description)
+		//		{
+		//			log_info(desc);
+		//		}
 	}));
 }
 
@@ -47,7 +76,10 @@ GameState *GameStatePlaying::update(Game &game)
 		}
 		case LEVELING:
 		{
-			//			game.leveling_overlay.update();
+			if (game.leveling_overlay.update())
+			{
+				state = PLAYING;
+			}
 			break;
 		}
 		case PLAYING:
@@ -110,5 +142,9 @@ void GameStatePlaying::draw_world(Game &game)
 void GameStatePlaying::draw_ui(Game &game)
 {
 	game.game_timer.draw();
-	//	game.leveling_overlay.update();
+
+	if (state == LEVELING)
+	{
+		game.leveling_overlay.draw();
+	}
 }

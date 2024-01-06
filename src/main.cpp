@@ -47,6 +47,7 @@ int main(int, char *[])
 	start_http_server_thread();
 
 	cf_make_font("ProggyClean.ttf", "ProggyClean");
+	cf_make_font("Renogare.otf", "Renogare");
 	cf_app_init_imgui(false);
 
 	Game game;

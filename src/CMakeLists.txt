@@ -178,6 +178,8 @@ add_library(${PROJECT_NAME}_static STATIC
             event_handlers/level_up_event_handler.h
             leveling_overlay.cpp
             leveling_overlay.h
+            ui.h
+            ui.cpp
 )
 
 target_include_directories(${PROJECT_NAME}_static SYSTEM PUBLIC ${cute_headers_SOURCE_DIR} ${entt_SOURCE_DIR}/src)

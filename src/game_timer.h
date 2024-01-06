@@ -1,9 +1,11 @@
 #pragma once
 #include <cute.h>
 
+struct Game;
+
 struct GameTimer
 {
-	GameTimer(float initial_time);
+	GameTimer(Game &game, float initial_time);
 
 	void update();
 	void draw();
@@ -31,7 +33,7 @@ struct GameTimer
 	}
 
 private:
-	char text[5];
+	Game &game;
 
 	float initial_time;
 	float elapsed;

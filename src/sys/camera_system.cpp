@@ -18,6 +18,6 @@ void CameraSystem::update(World &w)
 		auto player_pos = w.get<C_Transform>(player).get_world_transform().pos;
 
 		cf_camera_dimensions(camera_size.x, camera_size.y);
-		cf_camera_look_at(player_pos.x, player_pos.y);
+		cf_camera_look_at((int)player_pos.x, (int)player_pos.y);
 	}
 }

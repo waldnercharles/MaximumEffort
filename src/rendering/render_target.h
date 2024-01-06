@@ -15,5 +15,6 @@ struct Vertex
 	float u, v;
 };
 
-RenderTarget make_render_target(int w, int h);
+RenderTarget
+make_render_target(int w, int h, CF_Filter filter = CF_FILTER_NEAREST);
 void destroy_render_target(RenderTarget render_target);

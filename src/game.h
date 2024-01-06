@@ -7,6 +7,7 @@
 #include "event_handlers/hit_event_handler.h"
 #include "factories/enemy_factory.h"
 #include "game_timer.h"
+#include "leveling_overlay.h"
 #include "passive_tree.h"
 #include "rendering/render_target.h"
 #include "states/game_state.h"
@@ -31,6 +32,7 @@
 #include "sys/weapon_system.h"
 #include "sys/xp_system.h"
 #include "tiled/tiled_map.h"
+#include "ui.h"
 
 struct Game
 {
@@ -78,6 +80,8 @@ private:
 
 	AabbGrid<Entity> enemy_aabb_grid;
 
+	UI ui;
+
 	// Event Handlers
 	HitEventHandler hit_event_handler;
 	DeathEventHandler death_event_handler;
@@ -107,6 +111,8 @@ private:
 	XpSystem xp_system;
 	PickupSystem pickup_system;
 
+	LevelingOverlay leveling_overlay;
+
 	// Rendering
 	CameraSystem camera_system;
 	RenderSystem render_system;
@@ -116,4 +122,7 @@ private:
 
 	RenderTarget main_render_target = {};
 	CF_Mesh main_render_quad = {};
+
+	RenderTarget ui_render_target = {};
+	CF_Mesh ui_render_quad = {};
 };
